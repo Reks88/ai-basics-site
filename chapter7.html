@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chapter 7: Multimodal AI & The Future 🌌 — AI Basics</title>
+  <meta name="description" content="Beyond text — vision, audio, video, and what the next generation of AI actually looks like.">
+  <meta property="og:title" content="Chapter 7: Multimodal AI & The Future — AI Basics">
+  <meta property="og:description" content="Vision, audio, video models and the roadmap to what comes next.">
+  <meta property="og:type" content="article">
+  <meta property="og:image" content="https://YOUR-CLOUDFRONT-DOMAIN/og-cover.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:#0a0a0f; --surface:#12121a; --card:#1a1a28;
+      --accent:#8b5cf6; --accent2:#a78bfa; --accent3:#c4b5fd;
+      --text:#f0f0ff; --muted:#8888aa;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    /* LIGHT MODE */
+    body.light { --bg:#f5f5ff; --surface:#ebebf5; --card:#ffffff; --text:#0a0a20; --muted:#55557a; }
+    body.light nav { background:rgba(240,240,250,0.92) !important; border-bottom-color:rgba(0,0,0,0.08); }
+    body.light .concept { box-shadow:0 4px 20px rgba(0,0,0,0.05); border-color:rgba(0,0,0,0.08); }
+    body.light .analogy { background:rgba(139,92,246,0.07); }
+    body.light .key-point { background:rgba(6,182,212,0.07); }
+    body.light .interactive-box { background:rgba(0,0,0,0.03); }
+    /* THEME TOGGLE */
+    .theme-toggle { background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.1); border-radius:100px; padding:0.3rem 0.8rem; cursor:pointer; font-size:0.85rem; color:var(--muted); transition:all 0.2s; }
+    .theme-toggle:hover { background:rgba(255,255,255,0.14); color:var(--text); }
+    body.light .theme-toggle { background:rgba(0,0,0,0.05); border-color:rgba(0,0,0,0.1); }
+
+    body { background:var(--bg); color:var(--text); font-family:'Inter',sans-serif; overflow-x:hidden; }
+
+    nav {
+      position:sticky; top:0; z-index:100;
+      background:rgba(10,10,15,0.85);
+      backdrop-filter:blur(20px);
+      border-bottom:1px solid rgba(255,255,255,0.06);
+      padding:1rem 2rem;
+      display:flex; align-items:center; gap:1.5rem; flex-wrap:wrap;
+    }
+    .nav-home { text-decoration:none; color:var(--muted); font-size:0.8rem; transition:color 0.2s; }
+    .nav-home:hover { color:var(--text); }
+    .nav-sep { color:rgba(255,255,255,0.15); }
+    .nav-current { color:var(--accent2); font-size:0.8rem; }
+    .nav-links { margin-left:auto; display:flex; gap:0.75rem; align-items:center; }
+    .nav-pill { padding:0.35rem 0.9rem; border-radius:100px; font-size:0.7rem; text-decoration:none; color:var(--muted); border:1px solid rgba(255,255,255,0.08); transition:all 0.2s; }
+    .nav-pill:hover { border-color:var(--accent); color:var(--accent2); }
+    .nav-pill.quiz { background:linear-gradient(135deg,var(--accent),#06b6d4); color:white; border:none; }
+    .nav-pill.quiz:hover { opacity:0.85; }
+
+    .progress-bar { height:3px; background:rgba(255,255,255,0.06); border-radius:100px; margin:0 2rem; max-width:900px; margin-left:auto; margin-right:auto; }
+    .progress-fill { height:100%; border-radius:100px; background:linear-gradient(90deg,var(--accent),#06b6d4); width:0%; transition:width 0.2s; }
+
+    .chapter-hero { padding:5rem 2rem 3rem; max-width:900px; margin:0 auto; }
+    .chapter-num { color:var(--accent2); font-size:0.75rem; letter-spacing:0.2em; margin-bottom:1rem; }
+    .chapter-title { font-family:'Syne',sans-serif; font-size:clamp(2.5rem,7vw,5rem); font-weight:800; line-height:1.05; margin-bottom:1.5rem; }
+    .chapter-title span { background:linear-gradient(90deg,var(--accent),#06b6d4); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+    .chapter-intro { color:var(--muted); font-size:0.95rem; line-height:1.9; max-width:640px; }
+
+    .content { max-width:900px; margin:0 auto; padding:3rem 2rem 6rem; }
+
+    .concept { background:var(--card); border:1px solid rgba(255,255,255,0.07); border-radius:20px; padding:2.5rem; margin-bottom:3rem; position:relative; overflow:hidden; animation:slideIn 0.5s ease both; }
+    .concept:nth-child(1){animation-delay:0.1s;} .concept:nth-child(2){animation-delay:0.2s;} .concept:nth-child(3){animation-delay:0.3s;}
+    .concept::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background:linear-gradient(90deg,var(--accent),#06b6d4); }
+    .concept-header { display:flex; align-items:center; gap:1rem; margin-bottom:1.5rem; flex-wrap:wrap; }
+    .concept-num { background:linear-gradient(135deg,var(--accent),#06b6d4); width:40px; height:40px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-family:'Syne',sans-serif; font-weight:800; font-size:1rem; flex-shrink:0; }
+    .concept-name { font-family:'Syne',sans-serif; font-size:1.6rem; font-weight:700; }
+    .concept-body { font-size:0.88rem; color:#d0d0e8; line-height:2; }
+    .concept-body p { margin-bottom:1rem; }
+    .concept-body strong { color:var(--accent2); font-weight:700; }
+    .concept-body em { color:var(--accent3); font-style:normal; }
+
+    .analogy { background:rgba(139,92,246,0.12); border:1px solid rgba(139,92,246,0.3); border-radius:12px; padding:1.5rem; margin:1.5rem 0; display:flex; gap:1rem; align-items:flex-start; }
+    .analogy-icon { font-size:1.8rem; flex-shrink:0; }
+    .analogy-content { font-size:0.85rem; line-height:1.8; color:var(--accent3); }
+    .analogy-content strong { color:#e9d5ff; }
+
+    .key-point { background:rgba(6,182,212,0.1); border-left:3px solid #06b6d4; padding:1rem 1.5rem; margin:1.5rem 0; border-radius:0 10px 10px 0; font-size:0.85rem; color:#a5f3fc; line-height:1.7; }
+
+    .interactive-box { background:var(--surface); border:1px solid rgba(139,92,246,0.25); border-radius:20px; padding:2rem; margin:2rem 0; }
+    .interactive-title { font-family:'Syne',sans-serif; font-size:1rem; font-weight:700; color:var(--accent2); margin-bottom:1rem; display:flex; align-items:center; gap:0.5rem; }
+    .interactive-title::before { content:'⚡'; }
+
+    /* MODALITY TABS */
+    .modality-tabs { display:flex; gap:0.5rem; flex-wrap:wrap; margin-bottom:1.5rem; }
+    .mod-tab { padding:0.5rem 1.2rem; border-radius:100px; font-size:0.75rem; border:1px solid rgba(255,255,255,0.1); color:var(--muted); cursor:pointer; transition:all 0.2s; background:transparent; font-family:'Inter',sans-serif; }
+    .mod-tab.active { background:var(--accent); border-color:var(--accent); color:white; }
+    .mod-content { display:none; font-size:0.82rem; line-height:1.8; color:#d0d0e8; background:rgba(255,255,255,0.03); padding:1.2rem; border-radius:12px; }
+    .mod-content.active { display:block; }
+
+    /* TIMELINE */
+    .timeline { position:relative; padding-left:2rem; margin:1.5rem 0; }
+    .timeline::before { content:''; position:absolute; left:0.5rem; top:0; bottom:0; width:2px; background:linear-gradient(to bottom, var(--accent), transparent); border-radius:100px; }
+    .tl-item { position:relative; padding:0.8rem 0 0.8rem 1rem; }
+    .tl-item::before { content:''; position:absolute; left:-1.65rem; top:1.1rem; width:10px; height:10px; border-radius:50%; background:var(--accent); box-shadow:0 0 10px rgba(139,92,246,0.6); }
+    .tl-year { font-size:0.65rem; color:var(--accent2); letter-spacing:0.1em; margin-bottom:0.2rem; }
+    .tl-text { font-size:0.8rem; color:#d0d0e8; line-height:1.6; }
+    .tl-text strong { color:var(--accent3); }
+
+    /* QUIZ OPTION */
+    .quiz-opt { background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.1); color:var(--text); padding:0.9rem 1.2rem; border-radius:10px; text-align:left; cursor:pointer; font-family:'Inter',sans-serif; font-size:0.8rem; transition:all 0.2s; width:100%; display:block; margin:0.5rem 0; }
+    .quiz-opt:hover { border-color:var(--accent); }
+
+    /* COMPLETION BANNER */
+    .completion-banner { background:linear-gradient(135deg,rgba(139,92,246,0.25),rgba(6,182,212,0.15)); border:1px solid rgba(139,92,246,0.4); border-radius:24px; padding:3rem 2rem; text-align:center; margin:0 0 3rem; }
+    .completion-banner h2 { font-family:'Syne',sans-serif; font-size:2rem; font-weight:800; margin-bottom:1rem; }
+    .completion-banner p { color:var(--muted); font-size:0.9rem; margin-bottom:2rem; line-height:1.8; }
+    .quiz-cta { display:inline-block; background:linear-gradient(135deg,var(--accent),#06b6d4); color:white; padding:1rem 2.5rem; border-radius:100px; text-decoration:none; font-family:'Syne',sans-serif; font-weight:800; font-size:1.1rem; transition:transform 0.2s; box-shadow:0 0 30px rgba(139,92,246,0.4); }
+    .quiz-cta:hover { transform:scale(1.05); }
+
+    .bottom-nav { display:flex; justify-content:space-between; align-items:center; padding:2rem; max-width:900px; margin:0 auto; border-top:1px solid rgba(255,255,255,0.06); flex-wrap:wrap; gap:1rem; }
+    .nav-btn { display:flex; align-items:center; gap:0.75rem; padding:0.9rem 1.8rem; border-radius:14px; text-decoration:none; color:var(--text); background:var(--card); border:1px solid rgba(255,255,255,0.08); font-size:0.82rem; transition:all 0.2s; }
+    .nav-btn:hover { border-color:var(--accent); }
+    .nav-btn.forward { background:linear-gradient(135deg,var(--accent),#06b6d4); border:none; color:white; font-weight:700; }
+    .nav-btn.forward:hover { opacity:0.9; }
+    .btn-small { font-size:0.7rem; color:var(--muted); }
+
+    @keyframes slideIn { from{opacity:0;transform:translateY(20px);} to{opacity:1;transform:translateY(0);} }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-home">🏠 Home</a>
+  <span class="nav-sep">/</span>
+  <span class="nav-current">Chapter 7: Multimodal AI</span>
+  <div class="nav-links">
+    <a href="chapter6.html" class="nav-pill">← Ch 6</a>
+    <a href="quiz.html" class="nav-pill quiz">🎯 Take Quiz</a>
+    <button class="theme-toggle" id="themeBtn" onclick="toggleTheme()">🌙</button>
+  </div>
+</nav>
+
+<div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
+
+<div class="chapter-hero">
+  <div class="chapter-num">// CHAPTER 07 OF 07 — FINAL CHAPTER</div>
+  <h1 class="chapter-title"><span>Multimodal</span> AI<br>& The Future</h1>
+  <p class="chapter-intro">Text was just the beginning. Modern AI sees, hears, and reasons across everything at once — and the next few years will be even wilder.</p>
+</div>
+
+<div class="content">
+
+  <!-- CONCEPT 1: MULTIMODAL -->
+  <div class="concept">
+    <div class="concept-header">
+      <div class="concept-num">1</div>
+      <div class="concept-name">What is Multimodal AI?</div>
+    </div>
+    <div class="concept-body">
+      <p>Early AI models were <strong>unimodal</strong> — text in, text out. <strong>Multimodal AI</strong> can process and generate across multiple types of data: text, images, audio, video, and even code — often simultaneously.</p>
+
+      <div class="analogy">
+        <div class="analogy-icon">👁️</div>
+        <div class="analogy-content">
+          <strong>The human brain analogy:</strong> You don't process the world through just one sense. You see, hear, and feel simultaneously, and your brain integrates all of that into a single coherent understanding. Multimodal AI is attempting the same thing — one model, many modalities.
+        </div>
+      </div>
+
+      <p>The key insight is that <strong>the transformer architecture scales to any modality</strong>. Images can be broken into patches (visual tokens), audio into spectrograms, video into frame sequences — all processed by the same attention mechanism you met in Chapter 2.</p>
+    </div>
+
+    <div class="interactive-box">
+      <div class="interactive-title">Explore by Modality — click a tab</div>
+      <div class="modality-tabs">
+        <button class="mod-tab active" onclick="switchMod(this,'vision')">👁️ Vision</button>
+        <button class="mod-tab" onclick="switchMod(this,'audio')">🎵 Audio</button>
+        <button class="mod-tab" onclick="switchMod(this,'video')">🎬 Video</button>
+        <button class="mod-tab" onclick="switchMod(this,'code')">💻 Code</button>
+      </div>
+      <div class="mod-content active" id="mod-vision">
+        <strong style="color:var(--accent2)">Vision AI:</strong> Models like GPT-4V, Gemini, and Claude 3 can "see" images. Input: an image of a whiteboard. Output: structured text of every equation on it. The image is split into 16×16 pixel patches, each patch becomes a token, and attention runs across all patches. Use cases: document understanding, medical imaging, accessibility tools, robotics perception.
+      </div>
+      <div class="mod-content" id="mod-audio">
+        <strong style="color:var(--accent2)">Audio AI:</strong> Whisper (OpenAI) converts speech to text at near-human accuracy in 100+ languages. Models like AudioLM generate speech, music, and sound effects. Audio is processed as a spectrogram — a 2D image of frequencies over time — which transformers handle just like visual patches. Use cases: real-time transcription, voice cloning, music generation, accessibility.
+      </div>
+      <div class="mod-content" id="mod-video">
+        <strong style="color:var(--accent2)">Video AI:</strong> Video is the hardest modality — it's images + audio + time. Sora (OpenAI, 2024) generates photorealistic video from text prompts by treating video as a sequence of "spacetime patches." The model must understand physics, causality, and consistency across frames. Current challenge: maintaining consistency over longer clips.
+      </div>
+      <div class="mod-content" id="mod-code">
+        <strong style="color:var(--accent2)">Code AI:</strong> GitHub Copilot, Cursor, and Claude all treat code as a modality. But truly multimodal code AI can take a screenshot of a UI and generate the code for it, or look at a hand-drawn diagram and produce working software. Models like GPT-4o can go from image → code in a single step.
+      </div>
+    </div>
+  </div>
+
+  <!-- CONCEPT 2: AI AGENTS 2.0 -->
+  <div class="concept">
+    <div class="concept-header">
+      <div class="concept-num">2</div>
+      <div class="concept-name">AI Agents 2.0 — Tools & Autonomy</div>
+    </div>
+    <div class="concept-body">
+      <p>You met basic AI agents in Chapter 5. The 2025-2026 wave is different: <strong>agentic AI systems</strong> that run for hours or days, use dozens of tools, spawn sub-agents, and complete complex multi-step tasks with minimal human input.</p>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin:1.5rem 0;">
+        <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:1.2rem;">
+          <div style="font-size:1.2rem;margin-bottom:0.5rem;">🤖 Simple Agent (2023)</div>
+          <ul style="font-size:0.75rem;color:var(--muted);line-height:2;list-style:none;padding:0;">
+            <li>↳ Single LLM</li>
+            <li>↳ Basic tool use (search, calculator)</li>
+            <li>↳ Short context window</li>
+            <li>↳ Human in loop constantly</li>
+          </ul>
+        </div>
+        <div style="background:rgba(139,92,246,0.1);border:1px solid rgba(139,92,246,0.3);border-radius:14px;padding:1.2rem;">
+          <div style="font-size:1.2rem;margin-bottom:0.5rem;">🚀 Agentic AI (2025)</div>
+          <ul style="font-size:0.75rem;color:var(--accent3);line-height:2;list-style:none;padding:0;">
+            <li>↳ Multi-model orchestration</li>
+            <li>↳ Browser, IDE, APIs, file system</li>
+            <li>↳ 200K+ token memory</li>
+            <li>↳ Runs autonomously for hours</li>
+          </ul>
+        </div>
+      </div>
+
+      <p>Systems like <strong>Devin</strong> (software engineer agent), <strong>Operator</strong> (browser-based agent), and <strong>Claude's computer use</strong> can control a computer like a human would — clicking, typing, navigating — to complete complex tasks end-to-end.</p>
+
+      <div class="key-point">
+        💡 The frontier shift: moving from AI as a <strong>tool</strong> (you use it) to AI as an <strong>agent</strong> (it does things on your behalf). This changes the alignment challenge enormously — agents accumulate mistakes over long horizons and have access to real-world systems.
+      </div>
+    </div>
+  </div>
+
+  <!-- CONCEPT 3: WHAT'S COMING -->
+  <div class="concept">
+    <div class="concept-header">
+      <div class="concept-num">3</div>
+      <div class="concept-name">The Frontier — What's Coming Next</div>
+    </div>
+    <div class="concept-body">
+      <p>Here's the honest answer about AI's future: nobody knows exactly, and anyone who claims certainty is overconfident. But here are the well-evidenced trends shaping the next 3–5 years:</p>
+
+      <div class="timeline">
+        <div class="tl-item">
+          <div class="tl-year">NOW → 1 YEAR</div>
+          <div class="tl-text"><strong>Ambient AI:</strong> AI embedded everywhere — in your IDE, browser, OS, earphones. Proactive suggestions without you asking. The interface shifts from chat to invisible assistance.</div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-year">1 → 2 YEARS</div>
+          <div class="tl-text"><strong>Personal AI:</strong> Models that know you — your writing style, your projects, your preferences — across all your devices. Long-term memory becomes standard. Privacy concerns increase proportionally.</div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-year">2 → 4 YEARS</div>
+          <div class="tl-text"><strong>Physical AI:</strong> Robots powered by multimodal foundation models. Tesla Optimus, Figure 02, Boston Dynamics' humanoids — the bottleneck has shifted from hardware to AI reasoning.</div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-year">OPEN QUESTION</div>
+          <div class="tl-text"><strong>AGI:</strong> "Artificial General Intelligence" — AI that can do any cognitive task a human can. The timeline is genuinely contested: some researchers say 2030, others say never. The definition itself is debated.</div>
+        </div>
+      </div>
+
+      <div class="key-point">
+        💡 The most important skill won't be knowing AI — it'll be knowing <em>how to work with AI</em>. Understanding the concepts in this course means you can evaluate AI tools critically, spot their limits, and build on top of them rather than being replaced by them.
+      </div>
+    </div>
+
+    <div class="interactive-box">
+      <div class="interactive-title">Quick Check — Final question:</div>
+      <p style="font-size:0.85rem;margin-bottom:1rem;color:#d0d0e8;">What makes a model "multimodal"?</p>
+      <div id="quiz-opts">
+        <button class="quiz-opt" onclick="checkQ7(this,false)">A) It can speak multiple human languages</button>
+        <button class="quiz-opt" onclick="checkQ7(this,false)">B) It runs on multiple GPUs simultaneously</button>
+        <button class="quiz-opt" onclick="checkQ7(this,true)">C) It can process and generate multiple types of data — text, images, audio, video</button>
+        <button class="quiz-opt" onclick="checkQ7(this,false)">D) It has more than one version (e.g. GPT-4 and GPT-4 Turbo)</button>
+      </div>
+      <div id="quiz-feedback" style="margin-top:1rem;font-size:0.82rem;min-height:24px;"></div>
+    </div>
+  </div>
+
+  <!-- COMPLETION BANNER -->
+  <div class="completion-banner">
+    <div style="font-size:3rem;margin-bottom:1rem;">🎉</div>
+    <h2>You've Finished All 7 Chapters!</h2>
+    <p>You now understand neural networks, transformers, LLMs, training, AI systems, ethics, and multimodal AI.<br>That's legitimately more than most adults know. Time to prove it.</p>
+    <a href="quiz.html" class="quiz-cta">Take the Final Quiz →</a>
+  </div>
+
+</div>
+
+<div class="bottom-nav">
+  <a href="chapter6.html" class="nav-btn">
+    <span>←</span>
+    <div><div class="btn-small">Back to</div>Ch 6: AI Ethics</div>
+  </a>
+  <div style="text-align:center;font-size:0.75rem;color:var(--muted);">
+    <div style="color:var(--accent2);font-weight:700;margin-bottom:0.2rem;">All 7 Chapters Done! 🌌</div>
+    28 concepts unlocked
+  </div>
+  <a href="quiz.html" class="nav-btn forward">
+    <div><div class="btn-small">Ready?</div>Take the Quiz</div>
+    <span>🎯</span>
+  </a>
+</div>
+
+<script>
+  // Theme toggle
+  function toggleTheme() {
+    const light = document.body.classList.toggle('light');
+    localStorage.setItem('aibasics_theme', light ? 'light' : 'dark');
+    document.getElementById('themeBtn').textContent = light ? '☀️' : '🌙';
+  }
+  if (localStorage.getItem('aibasics_theme') === 'light') {
+    document.body.classList.add('light');
+    const _b = document.getElementById('themeBtn'); if (_b) _b.textContent = '☀️';
+  }
+
+  // Progress bar + chapter 7 completion
+  let _done = false;
+  window.addEventListener('scroll', () => {
+    const p = (window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100;
+    document.getElementById('progress').style.width = Math.min(p,100) + '%';
+    if (p >= 85 && !_done) { _done = true; localStorage.setItem('aibasics_ch7_complete', '1'); }
+  });
+
+  function switchMod(btn, id) {
+    document.querySelectorAll('.mod-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.mod-content').forEach(c => c.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('mod-' + id).classList.add('active');
+  }
+
+  function checkQ7(btn, correct) {
+    document.querySelectorAll('.quiz-opt').forEach(o => { o.disabled = true; o.style.opacity = '0.5'; });
+    btn.style.opacity = '1';
+    if (correct) {
+      btn.style.background = 'rgba(16,185,129,0.25)'; btn.style.borderColor = '#10b981';
+      document.getElementById('quiz-feedback').innerHTML = '<span style="color:#10b981">✅ Correct! Multimodal = multiple modalities — text, images, audio, video processed together.</span>';
+    } else {
+      btn.style.background = 'rgba(244,63,94,0.25)'; btn.style.borderColor = '#f43f5e';
+      document.getElementById('quiz-feedback').innerHTML = '<span style="color:#f43f5e">❌ Not quite. Think about different types of data inputs.</span>';
+      setTimeout(() => {
+        document.querySelectorAll('.quiz-opt').forEach(o => { o.disabled = false; o.style.opacity='1'; o.style.background='rgba(255,255,255,0.04)'; o.style.borderColor='rgba(255,255,255,0.1)'; });
+        document.getElementById('quiz-feedback').innerHTML = '';
+        btn.style.background='rgba(244,63,94,0.15)'; btn.style.borderColor='rgba(244,63,94,0.3)';
+      }, 2200);
+    }
+  }
+</script>
+</body>
+</html>

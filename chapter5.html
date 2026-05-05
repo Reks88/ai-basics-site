@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chapter 5: Building AI Systems 🚀 — AI Basics</title>
+  <meta name="description" content="Prompting tricks, AI agents, RAG, vector databases, and how images are generated from noise.">
+  <meta property="og:title" content="Chapter 5: Building AI Systems — AI Basics">
+  <meta property="og:description" content="Prompting tricks, AI agents, RAG, vector databases, and diffusion models.">
+  <meta property="og:type" content="article">
+  <meta property="og:image" content="https://YOUR-CLOUDFRONT-DOMAIN/og-cover.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root { --bg:#0a0a0f; --surface:#12121a; --card:#1a1a28; --accent:#f43f5e; --accent2:#fda4af; --accent3:#ffe4e6; --text:#f0f0ff; --muted:#8888aa; }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    /* LIGHT MODE */
+    body.light { --bg:#f5f5ff; --surface:#ebebf5; --card:#ffffff; --text:#0a0a20; --muted:#55557a; }
+    body.light nav { background:rgba(240,240,250,0.92) !important; border-bottom-color:rgba(0,0,0,0.08); }
+    body.light .concept { box-shadow:0 4px 20px rgba(0,0,0,0.05); border-color:rgba(0,0,0,0.08); }
+    body.light .analogy { background:rgba(245,158,11,0.07); }
+    body.light .key-point { background:rgba(6,182,212,0.07); }
+    body.light .interactive-box { background:rgba(0,0,0,0.03); }
+    /* THEME TOGGLE */
+    .theme-toggle { background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.1); border-radius:100px; padding:0.3rem 0.8rem; cursor:pointer; font-size:0.85rem; color:var(--muted); transition:all 0.2s; }
+    .theme-toggle:hover { background:rgba(255,255,255,0.14); color:var(--text); }
+    body.light .theme-toggle { background:rgba(0,0,0,0.05); border-color:rgba(0,0,0,0.1); }
+    body { background:var(--bg); color:var(--text); font-family:'Inter',sans-serif; overflow-x:hidden; }
+    nav { position:sticky; top:0; z-index:100; background:rgba(10,10,15,0.85); backdrop-filter:blur(20px); border-bottom:1px solid rgba(255,255,255,0.06); padding:1rem 2rem; display:flex; align-items:center; gap:1.5rem; flex-wrap:wrap; }
+    .nav-home { text-decoration:none; color:var(--muted); font-size:0.8rem; }
+    .nav-home:hover { color:var(--text); }
+    .nav-sep { color:rgba(255,255,255,0.15); }
+    .nav-current { color:var(--accent2); font-size:0.8rem; }
+    .nav-links { margin-left:auto; display:flex; gap:0.75rem; }
+    .nav-pill { padding:0.35rem 0.9rem; border-radius:100px; font-size:0.7rem; text-decoration:none; color:var(--muted); border:1px solid rgba(255,255,255,0.08); transition:all 0.2s; }
+    .nav-pill:hover { border-color:var(--accent); color:var(--accent2); }
+    .nav-pill.quiz { background:linear-gradient(135deg,var(--accent),#f59e0b); color:white; border:none; font-weight:700; }
+    .progress-bar { height:3px; background:rgba(255,255,255,0.06); }
+    .progress-fill { height:100%; background:linear-gradient(90deg,var(--accent),#f59e0b); width:100%; }
+    .chapter-hero { padding:5rem 2rem 3rem; max-width:900px; margin:0 auto; }
+    .chapter-num { color:var(--accent2); font-size:0.75rem; letter-spacing:0.2em; margin-bottom:1rem; }
+    .chapter-title { font-family:'Syne',sans-serif; font-size:clamp(2.5rem,7vw,5rem); font-weight:800; line-height:1.05; margin-bottom:1.5rem; }
+    .chapter-title span { background:linear-gradient(90deg,var(--accent),#f59e0b); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+    .chapter-intro { color:var(--muted); font-size:0.95rem; line-height:1.9; max-width:640px; }
+    .content { max-width:900px; margin:0 auto; padding:3rem 2rem 6rem; }
+    .concept { background:var(--card); border:1px solid rgba(255,255,255,0.07); border-radius:20px; padding:2.5rem; margin-bottom:3rem; position:relative; overflow:hidden; animation:slideIn 0.5s ease both; }
+    .concept::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background:linear-gradient(90deg,var(--accent),#f59e0b); }
+    .concept:nth-child(2){animation-delay:0.1s;} .concept:nth-child(3){animation-delay:0.15s;} .concept:nth-child(4){animation-delay:0.2s;} .concept:nth-child(5){animation-delay:0.25s;} .concept:nth-child(6){animation-delay:0.3s;}
+    @keyframes slideIn { from{opacity:0;transform:translateY(20px);} to{opacity:1;transform:translateY(0);} }
+    .concept-header { display:flex; align-items:center; gap:1rem; margin-bottom:1.5rem; flex-wrap:wrap; }
+    .concept-num { background:linear-gradient(135deg,var(--accent),#f59e0b); width:40px; height:40px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-family:'Syne',sans-serif; font-weight:800; color:white; flex-shrink:0; font-size:0.85rem; }
+    .concept-name { font-family:'Syne',sans-serif; font-size:1.6rem; font-weight:700; }
+    .concept-body { font-size:0.88rem; color:#d0d0e8; line-height:2; }
+    .concept-body p { margin-bottom:1rem; }
+    .concept-body strong { color:var(--accent2); }
+    .concept-body em { color:var(--accent3); }
+    .analogy { background:rgba(244,63,94,0.1); border:1px solid rgba(244,63,94,0.2); border-radius:12px; padding:1.5rem; margin:1.5rem 0; display:flex; gap:1rem; align-items:flex-start; }
+    .analogy-icon { font-size:1.8rem; flex-shrink:0; }
+    .analogy-content { font-size:0.85rem; line-height:1.8; color:var(--accent3); }
+    .analogy-content strong { color:var(--accent2); }
+    .key-point { background:rgba(124,58,237,0.08); border-left:3px solid #7c3aed; padding:1rem 1.5rem; margin:1.5rem 0; border-radius:0 10px 10px 0; font-size:0.85rem; color:#c4b5fd; line-height:1.7; }
+    .interactive-box { background:var(--surface); border:1px solid rgba(244,63,94,0.2); border-radius:20px; padding:2rem; margin:2rem 0; }
+    .interactive-title { font-family:'Syne',sans-serif; font-size:1rem; font-weight:700; color:var(--accent2); margin-bottom:1rem; display:flex; align-items:center; gap:0.5rem; }
+    .interactive-title::before { content:'⚡'; }
+
+    /* PROMPT COMPARE */
+    .prompt-compare { display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin:1rem 0; }
+    .prompt-box { border-radius:12px; padding:1.2rem; }
+    .prompt-box.bad { background:rgba(244,63,94,0.1); border:1px solid rgba(244,63,94,0.2); }
+    .prompt-box.good { background:rgba(16,185,129,0.1); border:1px solid rgba(16,185,129,0.25); }
+    .prompt-label { font-size:0.65rem; letter-spacing:0.1em; margin-bottom:0.75rem; }
+    .prompt-label.bad-l { color:#fda4af; }
+    .prompt-label.good-l { color:#6ee7b7; }
+    .prompt-text { font-size:0.8rem; color:#d0d0e8; background:rgba(255,255,255,0.04); border-radius:8px; padding:0.75rem; margin-bottom:0.75rem; line-height:1.6; font-style:italic; }
+    .prompt-output { font-size:0.75rem; color:var(--muted); line-height:1.6; }
+    @media(max-width:600px){.prompt-compare{grid-template-columns:1fr;}}
+
+    /* COT DEMO */
+    .cot-tabs { display:flex; gap:0.5rem; margin-bottom:1rem; }
+    .cot-tab { padding:0.5rem 1.2rem; border-radius:100px; font-size:0.75rem; cursor:pointer; border:1px solid rgba(255,255,255,0.1); transition:all 0.2s; color:var(--muted); background:transparent; font-family:'Space Mono',monospace; }
+    .cot-tab.active { background:var(--accent); color:white; border-color:var(--accent); }
+    .cot-answer { background:rgba(255,255,255,0.04); border-radius:10px; padding:1.2rem; font-size:0.82rem; line-height:1.8; color:#d0d0e8; min-height:80px; }
+    .cot-step { border-left:2px solid rgba(245,158,11,0.4); padding-left:0.75rem; margin-bottom:0.5rem; color:#fde68a; font-size:0.78rem; }
+
+    /* RAG FLOW */
+    .rag-flow { display:flex; flex-direction:column; gap:0.75rem; margin:1rem 0; }
+    .rag-step { display:flex; align-items:flex-start; gap:1rem; padding:1rem; background:rgba(255,255,255,0.03); border-radius:10px; border:1px solid rgba(255,255,255,0.06); transition:border-color 0.2s; }
+    .rag-step:hover { border-color:var(--accent); }
+    .rag-step-num { width:28px; height:28px; border-radius:50%; background:linear-gradient(135deg,var(--accent),#f59e0b); display:flex; align-items:center; justify-content:center; font-size:0.75rem; font-weight:700; flex-shrink:0; color:white; }
+    .rag-step-text { font-size:0.82rem; line-height:1.6; color:#d0d0e8; }
+    .rag-step-text strong { color:var(--accent2); }
+
+    /* VECTOR DB */
+    .vector-search { margin:1rem 0; }
+    .vec-input { width:100%; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.12); border-radius:10px; padding:0.9rem 1.2rem; color:var(--text); font-family:'Space Mono',monospace; font-size:0.82rem; outline:none; margin-bottom:1rem; transition:border-color 0.2s; }
+    .vec-input:focus { border-color:var(--accent); }
+    .vec-results { display:flex; flex-direction:column; gap:0.5rem; }
+    .vec-result { background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.07); border-radius:8px; padding:0.8rem 1rem; display:flex; align-items:center; gap:0.75rem; font-size:0.8rem; transition:all 0.3s; }
+    .vec-result.match { border-color:rgba(244,63,94,0.4); background:rgba(244,63,94,0.08); }
+    .vec-result.partial { border-color:rgba(245,158,11,0.25); background:rgba(245,158,11,0.05); }
+    .vec-score { font-size:0.7rem; padding:0.2rem 0.5rem; border-radius:6px; font-weight:700; white-space:nowrap; }
+    .vec-score.high { background:rgba(244,63,94,0.2); color:#fda4af; }
+    .vec-score.mid { background:rgba(245,158,11,0.15); color:#fde68a; }
+    .vec-score.low { background:rgba(255,255,255,0.06); color:var(--muted); }
+
+    /* AGENT LOOP */
+    .agent-loop { position:relative; margin:1.5rem 0; }
+    .agent-steps-list { display:flex; flex-direction:column; gap:0.5rem; }
+    .agent-step { display:flex; align-items:center; gap:1rem; padding:0.9rem 1.2rem; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.06); border-radius:10px; font-size:0.82rem; cursor:pointer; transition:all 0.2s; }
+    .agent-step:hover, .agent-step.active { border-color:var(--accent); background:rgba(244,63,94,0.08); }
+    .agent-step-icon { font-size:1.4rem; flex-shrink:0; }
+    .agent-step-label { font-weight:700; color:var(--accent2); }
+    .agent-step-desc { color:var(--muted); font-size:0.75rem; margin-top:0.1rem; }
+
+    /* DIFFUSION */
+    .diffusion-canvas { display:flex; gap:0.5rem; margin:1rem 0; align-items:center; flex-wrap:wrap; justify-content:center; }
+    .diff-frame { border-radius:8px; text-align:center; padding:0.5rem; }
+    .diff-img { width:80px; height:80px; border-radius:8px; display:block; margin:0 auto 0.3rem; }
+    .diff-label { font-size:0.62rem; color:var(--muted); }
+    .diff-arrow { color:var(--accent); font-size:1.2rem; }
+
+    /* COMPLETION BANNER */
+    .completion-banner {
+      background:linear-gradient(135deg,rgba(124,58,237,0.3),rgba(244,63,94,0.2));
+      border:1px solid rgba(124,58,237,0.4);
+      border-radius:20px;
+      padding:3rem;
+      text-align:center;
+      margin:0 0 4rem;
+    }
+    .completion-banner h2 { font-family:'Syne',sans-serif; font-size:2rem; font-weight:800; margin-bottom:1rem; }
+    .completion-banner p { color:var(--muted); font-size:0.9rem; margin-bottom:2rem; line-height:1.8; }
+    .quiz-cta {
+      display:inline-block;
+      background:linear-gradient(135deg,#7c3aed,var(--accent));
+      color:white;
+      padding:1rem 2.5rem;
+      border-radius:100px;
+      text-decoration:none;
+      font-family:'Syne',sans-serif;
+      font-weight:800;
+      font-size:1.1rem;
+      transition:transform 0.2s, box-shadow 0.2s;
+      box-shadow:0 0 40px rgba(244,63,94,0.4);
+    }
+    .quiz-cta:hover { transform:scale(1.05); box-shadow:0 0 60px rgba(244,63,94,0.6); }
+
+    .bottom-nav { display:flex; justify-content:space-between; align-items:center; padding:2rem; max-width:900px; margin:0 auto; border-top:1px solid rgba(255,255,255,0.06); flex-wrap:wrap; gap:1rem; }
+    .nav-btn { display:flex; align-items:center; gap:0.75rem; padding:0.9rem 1.8rem; border-radius:14px; text-decoration:none; color:var(--text); background:var(--card); border:1px solid rgba(255,255,255,0.08); font-size:0.82rem; transition:all 0.2s; }
+    .nav-btn:hover { border-color:var(--accent); }
+    .nav-btn.forward { background:linear-gradient(135deg,#7c3aed,var(--accent)); border:none; color:white; font-weight:700; }
+    .btn-small { font-size:0.7rem; color:var(--muted); }
+    .nav-btn.forward .btn-small { color:rgba(255,255,255,0.6); }
+  </style>
+</head>
+<body>
+<nav>
+  <a href="index.html" class="nav-home">🏠 Home</a>
+  <span class="nav-sep">/</span>
+  <span class="nav-current">Chapter 5: Building AI Systems</span>
+  <div class="nav-links">
+    <a href="chapter4.html" class="nav-pill">← Ch 4</a>
+    <a href="quiz.html" class="nav-pill quiz">🎯 Take Quiz</a>
+    <button class="theme-toggle" id="themeBtn" onclick="toggleTheme()">🌙</button>
+  </div>
+</nav>
+<div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
+
+<div class="chapter-hero">
+  <div class="chapter-num">// CHAPTER 05 OF 05 — FINAL CHAPTER</div>
+  <h1 class="chapter-title">Building<br><span>AI Systems</span></h1>
+  <p class="chapter-intro">Prompting tricks, AI agents, RAG, vector databases, and how images are created from pure noise.</p>
+</div>
+
+<div class="content">
+
+  <!-- CONCEPT 15: Prompt Engineering -->
+  <div class="concept">
+    <div class="concept-header">
+      <div class="concept-num">15</div>
+      <div class="concept-name">Prompt Engineering</div>
+    </div>
+    <div class="concept-body">
+      <p>The way you ask an AI matters <em>a lot</em>. The same question asked in two different ways can produce wildly different results. <strong>Prompt engineering</strong> is the skill of crafting inputs that get great outputs.</p>
+    </div>
+
+    <div class="interactive-box">
+      <div class="interactive-title">Bad prompt vs Good prompt — spot the difference</div>
+      <div class="prompt-compare">
+        <div class="prompt-box bad">
+          <div class="prompt-label bad-l">❌ VAGUE PROMPT</div>
+          <div class="prompt-text">"explain APIs"</div>
+          <div class="prompt-output">Gets you: A broad, surface-level answer with no examples. Not very useful.</div>
+        </div>
+        <div class="prompt-box good">
+          <div class="prompt-label good-l">✅ ENGINEERED PROMPT</div>
+          <div class="prompt-text">"Explain how REST APIs handle authentication, with a real code example in Python for a beginner"</div>
+          <div class="prompt-output">Gets you: Specific, practical, with code, at the right level. Actually usable!</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="concept-body">
+      <p>Good prompts do these things: <strong>set a role</strong> ("you are an expert..."), <strong>be specific</strong> (format, length, level), <strong>give examples</strong>, and <strong>break complex tasks into steps</strong>.</p>
+      <div class="key-point">
+        💡 Prompt engineering isn't a trick — it's the primary way you communicate with AI. A vague prompt gets generic output. A sharp prompt gets something genuinely useful.
+      </div>
+    </div>
+  </div>
+
+  <!-- CONCEPT 16: Chain of Thought -->
+  <div class="concept">
+    <div class="concept-header">
+      <div class="concept-num">16</div>
+      <div class="concept-name">Chain of Thought (CoT)</div>
+    </div>
+    <div class="concept-body">
+      <p>Sometimes a model gives a wrong answer not because it doesn't know — but because it <strong>rushed</strong>. Chain of Thought (CoT) prompting makes the model work through problems step-by-step instead of jumping to a conclusion.</p>
+    </div>
+
+    <div class="interactive-box">
+      <div class="interactive-title">Same maths problem — two approaches</div>
+      <div class="cot-tabs">
+        <button class="cot-tab active" onclick="showCoT('direct')">Direct Answer</button>
+        <button class="cot-tab" onclick="showCoT('cot')">Chain of Thought</button>
+      </div>
+      <div class="cot-answer" id="cot-output">
+        <strong style="color:var(--muted)">Question: A shirt costs $24. It's 25% off. You have a $5 coupon on top. How much do you pay?</strong><br><br>
+        <span id="cot-result">$13. <span style="color:#f43f5e">(Wait... is that right? 🤔)</span></span>
+      </div>
+    </div>
+
+    <div class="concept-body">
+      <div class="analogy">
+        <div class="analogy-icon">📝</div>
+        <div class="analogy-content">
+          <strong>CoT = scratch paper:</strong> Instead of forcing an instant answer, you give the model space to reason. For multi-step problems, this small change makes a huge difference in accuracy.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONCEPT 17: RAG -->
+  <div class="concept">
+    <div class="concept-header">
+      <div class="concept-num">17</div>
+      <div class="concept-name">RAG (Retrieval-Augmented Generation)</div>
+    </div>
+    <div class="concept-body">
+      <p>Remember hallucinations? <strong>RAG</strong> is one of the best ways to fix them. Instead of relying on what the model "memorised" during training, you give it <em>real, current documents</em> to reference at query time.</p>
+    </div>
+
+    <div class="interactive-box">
+      <div class="interactive-title">How RAG works — step by step</div>
+      <div class="rag-flow">
+        <div class="rag-step">
+          <div class="rag-step-num">1</div>
+          <div class="rag-step-text"><strong>User asks a question</strong> — "What's our refund policy?"</div>
+        </div>
+        <div class="rag-step">
+          <div class="rag-step-num">2</div>
+          <div class="rag-step-text"><strong>System searches knowledge base</strong> — finds the relevant policy document</div>
+        </div>
+        <div class="rag-step">
+          <div class="rag-step-num">3</div>
+          <div class="rag-step-text"><strong>Document + question are sent to the AI</strong> together as context</div>
+        </div>
+        <div class="rag-step">
+          <div class="rag-step-num">4</div>
+          <div class="rag-step-text"><strong>AI answers using the actual document</strong> — no guessing, no hallucination</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="concept-body">
+      <p>The key insight: <strong>separate the roles</strong>. The model explains answers. The knowledge base provides facts. Update your docs — the AI uses new info immediately, no retraining needed.</p>
+      <div class="key-point">
+        💡 Most enterprise AI products use RAG. It's why company chatbots can answer questions about your specific products, policies, or internal docs.
+      </div>
+    </div>
+  </div>
+
+  <!-- CONCEPT 18: Vector DB -->
+  <div class="concept">
+    <div class="concept-header">
+      <div class="concept-num">18</div>
+      <div class="concept-name">Vector Database</div>
+    </div>
+    <div class="concept-body">
+      <p>RAG needs to find relevant documents fast. A <strong>vector database</strong> stores embeddings (those number lists from Chapter 2) and searches by <em>meaning</em> rather than exact keywords.</p>
+    </div>
+
+    <div class="interactive-box">
+      <div class="interactive-title">Semantic search — meaning beats exact words</div>
+      <input class="vec-input" id="vec-query" placeholder="Try: heart, code, learn, fast food, feelings..." oninput="vectorSearch(this.value)">
+      <div class="vec-results" id="vec-results"></div>
+    </div>
+
+    <div class="concept-body">
+      <div class="analogy">
+        <div class="analogy-icon">🗺️</div>
+        <div class="analogy-content">
+          <strong>It searches like a brain, not a ctrl+F:</strong> "heart condition" will find "cardiac arrest" even if those exact words don't appear together. Vector search understands intent, not just characters.
+        </div>
+      </div>
+      <div class="key-point">
+        💡 Popular vector databases: Pinecone, Weaviate, Qdrant, ChromaDB. Even PostgreSQL can do it with the pgvector extension!
+      </div>
+    </div>
+  </div>
+
+  <!-- CONCEPT 19: AI Agents -->
+  <div class="concept">
+    <div class="concept-header">
+      <div class="concept-num">19</div>
+      <div class="concept-name">AI Agents</div>
+    </div>
+    <div class="concept-body">
+      <p>Everything so far has been about AI that <em>generates text</em>. An <strong>AI agent</strong> can actually <em>do things</em> — run code, search the web, call APIs, interact with tools, and chain these steps together to complete a task.</p>
+    </div>
+
+    <div class="interactive-box">
+      <div class="interactive-title">The Agent Loop — click each step</div>
+      <div class="agent-steps-list">
+        <div class="agent-step" onclick="showAgentStep(this, 'The model reads the task: "Fix the bug in our login code". It decides the first action: read the codebase.')">
+          <span class="agent-step-icon">👁️</span>
+          <div><div class="agent-step-label">OBSERVE</div><div class="agent-step-desc">Read the current situation</div></div>
+        </div>
+        <div class="agent-step" onclick="showAgentStep(this, 'Based on what it sees, the model decides: which tool to call next? Read file? Run tests? Search docs?')">
+          <span class="agent-step-icon">🧠</span>
+          <div><div class="agent-step-label">THINK</div><div class="agent-step-desc">Decide what to do next</div></div>
+        </div>
+        <div class="agent-step" onclick="showAgentStep(this, 'The model calls a tool — runs the test suite, reads a file, or searches the web. This is where agents actually DO things.')">
+          <span class="agent-step-icon">⚡</span>
+          <div><div class="agent-step-label">ACT</div><div class="agent-step-desc">Call a tool or run code</div></div>
+        </div>
+        <div class="agent-step" onclick="showAgentStep(this, 'The tool returns results. Did tests pass? What did the file say? The agent feeds this back into its context and starts the loop again.')">
+          <span class="agent-step-icon">🔄</span>
+          <div><div class="agent-step-label">REPEAT</div><div class="agent-step-desc">Loop until done</div></div>
+        </div>
+      </div>
+      <div id="agent-info" style="margin-top:1rem;padding:1rem;background:rgba(244,63,94,0.08);border-radius:10px;font-size:0.8rem;color:#fda4af;min-height:48px;line-height:1.7;">
+        👆 Click a step to learn more
+      </div>
+    </div>
+
+    <div class="concept-body">
+      <div class="key-point">
+        💡 The hard part of agents isn't making them capable — it's making them <strong>reliable</strong>. Each step can fail, and errors stack up. That's why modern agent systems invest heavily in error handling and self-correction.
+      </div>
+    </div>
+  </div>
+
+  <!-- CONCEPT 20: Diffusion -->
+  <div class="concept">
+    <div class="concept-header">
+      <div class="concept-num">20</div>
+      <div class="concept-name">Diffusion Models</div>
+    </div>
+    <div class="concept-body">
+      <p>So far it's all been text. But what about <strong>image generation</strong> (Midjourney, DALL·E, Stable Diffusion)? These use a completely different and counterintuitive approach.</p>
+      <p>The model first learns to <em>destroy images</em> — adding noise until they become static. Then it learns to reverse that process, cleaning up noise step by step.</p>
+    </div>
+
+    <div class="interactive-box">
+      <div class="interactive-title">The diffusion process — from noise to image</div>
+      <div class="diffusion-canvas" id="diffusion-viz">
+        <!-- Generated by JS -->
+      </div>
+      <div style="text-align:center;margin-top:0.75rem;">
+        <button onclick="runDiffusion()" style="background:linear-gradient(135deg,var(--accent),#f59e0b);border:none;color:white;padding:0.7rem 1.8rem;border-radius:100px;cursor:pointer;font-family:'Space Mono',monospace;font-size:0.8rem;font-weight:700;transition:transform 0.2s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">▶ Run Again</button>
+      </div>
+    </div>
+
+    <div class="concept-body">
+      <div class="analogy">
+        <div class="analogy-icon">🎨</div>
+        <div class="analogy-content">
+          <strong>Ink in water:</strong> Diffusion comes from physics — particles spreading into randomness, like ink in water. The model learns the reverse: how to bring order back from chaos. Same idea is now used for video, audio, 3D, and even molecule design!
+        </div>
+      </div>
+      <div class="key-point">
+        💡 You start with pure random noise. The model gets a text prompt. Then, step by step, it removes noise guided by the prompt — turning static into a detailed image. That's Stable Diffusion, DALL·E, Midjourney, all of them.
+      </div>
+    </div>
+  </div>
+
+  <div class="completion-banner">
+    <div style="font-size:3rem;margin-bottom:1rem;">🎉</div>
+    <h2>You've covered all 20 concepts!</h2>
+    <p>Neural Networks → Transformers → LLMs → Training → Building Systems. You now understand the full stack of modern AI — better than most adults. Time to prove it!</p>
+    <a href="quiz.html" class="quiz-cta">Take the Final Quiz ⚡</a>
+  </div>
+
+</div>
+
+<div class="bottom-nav">
+  <a href="chapter4.html" class="nav-btn">
+    <span>←</span>
+    <div><div class="btn-small">Back to</div>Ch 4: Training</div>
+  </a>
+  <a href="quiz.html" class="nav-btn forward">
+    <div><div class="btn-small">Test your knowledge</div>Take the Quiz ⚡</div>
+    <span>🎯</span>
+  </a>
+</div>
+
+<script>
+  // Theme toggle
+  function toggleTheme() {
+    const light = document.body.classList.toggle('light');
+    localStorage.setItem('aibasics_theme', light ? 'light' : 'dark');
+    document.getElementById('themeBtn').textContent = light ? '☀️' : '🌙';
+  }
+  if (localStorage.getItem('aibasics_theme') === 'light') {
+    document.body.classList.add('light');
+    const _b = document.getElementById('themeBtn'); if (_b) _b.textContent = '☀️';
+  }
+  // Progress bar + chapter 5 completion
+  let _done = false;
+  window.addEventListener('scroll', () => {
+    const p = (window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100;
+    document.getElementById('progress').style.width = Math.min(p,100) + '%';
+    if (p >= 85 && !_done) { _done = true; localStorage.setItem('aibasics_ch5_complete', '1'); }
+  });
+
+  // COT
+  function showCoT(mode) {
+    document.querySelectorAll('.cot-tab').forEach(t => t.classList.remove('active'));
+    event.target.classList.add('active');
+    const out = document.getElementById('cot-result');
+    if (mode === 'direct') {
+      out.innerHTML = '$13. <span style="color:#f43f5e">(Wait... is that right? 🤔)</span>';
+    } else {
+      out.innerHTML = `
+        <div class="cot-step">Step 1: Original price = $24</div>
+        <div class="cot-step">Step 2: 25% off → discount = $24 × 0.25 = $6</div>
+        <div class="cot-step">Step 3: After discount = $24 - $6 = $18</div>
+        <div class="cot-step">Step 4: Apply $5 coupon → $18 - $5 = <strong style="color:#6ee7b7">$13</strong></div>
+        <div style="margin-top:0.5rem;color:#6ee7b7">✅ $13 — and now we're confident it's right because we showed the work!</div>
+      `;
+    }
+  }
+
+  // VECTOR SEARCH
+  const docs = [
+    { text:'🫀 Cardiovascular disease affects the heart and blood vessels', tags:['heart','health','medical','body','blood'] },
+    { text:'💻 Python is a popular language for writing software programs', tags:['code','programming','python','software','tech'] },
+    { text:'📚 Online courses help students learn new skills and grow', tags:['learn','education','students','study','school'] },
+    { text:'🍕 Pizza and burgers are popular fast food choices worldwide', tags:['fast food','pizza','food','eat','hungry'] },
+    { text:'😊 Emotions like joy and sadness shape our daily experiences', tags:['feelings','emotions','mental','mood','psychology'] },
+    { text:'🤖 Neural networks are the foundation of modern AI systems', tags:['ai','machine learning','neural','deep learning','tech'] },
+    { text:'🧬 DNA carries the genetic code for all living organisms', tags:['biology','genes','science','life','cells'] },
+    { text:'🚀 Space exploration expands our understanding of the universe', tags:['space','rocket','astronomy','NASA','stars'] },
+  ];
+  function vectorSearch(q) {
+    const container = document.getElementById('vec-results');
+    if (!q.trim()) { container.innerHTML = ''; return; }
+    const qLower = q.toLowerCase();
+    const scored = docs.map(doc => {
+      let score = 0;
+      doc.tags.forEach(tag => {
+        if (tag.includes(qLower) || qLower.includes(tag)) score += 3;
+        else if (levenshtein(tag, qLower) <= 2) score += 1;
+      });
+      if (doc.text.toLowerCase().includes(qLower)) score += 2;
+      return { ...doc, score };
+    }).sort((a,b) => b.score - a.score).slice(0,4);
+
+    container.innerHTML = scored.map(d => {
+      const pct = Math.min(100, Math.round((d.score / 5) * 100));
+      const cls = pct >= 60 ? 'match' : pct >= 30 ? 'partial' : '';
+      const scoreCls = pct >= 60 ? 'high' : pct >= 30 ? 'mid' : 'low';
+      return `<div class="vec-result ${cls}">
+        <span style="flex:1;font-size:0.8rem">${d.text}</span>
+        <span class="vec-score ${scoreCls}">${pct}% match</span>
+      </div>`;
+    }).join('');
+  }
+  function levenshtein(a, b) {
+    const m = a.length, n = b.length;
+    const dp = Array.from({length:m+1},(_,i)=>i===0?Array(n+1).fill(0).map((_,j)=>j):[i,...Array(n).fill(0)]);
+    for(let i=1;i<=m;i++) for(let j=1;j<=n;j++) dp[i][j]=a[i-1]===b[j-1]?dp[i-1][j-1]:1+Math.min(dp[i-1][j],dp[i][j-1],dp[i-1][j-1]);
+    return dp[m][n];
+  }
+
+  // AGENT STEPS
+  function showAgentStep(el, msg) {
+    document.querySelectorAll('.agent-step').forEach(s => s.classList.remove('active'));
+    el.classList.add('active');
+    document.getElementById('agent-info').textContent = '💡 ' + msg;
+  }
+
+  // DIFFUSION VIZ
+  function generateNoise(canvas, amount) {
+    const ctx = canvas.getContext('2d');
+    const w = canvas.width, h = canvas.height;
+    ctx.clearRect(0,0,w,h);
+    // draw a simple "cat" shape
+    if (amount < 0.15) {
+      ctx.fillStyle = '#f59e0b';
+      ctx.beginPath(); ctx.arc(w/2, h/2-5, 22, 0, Math.PI*2); ctx.fill();
+      ctx.fillStyle = '#0a0a0f';
+      ctx.beginPath(); ctx.arc(w/2-8,h/2-5,4,0,Math.PI*2); ctx.fill();
+      ctx.beginPath(); ctx.arc(w/2+8,h/2-5,4,0,Math.PI*2); ctx.fill();
+      ctx.strokeStyle = '#0a0a0f'; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.arc(w/2, h/2+8, 8, 0, Math.PI); ctx.stroke();
+      ctx.fillStyle = '#f59e0b';
+      ctx.beginPath(); ctx.moveTo(w/2-22,h/2-24); ctx.lineTo(w/2-10,h/2-10); ctx.lineTo(w/2-5,h/2-26); ctx.fill();
+      ctx.beginPath(); ctx.moveTo(w/2+22,h/2-24); ctx.lineTo(w/2+10,h/2-10); ctx.lineTo(w/2+5,h/2-26); ctx.fill();
+    }
+    // add noise on top
+    const imageData = ctx.getImageData(0,0,w,h);
+    const data = imageData.data;
+    for(let i=0;i<data.length;i+=4) {
+      if (Math.random() < amount) {
+        const n = Math.random()*255;
+        data[i]=n; data[i+1]=n; data[i+2]=n; data[i+3]=200;
+      }
+    }
+    ctx.putImageData(imageData,0,0);
+  }
+
+  function runDiffusion() {
+    const viz = document.getElementById('diffusion-viz');
+    const levels = [0.95, 0.75, 0.5, 0.25, 0.1, 0.02];
+    const labels = ['Pure Noise', 'Very Noisy', 'Noisy', 'Getting There', 'Almost!', '✨ Image!'];
+    viz.innerHTML = '';
+    levels.forEach((lvl, i) => {
+      if (i > 0) {
+        const arrow = document.createElement('div');
+        arrow.className = 'diff-arrow';
+        arrow.textContent = '→';
+        viz.appendChild(arrow);
+      }
+      const frame = document.createElement('div');
+      frame.className = 'diff-frame';
+      const canvas = document.createElement('canvas');
+      canvas.width = 80; canvas.height = 80;
+      canvas.className = 'diff-img';
+      canvas.style.background = '#12121a';
+      canvas.style.border = i === levels.length-1 ? '2px solid #f59e0b' : '1px solid rgba(255,255,255,0.1)';
+      const lbl = document.createElement('div');
+      lbl.className = 'diff-label';
+      lbl.textContent = labels[i];
+      frame.appendChild(canvas);
+      frame.appendChild(lbl);
+      viz.appendChild(frame);
+      setTimeout(() => generateNoise(canvas, lvl), i * 300);
+    });
+  }
+  runDiffusion();
+</script>
+</body>
+</html>

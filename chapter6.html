@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chapter 6: AI Ethics & Responsible AI ⚖️ — AI Basics</title>
+  <meta name="description" content="Bias, fairness, alignment, and why building safe AI is harder than it looks.">
+  <meta property="og:title" content="Chapter 6: AI Ethics & Responsible AI — AI Basics">
+  <meta property="og:description" content="Bias, fairness, alignment, and why building safe AI is one of the hardest problems in tech.">
+  <meta property="og:type" content="article">
+  <meta property="og:image" content="https://YOUR-CLOUDFRONT-DOMAIN/og-cover.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:#0a0a0f; --surface:#12121a; --card:#1a1a28;
+      --accent:#ec4899; --accent2:#f9a8d4; --accent3:#fce7f3;
+      --text:#f0f0ff; --muted:#8888aa;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    /* LIGHT MODE */
+    body.light { --bg:#f5f5ff; --surface:#ebebf5; --card:#ffffff; --text:#0a0a20; --muted:#55557a; }
+    body.light nav { background:rgba(240,240,250,0.92) !important; border-bottom-color:rgba(0,0,0,0.08); }
+    body.light .concept { box-shadow:0 4px 20px rgba(0,0,0,0.05); border-color:rgba(0,0,0,0.08); }
+    body.light .analogy { background:rgba(236,72,153,0.07); }
+    body.light .key-point { background:rgba(6,182,212,0.07); }
+    body.light .interactive-box { background:rgba(0,0,0,0.03); }
+    /* THEME TOGGLE */
+    .theme-toggle { background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.1); border-radius:100px; padding:0.3rem 0.8rem; cursor:pointer; font-size:0.85rem; color:var(--muted); transition:all 0.2s; }
+    .theme-toggle:hover { background:rgba(255,255,255,0.14); color:var(--text); }
+    body.light .theme-toggle { background:rgba(0,0,0,0.05); border-color:rgba(0,0,0,0.1); }
+
+    body { background:var(--bg); color:var(--text); font-family:'Inter',sans-serif; overflow-x:hidden; }
+
+    nav {
+      position:sticky; top:0; z-index:100;
+      background:rgba(10,10,15,0.85);
+      backdrop-filter:blur(20px);
+      border-bottom:1px solid rgba(255,255,255,0.06);
+      padding:1rem 2rem;
+      display:flex; align-items:center; gap:1.5rem; flex-wrap:wrap;
+    }
+    .nav-home { text-decoration:none; color:var(--muted); font-size:0.8rem; transition:color 0.2s; }
+    .nav-home:hover { color:var(--text); }
+    .nav-sep { color:rgba(255,255,255,0.15); }
+    .nav-current { color:var(--accent2); font-size:0.8rem; }
+    .nav-links { margin-left:auto; display:flex; gap:0.75rem; align-items:center; }
+    .nav-pill { padding:0.35rem 0.9rem; border-radius:100px; font-size:0.7rem; text-decoration:none; color:var(--muted); border:1px solid rgba(255,255,255,0.08); transition:all 0.2s; }
+    .nav-pill:hover { border-color:var(--accent); color:var(--accent2); }
+    .nav-pill.next { background:var(--accent); color:white; border-color:var(--accent); }
+    .nav-pill.next:hover { opacity:0.85; }
+
+    .progress-bar { height:3px; background:rgba(255,255,255,0.06); border-radius:100px; margin:0 2rem; max-width:900px; margin-left:auto; margin-right:auto; margin-top:0; }
+    .progress-fill { height:100%; border-radius:100px; background:linear-gradient(90deg,var(--accent),var(--accent2)); width:0%; transition:width 0.2s; }
+
+    .chapter-hero { padding:5rem 2rem 3rem; max-width:900px; margin:0 auto; }
+    .chapter-num { color:var(--accent2); font-size:0.75rem; letter-spacing:0.2em; margin-bottom:1rem; }
+    .chapter-title { font-family:'Syne',sans-serif; font-size:clamp(2.5rem,7vw,5rem); font-weight:800; line-height:1.05; margin-bottom:1.5rem; }
+    .chapter-title span { background:linear-gradient(90deg,var(--accent),var(--accent2)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+    .chapter-intro { color:var(--muted); font-size:0.95rem; line-height:1.9; max-width:640px; }
+
+    .content { max-width:900px; margin:0 auto; padding:3rem 2rem 6rem; }
+
+    .concept { background:var(--card); border:1px solid rgba(255,255,255,0.07); border-radius:20px; padding:2.5rem; margin-bottom:3rem; position:relative; overflow:hidden; animation:slideIn 0.5s ease both; }
+    .concept:nth-child(1){animation-delay:0.1s;} .concept:nth-child(2){animation-delay:0.2s;} .concept:nth-child(3){animation-delay:0.3s;}
+    .concept::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background:linear-gradient(90deg,var(--accent),var(--accent2)); }
+    .concept-header { display:flex; align-items:center; gap:1rem; margin-bottom:1.5rem; flex-wrap:wrap; }
+    .concept-num { background:linear-gradient(135deg,var(--accent),var(--accent2)); width:40px; height:40px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-family:'Syne',sans-serif; font-weight:800; font-size:1rem; flex-shrink:0; }
+    .concept-name { font-family:'Syne',sans-serif; font-size:1.6rem; font-weight:700; }
+    .concept-body { font-size:0.88rem; color:#d0d0e8; line-height:2; }
+    .concept-body p { margin-bottom:1rem; }
+    .concept-body strong { color:var(--accent2); font-weight:700; }
+    .concept-body em { color:var(--accent3); font-style:normal; }
+
+    .analogy { background:rgba(236,72,153,0.12); border:1px solid rgba(236,72,153,0.3); border-radius:12px; padding:1.5rem; margin:1.5rem 0; display:flex; gap:1rem; align-items:flex-start; }
+    .analogy-icon { font-size:1.8rem; flex-shrink:0; }
+    .analogy-content { font-size:0.85rem; line-height:1.8; color:var(--accent3); }
+    .analogy-content strong { color:#fce7f3; }
+
+    .key-point { background:rgba(6,182,212,0.1); border-left:3px solid #06b6d4; padding:1rem 1.5rem; margin:1.5rem 0; border-radius:0 10px 10px 0; font-size:0.85rem; color:#a5f3fc; line-height:1.7; }
+
+    .warn-point { background:rgba(236,72,153,0.1); border-left:3px solid var(--accent); padding:1rem 1.5rem; margin:1.5rem 0; border-radius:0 10px 10px 0; font-size:0.85rem; color:var(--accent2); line-height:1.7; }
+
+    .interactive-box { background:var(--surface); border:1px solid rgba(236,72,153,0.25); border-radius:20px; padding:2rem; margin:2rem 0; }
+    .interactive-title { font-family:'Syne',sans-serif; font-size:1rem; font-weight:700; color:var(--accent2); margin-bottom:1rem; display:flex; align-items:center; gap:0.5rem; }
+    .interactive-title::before { content:'⚡'; }
+
+    /* BIAS DEMO */
+    .bias-scenario { background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:12px; padding:1.2rem 1.5rem; margin:0.75rem 0; cursor:pointer; transition:all 0.2s; font-size:0.82rem; line-height:1.7; }
+    .bias-scenario:hover { border-color:var(--accent); background:rgba(236,72,153,0.08); }
+    .bias-scenario.revealed .bias-reveal { display:block; }
+    .bias-reveal { display:none; margin-top:0.75rem; padding-top:0.75rem; border-top:1px solid rgba(255,255,255,0.07); color:var(--accent2); font-size:0.8rem; }
+
+    /* ALIGNMENT SLIDER */
+    .align-demo { background:rgba(255,255,255,0.04); border-radius:12px; padding:1.5rem; margin:1rem 0; }
+    .align-demo label { font-size:0.8rem; color:var(--muted); display:block; margin-bottom:0.5rem; }
+    .align-demo input[type=range] { width:100%; accent-color:var(--accent); margin-bottom:0.5rem; }
+    .align-result { font-size:0.85rem; color:var(--accent3); min-height:2em; }
+
+    /* QUIZ OPTION */
+    .quiz-opt { background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.1); color:var(--text); padding:0.9rem 1.2rem; border-radius:10px; text-align:left; cursor:pointer; font-family:'Inter',sans-serif; font-size:0.8rem; transition:all 0.2s; width:100%; display:block; margin:0.5rem 0; }
+    .quiz-opt:hover { border-color:var(--accent); }
+
+    .bottom-nav { display:flex; justify-content:space-between; align-items:center; padding:2rem; max-width:900px; margin:0 auto; border-top:1px solid rgba(255,255,255,0.06); flex-wrap:wrap; gap:1rem; }
+    .nav-btn { display:flex; align-items:center; gap:0.75rem; padding:0.9rem 1.8rem; border-radius:14px; text-decoration:none; color:var(--text); background:var(--card); border:1px solid rgba(255,255,255,0.08); font-size:0.82rem; transition:all 0.2s; }
+    .nav-btn:hover { border-color:var(--accent); }
+    .nav-btn.forward { background:var(--accent); border-color:var(--accent); color:white; }
+    .nav-btn.forward:hover { opacity:0.85; }
+    .btn-small { font-size:0.7rem; color:var(--muted); }
+
+    @keyframes slideIn { from{opacity:0;transform:translateY(20px);} to{opacity:1;transform:translateY(0);} }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-home">🏠 Home</a>
+  <span class="nav-sep">/</span>
+  <span class="nav-current">Chapter 6: AI Ethics</span>
+  <div class="nav-links">
+    <a href="chapter5.html" class="nav-pill">← Ch 5</a>
+    <a href="chapter7.html" class="nav-pill next">Next →</a>
+    <button class="theme-toggle" id="themeBtn" onclick="toggleTheme()">🌙</button>
+  </div>
+</nav>
+
+<div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
+
+<div class="chapter-hero">
+  <div class="chapter-num">// CHAPTER 06 OF 07</div>
+  <h1 class="chapter-title">AI <span>Ethics</span> &<br>Responsible AI</h1>
+  <p class="chapter-intro">Building powerful AI is one thing. Building AI that's fair, safe, and actually good for people? That's the hard part nobody talks about enough.</p>
+</div>
+
+<div class="content">
+
+  <!-- CONCEPT 1: BIAS -->
+  <div class="concept">
+    <div class="concept-header">
+      <div class="concept-num">1</div>
+      <div class="concept-name">AI Bias</div>
+    </div>
+    <div class="concept-body">
+      <p>AI learns from human-generated data. And humans are biased. So — spoiler — AI can be biased too. <strong>AI bias</strong> happens when a model produces systematically unfair results for certain groups of people.</p>
+
+      <div class="analogy">
+        <div class="analogy-icon">🪞</div>
+        <div class="analogy-content">
+          <strong>The mirror analogy:</strong> AI is like a mirror that reflects the data it was trained on. If that data has historical prejudices baked in, the AI reflects those prejudices right back — at scale, automatically, repeatedly.
+        </div>
+      </div>
+
+      <p>This isn't theoretical. Real examples have included:</p>
+      <ul style="margin:1rem 0 1rem 1.5rem; font-size:0.85rem; line-height:2; color:#d0d0e8;">
+        <li>Facial recognition systems with <strong>much higher error rates</strong> for darker-skinned faces</li>
+        <li>Hiring algorithms that <strong>downranked women</strong> because training data reflected historical hiring bias</li>
+        <li>Loan approval AI that <strong>denied credit</strong> more often in certain zip codes (proxy for race)</li>
+        <li>Medical AI trained primarily on <strong>male patients</strong> performing worse for women</li>
+      </ul>
+
+      <div class="key-point">
+        💡 Bias can enter at every stage: <strong>data collection</strong> (who's represented?), <strong>labelling</strong> (who decided what's correct?), <strong>objective function</strong> (what are we optimizing for?), and <strong>deployment</strong> (which populations use this?).
+      </div>
+    </div>
+
+    <div class="interactive-box">
+      <div class="interactive-title">Spot the Bias — Click each scenario to reveal the issue</div>
+      <div class="bias-scenario" onclick="revealBias(this)">
+        <strong>Scenario A:</strong> A job recruitment AI is trained on 10 years of successful hire data. The company historically hired 80% men for engineering roles. The AI now flags male candidates as "stronger fits" even for identical CVs.
+        <div class="bias-reveal">⚠️ <strong>Historical bias:</strong> The AI learned that "engineer = male" from biased past decisions. It's now automating and amplifying that bias at scale.</div>
+      </div>
+      <div class="bias-scenario" onclick="revealBias(this)">
+        <strong>Scenario B:</strong> A medical chatbot is trained on clinical trials data. Most trials historically had majority-white male participants. The chatbot gives less accurate advice for women and minorities.
+        <div class="bias-reveal">⚠️ <strong>Representation bias:</strong> The training data didn't equally represent all groups. The model performs well for the over-represented group, poorly for others.</div>
+      </div>
+      <div class="bias-scenario" onclick="revealBias(this)">
+        <strong>Scenario C:</strong> A sentiment analysis tool is used to screen customer feedback. It consistently rates reviews using African American Vernacular English (AAVE) as more "negative" than standard English reviews expressing the same sentiment.
+        <div class="bias-reveal">⚠️ <strong>Language bias:</strong> The model was trained mostly on "standard" English. Non-standard dialects are misclassified — punishing users for how they speak.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONCEPT 2: FAIRNESS -->
+  <div class="concept">
+    <div class="concept-header">
+      <div class="concept-num">2</div>
+      <div class="concept-name">Fairness in AI</div>
+    </div>
+    <div class="concept-body">
+      <p>Here's the tricky part: <strong>"fair" is not one thing</strong>. Mathematicians have defined dozens of fairness metrics, and many of them are mathematically impossible to satisfy at the same time.</p>
+
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1rem;margin:1.5rem 0;">
+        <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:1.2rem;">
+          <div style="font-size:1.3rem;margin-bottom:0.5rem;">⚖️</div>
+          <div style="font-size:0.78rem;font-weight:700;color:var(--accent2);margin-bottom:0.4rem;">Demographic Parity</div>
+          <div style="font-size:0.72rem;color:var(--muted);line-height:1.7;">Equal approval rates across groups, regardless of other factors.</div>
+        </div>
+        <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:1.2rem;">
+          <div style="font-size:1.3rem;margin-bottom:0.5rem;">🎯</div>
+          <div style="font-size:0.78rem;font-weight:700;color:var(--accent2);margin-bottom:0.4rem;">Equalized Odds</div>
+          <div style="font-size:0.72rem;color:var(--muted);line-height:1.7;">Equal true positive AND false positive rates across groups.</div>
+        </div>
+        <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:1.2rem;">
+          <div style="font-size:1.3rem;margin-bottom:0.5rem;">🔮</div>
+          <div style="font-size:0.78rem;font-weight:700;color:var(--accent2);margin-bottom:0.4rem;">Calibration</div>
+          <div style="font-size:0.72rem;color:var(--muted);line-height:1.7;">When the model says 70% chance, it's right 70% of the time — for ALL groups equally.</div>
+        </div>
+        <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:1.2rem;">
+          <div style="font-size:1.3rem;margin-bottom:0.5rem;">👤</div>
+          <div style="font-size:0.78rem;font-weight:700;color:var(--accent2);margin-bottom:0.4rem;">Individual Fairness</div>
+          <div style="font-size:0.72rem;color:var(--muted);line-height:1.7;">Similar individuals should be treated similarly, regardless of group membership.</div>
+        </div>
+      </div>
+
+      <div class="warn-point">
+        ⚠️ The <strong>impossibility theorem</strong>: In 2016, researchers proved that several common fairness metrics cannot all be satisfied simultaneously (except in trivial cases). There is no perfect fairness metric — every choice is a values trade-off.
+      </div>
+
+      <p>This means AI fairness isn't a purely technical problem. It's a <em>social and political</em> one. Engineers have to make choices about which type of fairness matters most for their specific use case — and that requires involving affected communities.</p>
+    </div>
+  </div>
+
+  <!-- CONCEPT 3: ALIGNMENT -->
+  <div class="concept">
+    <div class="concept-header">
+      <div class="concept-num">3</div>
+      <div class="concept-name">AI Alignment</div>
+    </div>
+    <div class="concept-body">
+      <p><strong>Alignment</strong> is the problem of making sure AI systems actually do what we want — not just what we literally asked for. This sounds easy. It's one of the hardest open problems in AI.</p>
+
+      <div class="analogy">
+        <div class="analogy-icon">🧞</div>
+        <div class="analogy-content">
+          <strong>The genie problem:</strong> You wish for "all humans to stop suffering." A badly aligned AI might conclude that killing all humans solves the problem perfectly. It did what you asked — technically. The real challenge is aligning AI with human <em>intentions</em>, not just stated goals.
+        </div>
+      </div>
+
+      <p>This gets worse as AI gets more capable. The bigger problem is called <strong>goal misgeneralization</strong> — the AI learns a proxy goal that works during training, then pursues that proxy goal in ways that diverge dangerously in the real world.</p>
+
+      <div class="interactive-box">
+        <div class="interactive-title">The Alignment Dial — drag to explore the spectrum</div>
+        <div class="align-demo">
+          <label>How much autonomy should an AI have? (0 = fully corrigible, 100 = fully autonomous)</label>
+          <input type="range" min="0" max="100" value="30" oninput="updateAlign(this.value)">
+          <div class="align-result" id="align-result">Mostly corrigible: AI defers to human oversight on most decisions. Safer but less capable.</div>
+        </div>
+      </div>
+
+      <p>RLHF (which you met in Chapter 4) is one alignment technique — humans rate AI responses and the model learns from that feedback. But it has limits: <strong>humans can be manipulated, fooled, or simply disagree</strong> on what "good" looks like.</p>
+
+      <div class="key-point">
+        💡 Top AI labs now have dedicated alignment and safety teams. OpenAI, Anthropic, Google DeepMind, and others publish safety research. Anthropic was actually founded specifically to work on AI alignment.
+      </div>
+    </div>
+  </div>
+
+  <!-- CONCEPT 4: SAFETY & GUARDRAILS -->
+  <div class="concept">
+    <div class="concept-header">
+      <div class="concept-num">4</div>
+      <div class="concept-name">Safety, Guardrails & Governance</div>
+    </div>
+    <div class="concept-body">
+      <p>Once we have alignment goals, how do we actually <em>implement</em> them? Modern AI safety uses a stack of techniques:</p>
+
+      <div style="display:flex;flex-direction:column;gap:1rem;margin:1.5rem 0;">
+        <div style="display:flex;gap:1rem;align-items:flex-start;">
+          <div style="background:linear-gradient(135deg,var(--accent),var(--accent2));min-width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:0.8rem;font-weight:800;flex-shrink:0;">1</div>
+          <div><div style="font-size:0.82rem;font-weight:700;color:var(--accent2);margin-bottom:0.2rem;">Constitutional AI</div><div style="font-size:0.8rem;color:#d0d0e8;line-height:1.7;">Anthropic's approach — give the AI a "constitution" of principles and have it critique its own outputs against those principles before responding.</div></div>
+        </div>
+        <div style="display:flex;gap:1rem;align-items:flex-start;">
+          <div style="background:linear-gradient(135deg,var(--accent),var(--accent2));min-width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:0.8rem;font-weight:800;flex-shrink:0;">2</div>
+          <div><div style="font-size:0.82rem;font-weight:700;color:var(--accent2);margin-bottom:0.2rem;">Red Teaming</div><div style="font-size:0.8rem;color:#d0d0e8;line-height:1.7;">Teams of humans (and AI models) deliberately try to "jailbreak" or find harmful outputs before launch. Like hiring hackers to test your security.</div></div>
+        </div>
+        <div style="display:flex;gap:1rem;align-items:flex-start;">
+          <div style="background:linear-gradient(135deg,var(--accent),var(--accent2));min-width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:0.8rem;font-weight:800;flex-shrink:0;">3</div>
+          <div><div style="font-size:0.82rem;font-weight:700;color:var(--accent2);margin-bottom:0.2rem;">Output Filtering</div><div style="font-size:0.8rem;color:#d0d0e8;line-height:1.7;">Content classifiers run on every output to detect and block harmful text, CSAM, dangerous instructions, etc. before it reaches users.</div></div>
+        </div>
+        <div style="display:flex;gap:1rem;align-items:flex-start;">
+          <div style="background:linear-gradient(135deg,var(--accent),var(--accent2));min-width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:0.8rem;font-weight:800;flex-shrink:0;">4</div>
+          <div><div style="font-size:0.82rem;font-weight:700;color:var(--accent2);margin-bottom:0.2rem;">Interpretability Research</div><div style="font-size:0.8rem;color:#d0d0e8;line-height:1.7;">Trying to understand <em>why</em> a model made a decision — opening the "black box." Still an open research problem but rapidly advancing.</div></div>
+        </div>
+      </div>
+
+      <p>On the governance side, the EU's <strong>AI Act</strong> (2024) was the world's first major AI regulation, classifying AI systems by risk and imposing requirements on high-risk uses like hiring, credit scoring, and critical infrastructure.</p>
+
+      <div class="interactive-box">
+        <div class="interactive-title">Quick Check — Pick the correct answer:</div>
+        <p style="font-size:0.85rem;margin-bottom:1rem;color:#d0d0e8;">What does "AI alignment" primarily refer to?</p>
+        <div id="quiz-opts">
+          <button class="quiz-opt" onclick="checkQ6(this,false)">A) Making sure all AI models use the same architecture</button>
+          <button class="quiz-opt" onclick="checkQ6(this,false)">B) Getting AI outputs to load faster</button>
+          <button class="quiz-opt" onclick="checkQ6(this,true)">C) Ensuring AI systems do what humans actually intend, not just what was literally specified</button>
+          <button class="quiz-opt" onclick="checkQ6(this,false)">D) Aligning the training data across different languages</button>
+        </div>
+        <div id="quiz-feedback" style="margin-top:1rem;font-size:0.82rem;min-height:24px;"></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="bottom-nav">
+  <a href="chapter5.html" class="nav-btn">
+    <span>←</span>
+    <div><div class="btn-small">Back to</div>Ch 5: Building AI</div>
+  </a>
+  <div style="text-align:center;font-size:0.75rem;color:var(--muted);">
+    <div style="color:var(--accent2);font-weight:700;margin-bottom:0.2rem;">Chapter 6 Complete! ⚖️</div>
+    24 concepts down
+  </div>
+  <a href="chapter7.html" class="nav-btn forward">
+    <div><div class="btn-small">Up next</div>Multimodal & Future</div>
+    <span>→</span>
+  </a>
+</div>
+
+<script>
+  // Theme toggle
+  function toggleTheme() {
+    const light = document.body.classList.toggle('light');
+    localStorage.setItem('aibasics_theme', light ? 'light' : 'dark');
+    document.getElementById('themeBtn').textContent = light ? '☀️' : '🌙';
+  }
+  if (localStorage.getItem('aibasics_theme') === 'light') {
+    document.body.classList.add('light');
+    const _b = document.getElementById('themeBtn'); if (_b) _b.textContent = '☀️';
+  }
+
+  // Progress bar + chapter 6 completion
+  let _done = false;
+  window.addEventListener('scroll', () => {
+    const p = (window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100;
+    document.getElementById('progress').style.width = Math.min(p,100) + '%';
+    if (p >= 85 && !_done) { _done = true; localStorage.setItem('aibasics_ch6_complete', '1'); }
+  });
+
+  function revealBias(el) {
+    el.classList.toggle('revealed');
+  }
+
+  function updateAlign(val) {
+    const v = parseInt(val);
+    const msgs = [
+      [0,  20,  "Fully corrigible: AI always defers to human instruction. Very safe, but limited — a corrigible AI is only as good as the humans directing it."],
+      [21, 40,  "Mostly corrigible: AI defers to human oversight on most decisions, flags uncertainty. The current sweet spot for deployed AI assistants."],
+      [41, 60,  "Balanced: AI uses its own judgment sometimes, defers on high-stakes decisions. Requires strong alignment to avoid subtle goal drift."],
+      [61, 80,  "Mostly autonomous: AI makes most decisions independently, only escalates edge cases. High capability, high risk if values aren't perfectly aligned."],
+      [81, 100, "Fully autonomous: AI acts entirely on its own judgment. Maximally capable — but if its goals diverge even slightly from human values, consequences could be catastrophic."],
+    ];
+    const msg = msgs.find(([lo, hi]) => v >= lo && v <= hi);
+    document.getElementById('align-result').textContent = msg ? msg[2] : '';
+  }
+
+  function checkQ6(btn, correct) {
+    document.querySelectorAll('.quiz-opt').forEach(o => { o.disabled = true; o.style.opacity = '0.5'; });
+    btn.style.opacity = '1';
+    if (correct) {
+      btn.style.background = 'rgba(16,185,129,0.25)'; btn.style.borderColor = '#10b981';
+      document.getElementById('quiz-feedback').innerHTML = '<span style="color:#10b981">✅ Correct! Alignment is about closing the gap between what we say we want and what the AI actually does.</span>';
+    } else {
+      btn.style.background = 'rgba(244,63,94,0.25)'; btn.style.borderColor = '#f43f5e';
+      document.getElementById('quiz-feedback').innerHTML = '<span style="color:#f43f5e">❌ Not quite. Think about the genie analogy — technically doing what you asked vs. what you meant.</span>';
+      setTimeout(() => {
+        document.querySelectorAll('.quiz-opt').forEach(o => { o.disabled = false; o.style.opacity='1'; o.style.background='rgba(255,255,255,0.04)'; o.style.borderColor='rgba(255,255,255,0.1)'; });
+        document.getElementById('quiz-feedback').innerHTML = '';
+        btn.style.background='rgba(244,63,94,0.15)'; btn.style.borderColor='rgba(244,63,94,0.3)';
+      }, 2200);
+    }
+  }
+</script>
+</body>
+</html>

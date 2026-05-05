@@ -1,0 +1,20 @@
+# Dependencies
+node_modules/
+
+# macOS
+.DS_Store
+.AppleDouble
+
+# VS Code
+.vscode/
+
+# Environment / secrets — never commit these
+.env
+.env.*
+
+# AWS credentials
+*.pem
+credentials
+
+# Logs
+*.log

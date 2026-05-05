@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quiz: Test Your AI Brain ⚡ — AI Basics</title>
+  <meta name="description" content="Test your AI knowledge with 10 quick questions. Instant results, no judgement.">
+  <meta property="og:title" content="Quiz: Test Your AI Brain — AI Basics">
+  <meta property="og:description" content="10 questions, instant results. See how much you actually know about AI.">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="https://YOUR-CLOUDFRONT-DOMAIN/og-cover.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0a0a0f;
+      --surface: #12121a;
+      --card: #1a1a28;
+      --accent1: #7c3aed;
+      --accent2: #06b6d4;
+      --accent3: #f59e0b;
+      --accent4: #10b981;
+      --accent5: #f43f5e;
+      --text: #f0f0ff;
+      --muted: #8888aa;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; overflow-x: hidden; }
+
+    /* NAV */
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(10,10,15,0.85);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      padding: 1rem 2rem;
+      display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap;
+    }
+    .nav-home { text-decoration: none; color: var(--muted); font-size: 0.8rem; transition: color 0.2s; }
+    .nav-home:hover { color: var(--text); }
+    .nav-sep { color: rgba(255,255,255,0.15); }
+    .nav-current { color: #fde68a; font-size: 0.8rem; }
+    .nav-links { margin-left: auto; display: flex; gap: 0.75rem; }
+    .nav-pill {
+      padding: 0.35rem 0.9rem; border-radius: 100px;
+      font-size: 0.7rem; text-decoration: none; color: var(--muted);
+      border: 1px solid rgba(255,255,255,0.08); transition: all 0.2s;
+    }
+    .nav-pill:hover { border-color: var(--accent3); color: #fde68a; }
+
+    /* HERO */
+    .quiz-hero {
+      padding: 5rem 2rem 3rem;
+      max-width: 760px; margin: 0 auto; text-align: center;
+    }
+    .quiz-badge {
+      display: inline-block;
+      background: linear-gradient(135deg, rgba(245,158,11,0.25), rgba(124,58,237,0.25));
+      border: 1px solid rgba(245,158,11,0.4);
+      color: #fde68a;
+      padding: 0.4rem 1.2rem; border-radius: 100px;
+      font-size: 0.72rem; letter-spacing: 0.12em; margin-bottom: 1.5rem;
+    }
+    .quiz-hero h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(2.5rem, 7vw, 4.5rem);
+      font-weight: 800; line-height: 1.05; margin-bottom: 1.2rem;
+    }
+    .quiz-hero h1 span {
+      background: linear-gradient(90deg, var(--accent3), var(--accent1));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .quiz-hero p { color: var(--muted); font-size: 0.9rem; line-height: 1.9; max-width: 520px; margin: 0 auto 2.5rem; }
+    .start-btn {
+      display: inline-block;
+      background: linear-gradient(135deg, var(--accent3), var(--accent1));
+      color: white; padding: 1rem 2.8rem; border-radius: 100px;
+      font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1rem;
+      border: none; cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 0 30px rgba(245,158,11,0.35);
+    }
+    .start-btn:hover { transform: translateY(-3px) scale(1.03); box-shadow: 0 0 50px rgba(245,158,11,0.5); }
+
+    /* PROGRESS BAR */
+    .progress-wrap {
+      max-width: 760px; margin: 0 auto;
+      padding: 0 2rem;
+    }
+    .progress-bar {
+      height: 4px; background: rgba(255,255,255,0.06);
+      border-radius: 100px; margin-bottom: 0.75rem;
+    }
+    .progress-fill {
+      height: 100%; border-radius: 100px;
+      background: linear-gradient(90deg, var(--accent3), var(--accent1));
+      width: 0%; transition: width 0.5s ease;
+    }
+    .progress-label { font-size: 0.7rem; color: var(--muted); text-align: right; letter-spacing: 0.05em; }
+
+    /* QUIZ AREA */
+    .quiz-area { max-width: 760px; margin: 0 auto; padding: 2rem 2rem 6rem; display: none; }
+
+    /* QUESTION CARD */
+    .question-card {
+      background: var(--card);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 24px;
+      padding: 2.5rem;
+      position: relative; overflow: hidden;
+      animation: slideIn 0.4s ease both;
+    }
+    .question-card::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 3px;
+      background: linear-gradient(90deg, var(--accent3), var(--accent1));
+    }
+    @keyframes slideIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+    .q-meta { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
+    .q-num {
+      background: linear-gradient(135deg, var(--accent3), var(--accent1));
+      width: 40px; height: 40px; border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1rem;
+      flex-shrink: 0; color: white;
+    }
+    .q-chapter { font-size: 0.7rem; color: var(--muted); letter-spacing: 0.1em; }
+    .q-text { font-family: 'Syne', sans-serif; font-size: clamp(1.1rem, 3vw, 1.4rem); font-weight: 700; line-height: 1.4; margin-bottom: 2rem; }
+
+    /* ANSWER OPTIONS */
+    .options { display: flex; flex-direction: column; gap: 0.75rem; }
+    .option-btn {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 14px;
+      padding: 1rem 1.4rem;
+      text-align: left;
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.85rem;
+      color: var(--text);
+      line-height: 1.5;
+      transition: border-color 0.2s, background 0.2s, transform 0.15s;
+      display: flex; align-items: center; gap: 1rem;
+    }
+    .option-btn:hover:not(:disabled) { border-color: var(--accent3); background: rgba(245,158,11,0.08); transform: translateX(4px); }
+    .option-btn:disabled { cursor: default; transform: none; }
+    .option-btn.correct { border-color: var(--accent4) !important; background: rgba(16,185,129,0.15) !important; color: #6ee7b7; }
+    .option-btn.wrong { border-color: var(--accent5) !important; background: rgba(244,63,94,0.12) !important; color: #fda4af; }
+    .option-btn.reveal { border-color: rgba(16,185,129,0.4) !important; background: rgba(16,185,129,0.07) !important; color: #6ee7b7; }
+    .option-letter {
+      width: 28px; height: 28px; border-radius: 8px;
+      background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.75rem; font-weight: 700; flex-shrink: 0;
+      transition: background 0.2s, border-color 0.2s;
+    }
+    .option-btn.correct .option-letter { background: rgba(16,185,129,0.3); border-color: var(--accent4); color: #6ee7b7; }
+    .option-btn.wrong .option-letter { background: rgba(244,63,94,0.25); border-color: var(--accent5); color: #fda4af; }
+    .option-btn.reveal .option-letter { background: rgba(16,185,129,0.2); border-color: rgba(16,185,129,0.5); }
+
+    /* FEEDBACK */
+    .feedback {
+      margin-top: 1.5rem;
+      padding: 1rem 1.4rem;
+      border-radius: 12px;
+      font-size: 0.82rem;
+      line-height: 1.7;
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+    .feedback.correct { background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.3); color: #6ee7b7; }
+    .feedback.wrong { background: rgba(244,63,94,0.08); border: 1px solid rgba(244,63,94,0.25); color: #fda4af; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+    /* NEXT BTN */
+    .next-btn {
+      margin-top: 1.5rem;
+      background: linear-gradient(135deg, var(--accent3), var(--accent1));
+      color: white; padding: 0.9rem 2.2rem; border-radius: 100px;
+      border: none; cursor: pointer;
+      font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.9rem;
+      transition: transform 0.2s, box-shadow 0.2s;
+      display: none;
+    }
+    .next-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(245,158,11,0.35); }
+
+    /* RESULTS SCREEN */
+    .results-screen {
+      display: none;
+      max-width: 760px; margin: 0 auto; padding: 2rem 2rem 6rem;
+      text-align: center;
+      animation: slideIn 0.5s ease both;
+    }
+    .score-ring {
+      width: 160px; height: 160px;
+      border-radius: 50%;
+      background: conic-gradient(var(--accent3) calc(var(--pct) * 1%), rgba(255,255,255,0.06) 0%);
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 2rem;
+      position: relative;
+    }
+    .score-ring::after {
+      content: '';
+      position: absolute;
+      width: 120px; height: 120px;
+      border-radius: 50%;
+      background: var(--bg);
+    }
+    .score-inner {
+      position: relative; z-index: 1;
+      display: flex; flex-direction: column; align-items: center;
+    }
+    .score-number {
+      font-family: 'Syne', sans-serif; font-size: 2.8rem; font-weight: 800;
+      background: linear-gradient(135deg, var(--accent3), var(--accent1));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .score-denom { font-size: 0.75rem; color: var(--muted); }
+    .result-title {
+      font-family: 'Syne', sans-serif; font-size: clamp(1.8rem, 5vw, 3rem);
+      font-weight: 800; margin-bottom: 1rem; line-height: 1.1;
+    }
+    .result-sub { color: var(--muted); font-size: 0.88rem; line-height: 1.8; max-width: 480px; margin: 0 auto 2.5rem; }
+
+    /* ANSWER REVIEW */
+    .review-list { text-align: left; display: flex; flex-direction: column; gap: 1rem; margin-bottom: 3rem; }
+    .review-item {
+      background: var(--card);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 16px; padding: 1.2rem 1.5rem;
+      display: flex; gap: 1rem; align-items: flex-start;
+    }
+    .review-icon { font-size: 1.2rem; flex-shrink: 0; margin-top: 0.1rem; }
+    .review-q { font-size: 0.82rem; color: #d0d0e8; margin-bottom: 0.4rem; line-height: 1.5; font-weight: 700; }
+    .review-ans { font-size: 0.78rem; color: var(--muted); line-height: 1.5; }
+    .review-ans .your-ans { font-weight: 700; }
+    .review-ans .your-ans.ok { color: #6ee7b7; }
+    .review-ans .your-ans.bad { color: #fda4af; }
+    .review-ans .correct-ans { color: #6ee7b7; }
+
+    /* CTA BUTTONS */
+    .result-actions { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+    .cta-btn {
+      padding: 0.9rem 2rem; border-radius: 100px;
+      font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.9rem;
+      text-decoration: none; transition: transform 0.2s, box-shadow 0.2s;
+      border: none; cursor: pointer;
+    }
+    .cta-primary {
+      background: linear-gradient(135deg, var(--accent3), var(--accent1));
+      color: white; box-shadow: 0 0 25px rgba(245,158,11,0.3);
+    }
+    .cta-primary:hover { transform: translateY(-3px); box-shadow: 0 0 40px rgba(245,158,11,0.5); }
+    .cta-secondary {
+      background: transparent; color: var(--text);
+      border: 1px solid rgba(255,255,255,0.2);
+      font-family: 'Inter', sans-serif;
+    }
+    .cta-secondary:hover { border-color: var(--accent3); background: rgba(245,158,11,0.08); }
+
+    /* CHAPTER TAGS */
+    .chapter-tag {
+      display: inline-block; font-size: 0.62rem; letter-spacing: 0.08em;
+      padding: 0.2rem 0.6rem; border-radius: 100px; margin-bottom: 0.2rem;
+    }
+    .tag-ch1 { background: rgba(124,58,237,0.2); color: #a78bfa; }
+    .tag-ch2 { background: rgba(6,182,212,0.2); color: #67e8f9; }
+    .tag-ch3 { background: rgba(245,158,11,0.2); color: #fde68a; }
+    .tag-ch4 { background: rgba(16,185,129,0.2); color: #6ee7b7; }
+    .tag-ch5 { background: rgba(244,63,94,0.2); color: #fda4af; }
+
+    footer {
+      background: var(--surface);
+      border-top: 1px solid rgba(255,255,255,0.05);
+      padding: 2rem; text-align: center;
+      color: var(--muted); font-size: 0.75rem;
+    }
+    footer span { color: var(--accent3); }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-home">← Home</a>
+  <span class="nav-sep">/</span>
+  <span class="nav-current">Quiz</span>
+  <div class="nav-links">
+    <a href="chapter1.html" class="nav-pill">Ch.1</a>
+    <a href="chapter2.html" class="nav-pill">Ch.2</a>
+    <a href="chapter3.html" class="nav-pill">Ch.3</a>
+    <a href="chapter4.html" class="nav-pill">Ch.4</a>
+    <a href="chapter5.html" class="nav-pill">Ch.5</a>
+  </div>
+</nav>
+
+<!-- HERO (start screen) -->
+<div id="startScreen">
+  <div class="quiz-hero">
+    <div class="quiz-badge">⚡ BONUS CHALLENGE</div>
+    <h1>Test Your<br><span>AI Brain</span></h1>
+    <p>10 questions across all 5 chapters. Instant feedback. No fluff. Find out how much you actually know about how AI works.</p>
+    <button class="start-btn" onclick="startQuiz()">Let's Go ⚡</button>
+  </div>
+</div>
+
+<!-- PROGRESS -->
+<div class="progress-wrap" id="progressWrap" style="display:none; padding-top:2rem;">
+  <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+  <div class="progress-label" id="progressLabel">Question 1 of 10</div>
+</div>
+
+<!-- QUIZ AREA -->
+<div class="quiz-area" id="quizArea">
+  <div class="question-card" id="questionCard">
+    <div class="q-meta">
+      <div class="q-num" id="qNum">1</div>
+      <div>
+        <div class="chapter-tag" id="qChapterTag"></div>
+        <div class="q-chapter" id="qChapter"></div>
+      </div>
+    </div>
+    <div class="q-text" id="qText"></div>
+    <div class="options" id="optionsContainer"></div>
+    <div class="feedback" id="feedback"></div>
+    <button class="next-btn" id="nextBtn" onclick="nextQuestion()">Next Question →</button>
+  </div>
+</div>
+
+<!-- RESULTS SCREEN -->
+<div class="results-screen" id="resultsScreen">
+  <div class="score-ring" id="scoreRing">
+    <div class="score-inner">
+      <div class="score-number" id="scoreNumber">0</div>
+      <div class="score-denom">out of 10</div>
+    </div>
+  </div>
+  <h2 class="result-title" id="resultTitle"></h2>
+  <p class="result-sub" id="resultSub"></p>
+
+  <div class="review-list" id="reviewList"></div>
+
+  <div class="result-actions">
+    <button class="cta-btn cta-primary" onclick="retakeQuiz()">Retake Quiz ⚡</button>
+    <a href="index.html" class="cta-btn cta-secondary">Back to Chapters</a>
+  </div>
+</div>
+
+<footer>
+  <p>Made with 🧠 for curious minds everywhere &nbsp;|&nbsp; <span>AI Basics</span> — No PhD required</p>
+</footer>
+
+<script>
+  const questions = [
+    {
+      chapter: "Chapter 1",
+      chapterTag: "tag-ch1",
+      chapterLink: "chapter1.html",
+      text: "What are the adjustable numerical values in a neural network that get updated during training?",
+      options: ["Layers", "Weights", "Tokens", "Embeddings"],
+      correct: 1,
+      feedback: {
+        correct: "✅ Correct! Weights (and biases) are the numbers a neural network adjusts during training. Every connection between neurons has a weight — learning is just finding the right values.",
+        wrong: "❌ Not quite. The answer is Weights. Think of them as the dial settings on every neuron connection — training is the process of tuning millions of these dials."
+      }
+    },
+    {
+      chapter: "Chapter 1",
+      chapterTag: "tag-ch1",
+      chapterLink: "chapter1.html",
+      text: "Transfer Learning allows you to...",
+      options: [
+        "Train a model entirely from scratch on new data",
+        "Move a model from one server to another",
+        "Reuse a pre-trained model's knowledge for a new task",
+        "Share weights between two different users"
+      ],
+      correct: 2,
+      feedback: {
+        correct: "✅ Nailed it! Transfer Learning means taking a model already trained on massive data and adapting it to a specific task — instead of starting from zero. Way faster and cheaper.",
+        wrong: "❌ The answer is: Reuse a pre-trained model's knowledge for a new task. That's the whole point — you start with knowledge that already exists rather than learning from scratch."
+      }
+    },
+    {
+      chapter: "Chapter 2",
+      chapterTag: "tag-ch2",
+      chapterLink: "chapter2.html",
+      text: "What does tokenization do to a piece of text before an AI model can process it?",
+      options: [
+        "Encrypts it for security",
+        "Translates it to another language",
+        "Breaks it into smaller units the model can understand",
+        "Compresses it to save memory"
+      ],
+      correct: 2,
+      feedback: {
+        correct: "✅ Exactly! Tokenization splits text into chunks — often parts of words — that map to numbers. The model never sees raw text; it only sees sequences of token IDs.",
+        wrong: "❌ Tokenization breaks text into smaller units (tokens) that get converted to numbers. The model only works with numbers, not raw text."
+      }
+    },
+    {
+      chapter: "Chapter 2",
+      chapterTag: "tag-ch2",
+      chapterLink: "chapter2.html",
+      text: "The Attention mechanism in a Transformer helps the model...",
+      options: [
+        "Remember all previous conversations it has had",
+        "Focus on the most relevant parts of the input when predicting each token",
+        "Download more training data during inference",
+        "Generate images from text descriptions"
+      ],
+      correct: 1,
+      feedback: {
+        correct: "✅ Yes! Attention lets each token look at all other tokens and decide which ones matter most for understanding context. That's why Transformers can handle long-range dependencies so well.",
+        wrong: "❌ Attention allows the model to focus on the most relevant parts of the input. When predicting the next word, attention scores tell the model which earlier words are most important right now."
+      }
+    },
+    {
+      chapter: "Chapter 3",
+      chapterTag: "tag-ch3",
+      chapterLink: "chapter3.html",
+      text: "What is 'hallucination' in a Large Language Model?",
+      options: [
+        "A visual glitch in the model's user interface",
+        "When the model confidently states incorrect or made-up information",
+        "A bug that makes the model respond slowly",
+        "When the model refuses to answer a question"
+      ],
+      correct: 1,
+      feedback: {
+        correct: "✅ Spot on! Hallucination is when the LLM generates false information with total confidence — it invents facts, fake citations, or made-up events. The model doesn't 'know' it's wrong; it's just predicting plausible-sounding tokens.",
+        wrong: "❌ Hallucination is when an LLM confidently states something that is simply false. It might invent a book that doesn't exist, or make up a research paper — all stated as fact."
+      }
+    },
+    {
+      chapter: "Chapter 3",
+      chapterTag: "tag-ch3",
+      chapterLink: "chapter3.html",
+      text: "What does the 'temperature' setting control in a language model?",
+      options: [
+        "The physical cooling of the GPU during inference",
+        "The maximum length of the model's response",
+        "The randomness and creativity of the model's output",
+        "The language the model replies in"
+      ],
+      correct: 2,
+      feedback: {
+        correct: "✅ Correct! Low temperature (e.g. 0.1) = focused, predictable output. High temperature (e.g. 1.5) = creative, surprising, and sometimes incoherent output. It's like a creativity dial.",
+        wrong: "❌ Temperature controls randomness. Low temperature makes the model stick to the most probable tokens (safe and repetitive). High temperature makes it explore lower-probability tokens (creative but wilder)."
+      }
+    },
+    {
+      chapter: "Chapter 4",
+      chapterTag: "tag-ch4",
+      chapterLink: "chapter4.html",
+      text: "What does RLHF stand for?",
+      options: [
+        "Rapid Learning from Historical Features",
+        "Reinforcement Learning from Human Feedback",
+        "Real-time Language Handling Framework",
+        "Recursive Loss with Heuristic Filtering"
+      ],
+      correct: 1,
+      feedback: {
+        correct: "✅ Right! RLHF — Reinforcement Learning from Human Feedback — is how models like ChatGPT are trained to be helpful and safe. Humans rank responses, a reward model learns those preferences, then that guides further training.",
+        wrong: "❌ RLHF = Reinforcement Learning from Human Feedback. It's a key technique for aligning AI: human raters score responses, a reward model learns their preferences, and the LLM is trained to maximise that reward."
+      }
+    },
+    {
+      chapter: "Chapter 4",
+      chapterTag: "tag-ch4",
+      chapterLink: "chapter4.html",
+      text: "What is the main advantage of LoRA over full fine-tuning?",
+      options: [
+        "LoRA always produces better accuracy than full fine-tuning",
+        "LoRA requires no training data at all",
+        "LoRA trains only a tiny set of extra parameters, making it far cheaper and faster",
+        "LoRA only works on text generation, not other tasks"
+      ],
+      correct: 2,
+      feedback: {
+        correct: "✅ Exactly! LoRA (Low-Rank Adaptation) adds tiny adapter matrices to each layer and only trains those — the original weights stay frozen. You get 99%+ of the benefit for a fraction of the compute cost.",
+        wrong: "❌ LoRA's big win is efficiency. Instead of updating billions of weights, it adds small adapter layers with far fewer parameters. The original model is unchanged, so you can swap adapters per task."
+      }
+    },
+    {
+      chapter: "Chapter 5",
+      chapterTag: "tag-ch5",
+      chapterLink: "chapter5.html",
+      text: "What is RAG (Retrieval-Augmented Generation)?",
+      options: [
+        "A technique for generating images with a language model",
+        "A method to compress large language models to run on small devices",
+        "Giving an LLM access to an external knowledge base at query time, without retraining",
+        "A type of recurrent neural network architecture"
+      ],
+      correct: 2,
+      feedback: {
+        correct: "✅ Perfect! With RAG, when a user asks a question, relevant documents are retrieved from a knowledge base first, then passed to the LLM as extra context. The model can answer with up-to-date info without expensive retraining.",
+        wrong: "❌ RAG = Retrieval-Augmented Generation. A user's query fetches relevant documents from an external store (like a vector database), which are then injected into the prompt so the LLM can answer accurately without being retrained."
+      }
+    },
+    {
+      chapter: "Chapter 5",
+      chapterTag: "tag-ch5",
+      chapterLink: "chapter5.html",
+      text: "How do diffusion models generate images?",
+      options: [
+        "By directly drawing pixels based on a text description",
+        "By copying and pasting similar images from a training database",
+        "By gradually removing noise from a randomly noisy image until a coherent image appears",
+        "By combining parts of multiple existing images together"
+      ],
+      correct: 2,
+      feedback: {
+        correct: "✅ Brilliant! Diffusion models learn to reverse a noise process. They start from pure random noise and iteratively 'denoise', guided by a text prompt, until a crisp image emerges. That's how DALL·E, Midjourney, and Stable Diffusion all work.",
+        wrong: "❌ Diffusion models start with pure random noise and apply many small denoising steps, guided by the text prompt, until an image gradually emerges. It's the reverse of randomly destroying an image one step at a time."
+      }
+    }
+  ];
+
+  let current = 0;
+  let score = 0;
+  let userAnswers = [];
+
+  function startQuiz() {
+    document.getElementById('startScreen').style.display = 'none';
+    document.getElementById('progressWrap').style.display = 'block';
+    document.getElementById('quizArea').style.display = 'block';
+    renderQuestion();
+  }
+
+  function renderQuestion() {
+    const q = questions[current];
+    const letters = ['A', 'B', 'C', 'D'];
+
+    // progress
+    const pct = (current / questions.length) * 100;
+    document.getElementById('progressFill').style.width = pct + '%';
+    document.getElementById('progressLabel').textContent = `Question ${current + 1} of ${questions.length}`;
+
+    // re-animate card
+    const card = document.getElementById('questionCard');
+    card.style.animation = 'none';
+    card.offsetHeight; // reflow
+    card.style.animation = 'slideIn 0.4s ease both';
+
+    document.getElementById('qNum').textContent = current + 1;
+    document.getElementById('qText').textContent = q.text;
+
+    const tag = document.getElementById('qChapterTag');
+    tag.className = 'chapter-tag ' + q.chapterTag;
+    tag.textContent = q.chapter;
+
+    document.getElementById('qChapter').textContent = q.chapter.toUpperCase();
+
+    const container = document.getElementById('optionsContainer');
+    container.innerHTML = '';
+    q.options.forEach((opt, i) => {
+      const btn = document.createElement('button');
+      btn.className = 'option-btn';
+      btn.setAttribute('data-index', i);
+      btn.innerHTML = `<span class="option-letter">${letters[i]}</span>${opt}`;
+      btn.addEventListener('click', () => selectAnswer(i));
+      container.appendChild(btn);
+    });
+
+    document.getElementById('feedback').style.display = 'none';
+    document.getElementById('feedback').className = 'feedback';
+    document.getElementById('nextBtn').style.display = 'none';
+  }
+
+  function selectAnswer(selected) {
+    const q = questions[current];
+    const buttons = document.querySelectorAll('.option-btn');
+    userAnswers.push(selected);
+
+    buttons.forEach(btn => btn.disabled = true);
+
+    const isCorrect = selected === q.correct;
+    if (isCorrect) score++;
+
+    buttons[selected].classList.add(isCorrect ? 'correct' : 'wrong');
+    if (!isCorrect) buttons[q.correct].classList.add('reveal');
+
+    const fb = document.getElementById('feedback');
+    fb.className = 'feedback ' + (isCorrect ? 'correct' : 'wrong');
+    fb.textContent = isCorrect ? q.feedback.correct : q.feedback.wrong;
+    fb.style.display = 'block';
+
+    const nextBtn = document.getElementById('nextBtn');
+    nextBtn.textContent = current === questions.length - 1 ? 'See My Results →' : 'Next Question →';
+    nextBtn.style.display = 'inline-block';
+  }
+
+  function nextQuestion() {
+    current++;
+    if (current >= questions.length) {
+      showResults();
+    } else {
+      renderQuestion();
+    }
+  }
+
+  function showResults() {
+    document.getElementById('progressWrap').style.display = 'none';
+    document.getElementById('quizArea').style.display = 'none';
+    const results = document.getElementById('resultsScreen');
+    results.style.display = 'block';
+
+    const pct = score * 10;
+    document.getElementById('scoreRing').style.setProperty('--pct', pct);
+    document.getElementById('scoreNumber').textContent = score;
+
+    const titles = {
+      10: ["Perfect Score! 🧠", "You genuinely get how AI works. Impressive — seriously."],
+      9:  ["Almost Perfect! 🔥", "One slip away from flawless. You clearly know your stuff."],
+      8:  ["Solid Knowledge! ⚡", "Strong grasp of AI fundamentals. A quick re-read of the wrong ones and you've got it."],
+      7:  ["Good Work! 👍", "You know more than most. Check the review below to fill the gaps."],
+      6:  ["Getting There! 📚", "Halfway through the knowledge journey. The chapters will patch those gaps fast."],
+      5:  ["Room to Grow 🌱", "You've got the foundation — now go deeper into the chapters you missed."],
+    };
+    const tier = score >= 10 ? 10 : score >= 9 ? 9 : score >= 8 ? 8 : score >= 7 ? 7 : score >= 6 ? 6 : 5;
+    const [title, sub] = titles[tier] || titles[5];
+    document.getElementById('resultTitle').textContent = title;
+    document.getElementById('resultSub').textContent = sub;
+
+    // build review list
+    const letters = ['A', 'B', 'C', 'D'];
+    const list = document.getElementById('reviewList');
+    list.innerHTML = '';
+    questions.forEach((q, i) => {
+      const ua = userAnswers[i];
+      const correct = ua === q.correct;
+      const item = document.createElement('div');
+      item.className = 'review-item';
+      item.innerHTML = `
+        <div class="review-icon">${correct ? '✅' : '❌'}</div>
+        <div>
+          <span class="chapter-tag ${q.chapterTag}">${q.chapter}</span>
+          <div class="review-q">${q.text}</div>
+          <div class="review-ans">
+            Your answer: <span class="your-ans ${correct ? 'ok' : 'bad'}">${letters[ua]} — ${q.options[ua]}</span>
+            ${!correct ? `<br>Correct answer: <span class="correct-ans">${letters[q.correct]} — ${q.options[q.correct]}</span>` : ''}
+          </div>
+        </div>`;
+      list.appendChild(item);
+    });
+  }
+
+  function retakeQuiz() {
+    current = 0;
+    score = 0;
+    userAnswers = [];
+    document.getElementById('resultsScreen').style.display = 'none';
+    document.getElementById('progressWrap').style.display = 'block';
+    document.getElementById('quizArea').style.display = 'block';
+    renderQuestion();
+  }
+</script>
+</body>
+</html>

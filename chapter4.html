@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chapter 4: Training & Optimization ⚙️ — AI Basics</title>
+  <meta name="description" content="Fine-tuning, RLHF, LoRA, Quantization — how AI gets polished, personalized, and made to run on your laptop.">
+  <meta property="og:title" content="Chapter 4: Training & Optimization — AI Basics">
+  <meta property="og:description" content="Fine-tuning, RLHF, LoRA, Quantization — how raw AI gets polished and specialized.">
+  <meta property="og:type" content="article">
+  <meta property="og:image" content="https://YOUR-CLOUDFRONT-DOMAIN/og-cover.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root { --bg:#0a0a0f; --surface:#12121a; --card:#1a1a28; --accent:#10b981; --accent2:#6ee7b7; --accent3:#d1fae5; --text:#f0f0ff; --muted:#8888aa; }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    /* LIGHT MODE */
+    body.light { --bg:#f5f5ff; --surface:#ebebf5; --card:#ffffff; --text:#0a0a20; --muted:#55557a; }
+    body.light nav { background:rgba(240,240,250,0.92) !important; border-bottom-color:rgba(0,0,0,0.08); }
+    body.light .concept { box-shadow:0 4px 20px rgba(0,0,0,0.05); border-color:rgba(0,0,0,0.08); }
+    body.light .analogy { background:rgba(16,185,129,0.07); }
+    body.light .key-point { background:rgba(6,182,212,0.07); }
+    body.light .interactive-box { background:rgba(0,0,0,0.03); }
+    /* THEME TOGGLE */
+    .theme-toggle { background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.1); border-radius:100px; padding:0.3rem 0.8rem; cursor:pointer; font-size:0.85rem; color:var(--muted); transition:all 0.2s; }
+    .theme-toggle:hover { background:rgba(255,255,255,0.14); color:var(--text); }
+    body.light .theme-toggle { background:rgba(0,0,0,0.05); border-color:rgba(0,0,0,0.1); }
+    body { background:var(--bg); color:var(--text); font-family:'Inter',sans-serif; overflow-x:hidden; }
+    nav { position:sticky; top:0; z-index:100; background:rgba(10,10,15,0.85); backdrop-filter:blur(20px); border-bottom:1px solid rgba(255,255,255,0.06); padding:1rem 2rem; display:flex; align-items:center; gap:1.5rem; flex-wrap:wrap; }
+    .nav-home { text-decoration:none; color:var(--muted); font-size:0.8rem; }
+    .nav-home:hover { color:var(--text); }
+    .nav-sep { color:rgba(255,255,255,0.15); }
+    .nav-current { color:var(--accent2); font-size:0.8rem; }
+    .nav-links { margin-left:auto; display:flex; gap:0.75rem; }
+    .nav-pill { padding:0.35rem 0.9rem; border-radius:100px; font-size:0.7rem; text-decoration:none; color:var(--muted); border:1px solid rgba(255,255,255,0.08); transition:all 0.2s; }
+    .nav-pill:hover { border-color:var(--accent); color:var(--accent2); }
+    .nav-pill.next { background:var(--accent); color:#0a0a0f; border-color:var(--accent); font-weight:700; }
+    .progress-bar { height:3px; background:rgba(255,255,255,0.06); }
+    .progress-fill { height:100%; background:linear-gradient(90deg,var(--accent),#06b6d4); width:80%; }
+    .chapter-hero { padding:5rem 2rem 3rem; max-width:900px; margin:0 auto; }
+    .chapter-num { color:var(--accent2); font-size:0.75rem; letter-spacing:0.2em; margin-bottom:1rem; }
+    .chapter-title { font-family:'Syne',sans-serif; font-size:clamp(2.5rem,7vw,5rem); font-weight:800; line-height:1.05; margin-bottom:1.5rem; }
+    .chapter-title span { background:linear-gradient(90deg,var(--accent),#06b6d4); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+    .chapter-intro { color:var(--muted); font-size:0.95rem; line-height:1.9; max-width:640px; }
+    .content { max-width:900px; margin:0 auto; padding:3rem 2rem 6rem; }
+    .concept { background:var(--card); border:1px solid rgba(255,255,255,0.07); border-radius:20px; padding:2.5rem; margin-bottom:3rem; position:relative; overflow:hidden; animation:slideIn 0.5s ease both; }
+    .concept::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background:linear-gradient(90deg,var(--accent),#06b6d4); }
+    .concept:nth-child(2){animation-delay:0.1s;} .concept:nth-child(3){animation-delay:0.2s;} .concept:nth-child(4){animation-delay:0.3s;}
+    @keyframes slideIn { from{opacity:0;transform:translateY(20px);} to{opacity:1;transform:translateY(0);} }
+    .concept-header { display:flex; align-items:center; gap:1rem; margin-bottom:1.5rem; flex-wrap:wrap; }
+    .concept-num { background:linear-gradient(135deg,var(--accent),#06b6d4); width:40px; height:40px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-family:'Syne',sans-serif; font-weight:800; color:#0a0a0f; flex-shrink:0; }
+    .concept-name { font-family:'Syne',sans-serif; font-size:1.6rem; font-weight:700; }
+    .concept-body { font-size:0.88rem; color:#d0d0e8; line-height:2; }
+    .concept-body p { margin-bottom:1rem; }
+    .concept-body strong { color:var(--accent2); }
+    .concept-body em { color:var(--accent3); }
+    .analogy { background:rgba(16,185,129,0.1); border:1px solid rgba(16,185,129,0.25); border-radius:12px; padding:1.5rem; margin:1.5rem 0; display:flex; gap:1rem; align-items:flex-start; }
+    .analogy-icon { font-size:1.8rem; flex-shrink:0; }
+    .analogy-content { font-size:0.85rem; line-height:1.8; color:var(--accent3); }
+    .analogy-content strong { color:var(--accent2); }
+    .key-point { background:rgba(245,158,11,0.08); border-left:3px solid #f59e0b; padding:1rem 1.5rem; margin:1.5rem 0; border-radius:0 10px 10px 0; font-size:0.85rem; color:#fde68a; line-height:1.7; }
+    .interactive-box { background:var(--surface); border:1px solid rgba(16,185,129,0.2); border-radius:20px; padding:2rem; margin:2rem 0; }
+    .interactive-title { font-family:'Syne',sans-serif; font-size:1rem; font-weight:700; color:var(--accent2); margin-bottom:1rem; display:flex; align-items:center; gap:0.5rem; }
+    .interactive-title::before { content:'⚡'; }
+
+    /* FINE TUNE DEMO */
+    .ft-scenario { display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin:1rem 0; }
+    .ft-box { background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:12px; padding:1.2rem; }
+    .ft-box-title { font-size:0.72rem; letter-spacing:0.1em; color:var(--muted); margin-bottom:0.75rem; }
+    .ft-q { font-size:0.82rem; margin-bottom:0.5rem; color:#d0d0e8; }
+    .ft-a-base { font-size:0.8rem; color:var(--muted); line-height:1.6; padding:0.6rem; background:rgba(255,255,255,0.03); border-radius:6px; }
+    .ft-a-tuned { font-size:0.8rem; color:var(--accent2); line-height:1.6; padding:0.6rem; background:rgba(16,185,129,0.1); border:1px solid rgba(16,185,129,0.2); border-radius:6px; }
+    @media(max-width:600px){.ft-scenario{grid-template-columns:1fr;}}
+
+    /* RLHF SORTER */
+    .rlhf-q { font-size:0.85rem; color:#d0d0e8; margin-bottom:1rem; }
+    .rlhf-options { display:flex; flex-direction:column; gap:0.75rem; }
+    .rlhf-opt { background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:10px; padding:1rem 1.2rem; font-size:0.82rem; cursor:pointer; transition:all 0.2s; line-height:1.6; display:flex; gap:0.75rem; align-items:flex-start; }
+    .rlhf-opt:hover { border-color:var(--accent); }
+    .rlhf-opt.preferred { background:rgba(16,185,129,0.15); border-color:var(--accent); }
+    .rlhf-opt.rejected { background:rgba(244,63,94,0.08); border-color:rgba(244,63,94,0.3); opacity:0.6; }
+    .rlhf-badge { font-size:0.65rem; padding:0.2rem 0.6rem; border-radius:100px; white-space:nowrap; flex-shrink:0; margin-top:0.2rem; }
+    .badge-good { background:rgba(16,185,129,0.2); color:var(--accent2); }
+    .badge-bad { background:rgba(244,63,94,0.15); color:#fda4af; }
+    .rlhf-explain { margin-top:1rem; font-size:0.8rem; color:var(--muted); min-height:28px; }
+
+    /* LORA VIZ */
+    .lora-comparison { display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin:1rem 0; }
+    .lora-box { border-radius:14px; padding:1.5rem; text-align:center; }
+    .lora-box.full { background:rgba(244,63,94,0.1); border:1px solid rgba(244,63,94,0.25); }
+    .lora-box.lora { background:rgba(16,185,129,0.1); border:1px solid rgba(16,185,129,0.25); }
+    .lora-icon { font-size:2.5rem; margin-bottom:0.5rem; display:block; }
+    .lora-title { font-family:'Syne',sans-serif; font-weight:700; margin-bottom:0.4rem; }
+    .lora-detail { font-size:0.72rem; color:var(--muted); line-height:1.6; }
+    .lora-cost { font-size:0.8rem; margin-top:0.75rem; font-weight:700; }
+    .lora-cost.expensive { color:#fda4af; }
+    .lora-cost.cheap { color:var(--accent2); }
+    @media(max-width:500px){.lora-comparison{grid-template-columns:1fr;}}
+
+    /* QUANTIZATION SLIDER */
+    .quant-bar-row { display:flex; flex-direction:column; gap:0.75rem; margin:1rem 0; }
+    .quant-bar-item { display:grid; grid-template-columns:100px 1fr 80px; gap:0.75rem; align-items:center; font-size:0.78rem; }
+    .quant-bar-label { color:var(--muted); text-align:right; }
+    .quant-bar-track { background:rgba(255,255,255,0.06); border-radius:100px; height:10px; overflow:hidden; }
+    .quant-bar-fill { height:100%; border-radius:100px; transition:width 1s ease; }
+    .quant-bar-val { color:var(--accent2); }
+
+    .bottom-nav { display:flex; justify-content:space-between; align-items:center; padding:2rem; max-width:900px; margin:0 auto; border-top:1px solid rgba(255,255,255,0.06); flex-wrap:wrap; gap:1rem; }
+    .nav-btn { display:flex; align-items:center; gap:0.75rem; padding:0.9rem 1.8rem; border-radius:14px; text-decoration:none; color:var(--text); background:var(--card); border:1px solid rgba(255,255,255,0.08); font-size:0.82rem; transition:all 0.2s; }
+    .nav-btn:hover { border-color:var(--accent); }
+    .nav-btn.forward { background:var(--accent); border-color:var(--accent); color:#0a0a0f; font-weight:700; }
+    .btn-small { font-size:0.7rem; color:var(--muted); }
+    .nav-btn.forward .btn-small { color:rgba(0,0,0,0.5); }
+  </style>
+</head>
+<body>
+<nav>
+  <a href="index.html" class="nav-home">🏠 Home</a>
+  <span class="nav-sep">/</span>
+  <span class="nav-current">Chapter 4: Training & Optimization</span>
+  <div class="nav-links">
+    <a href="chapter3.html" class="nav-pill">← Ch 3</a>
+    <a href="chapter5.html" class="nav-pill next">Next →</a>
+    <button class="theme-toggle" id="themeBtn" onclick="toggleTheme()">🌙</button>
+  </div>
+</nav>
+<div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
+
+<div class="chapter-hero">
+  <div class="chapter-num">// CHAPTER 04 OF 05</div>
+  <h1 class="chapter-title">Training &<br><span>Optimization</span></h1>
+  <p class="chapter-intro">Fine-tuning, RLHF, LoRA, Quantization — how raw AI gets polished, specialized, and made to run on your laptop.</p>
+</div>
+
+<div class="content">
+
+  <!-- CONCEPT 11: Fine-Tuning -->
+  <div class="concept">
+    <div class="concept-header">
+      <div class="concept-num">11</div>
+      <div class="concept-name">Fine-Tuning</div>
+    </div>
+    <div class="concept-body">
+      <p>Fine-tuning is taking a pretrained model and continuing to train it on a <strong>smaller, more focused dataset</strong>. The model already understands general language — you're guiding it toward a specialty.</p>
+    </div>
+
+    <div class="interactive-box">
+      <div class="interactive-title">Base Model vs Fine-Tuned — Same question, very different answers</div>
+      <div class="ft-scenario">
+        <div class="ft-box">
+          <div class="ft-box-title">🌍 BASE MODEL</div>
+          <div class="ft-q">Q: "What are the indemnification clauses in section 4?"</div>
+          <div class="ft-a-base">A general response about contracts and legal language in a broad sense, likely not precise enough for actual legal work...</div>
+        </div>
+        <div class="ft-box">
+          <div class="ft-box-title">⚖️ FINE-TUNED (Legal)</div>
+          <div class="ft-q">Q: "What are the indemnification clauses in section 4?"</div>
+          <div class="ft-a-tuned">Section 4.2 establishes mutual indemnification obligations. The indemnitor must defend against third-party claims arising from breach of warranties, with carve-outs for gross negligence...</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="concept-body">
+      <div class="analogy">
+        <div class="analogy-icon">🎓</div>
+        <div class="analogy-content">
+          <strong>Like specialization:</strong> A general doctor knows medicine broadly. A cardiologist has the same foundation, but trained further on heart conditions. Fine-tuning works the same way.
+        </div>
+      </div>
+      <div class="key-point">
+        💡 Fine-tuning is powerful but costly — you're updating billions of parameters. That's where LoRA (concept 13) comes in!
+      </div>
+    </div>
+  </div>
+
+  <!-- CONCEPT 12: RLHF -->
+  <div class="concept">
+    <div class="concept-header">
+      <div class="concept-num">12</div>
+      <div class="concept-name">RLHF</div>
+    </div>
+    <div class="concept-body">
+      <p>Why do modern chatbots feel <strong>helpful, polite, and safe</strong>? Without any guidance, a model just continues patterns — it'd say anything that sounds probable, even if harmful.</p>
+      <p><strong>RLHF (Reinforcement Learning from Human Feedback)</strong> fixes this by injecting human judgment into training. Humans rank AI responses, and the model learns to prefer what people actually like.</p>
+    </div>
+
+    <div class="interactive-box">
+      <div class="interactive-title">You're the human trainer! Pick the better response</div>
+      <div class="rlhf-q">Prompt: "How do I get better at coding?"</div>
+      <div class="rlhf-options" id="rlhf-opts">
+        <div class="rlhf-opt" onclick="pickRLHF(this, false)">
+          <span>Coding is the act of writing instructions for a computer to execute. There are many programming languages such as Python, JavaScript, C++, Java, and others. Each has syntax and semantics. You should choose one and practice.</span>
+        </div>
+        <div class="rlhf-opt" onclick="pickRLHF(this, true)">
+          <span>Start with one language (Python is great for beginners), then build small real projects — a to-do app, a simple game. Don't just follow tutorials; break things and fix them. That's where real learning happens! 🚀</span>
+        </div>
+      </div>
+      <div class="rlhf-explain" id="rlhf-explain">👆 Which response would you prefer as a user?</div>
+    </div>
+
+    <div class="concept-body">
+      <p>Over thousands of these comparisons, the model learns a <em>sense of preference</em> — what helpful, clear, and safe answers look like. That's why modern AI feels very different from raw language models.</p>
+      <div class="key-point">
+        💡 RLHF is the reason chatbots decline harmful requests, follow instructions properly, and generally feel like they're trying to help. Without it, models would be far more unpredictable.
+      </div>
+    </div>
+  </div>
+
+  <!-- CONCEPT 13: LoRA -->
+  <div class="concept">
+    <div class="concept-header">
+      <div class="concept-num">13</div>
+      <div class="concept-name">LoRA</div>
+    </div>
+    <div class="concept-body">
+      <p>Fine-tuning a huge model means updating billions of parameters — expensive and hard to manage. <strong>LoRA (Low-Rank Adaptation)</strong> is the clever shortcut.</p>
+      <p>Instead of modifying the entire model, LoRA keeps the original frozen and adds <em>tiny trainable components</em> on top — often less than 1% of the total parameters.</p>
+    </div>
+
+    <div class="interactive-box">
+      <div class="interactive-title">Full Fine-Tuning vs LoRA</div>
+      <div class="lora-comparison">
+        <div class="lora-box full">
+          <span class="lora-icon">🏋️</span>
+          <div class="lora-title" style="color:#fda4af">Full Fine-Tuning</div>
+          <div class="lora-detail">Modifies all ~70B parameters. Needs multiple high-end GPUs. Each task = saving a full model copy.</div>
+          <div class="lora-cost expensive">💸 $$$$ per run</div>
+        </div>
+        <div class="lora-box lora">
+          <span class="lora-icon">🪶</span>
+          <div class="lora-title" style="color:var(--accent2)">LoRA</div>
+          <div class="lora-detail">Only trains ~0.1% of parameters. Runs on a single GPU. Each task = saving a tiny adapter file (a few MB).</div>
+          <div class="lora-cost cheap">💚 $ per run</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="concept-body">
+      <div class="analogy">
+        <div class="analogy-icon">🔌</div>
+        <div class="analogy-content">
+          <strong>Think of it like plug-ins:</strong> The base model is your operating system. LoRA adapters are like small plug-ins that change how it behaves for a specific task. You don't reinstall the OS — you just load the plug-in.
+        </div>
+      </div>
+      <div class="key-point">
+        💡 LoRA makes fine-tuning accessible to regular developers, not just big labs. That's why you can now customize AI models on a laptop!
+      </div>
+    </div>
+  </div>
+
+  <!-- CONCEPT 14: Quantization -->
+  <div class="concept">
+    <div class="concept-header">
+      <div class="concept-num">14</div>
+      <div class="concept-name">Quantization</div>
+    </div>
+    <div class="concept-body">
+      <p>As models get bigger, running them gets harder. <strong>Quantization</strong> solves this by storing model weights with less precision — using fewer bits per number.</p>
+      <p>A full-precision model stores each weight in 32 bits. Quantizing to 4 bits makes it 8× smaller. Quality drops a tiny bit, but the model becomes much more practical to run.</p>
+    </div>
+
+    <div class="interactive-box">
+      <div class="interactive-title">Model size vs precision tradeoff</div>
+      <div class="quant-bar-row" id="quant-bars">
+        <div class="quant-bar-item">
+          <div class="quant-bar-label">32-bit (FP32)</div>
+          <div class="quant-bar-track"><div class="quant-bar-fill" style="width:100%;background:linear-gradient(90deg,#f43f5e,#fb923c);"></div></div>
+          <div class="quant-bar-val">~140 GB 😱</div>
+        </div>
+        <div class="quant-bar-item">
+          <div class="quant-bar-label">16-bit (FP16)</div>
+          <div class="quant-bar-track"><div class="quant-bar-fill" style="width:50%;background:linear-gradient(90deg,#f59e0b,#fde68a);"></div></div>
+          <div class="quant-bar-val">~70 GB 😓</div>
+        </div>
+        <div class="quant-bar-item">
+          <div class="quant-bar-label">8-bit (INT8)</div>
+          <div class="quant-bar-track"><div class="quant-bar-fill" style="width:25%;background:linear-gradient(90deg,#06b6d4,#67e8f9);"></div></div>
+          <div class="quant-bar-val">~35 GB 😌</div>
+        </div>
+        <div class="quant-bar-item">
+          <div class="quant-bar-label">4-bit (INT4)</div>
+          <div class="quant-bar-track"><div class="quant-bar-fill" style="width:12%;background:linear-gradient(90deg,#10b981,#6ee7b7);"></div></div>
+          <div class="quant-bar-val">~17 GB 🎉</div>
+        </div>
+      </div>
+      <p style="font-size:0.75rem;color:var(--muted);margin-top:0.75rem;">Example: A 70B parameter model at different precisions. 4-bit lets you run it on a desktop GPU!</p>
+    </div>
+
+    <div class="concept-body">
+      <div class="key-point">
+        💡 When you see "llama-3-8B-Q4_K_M.gguf" — that's a 4-bit quantized model. The quality drop is surprisingly small, and it's the reason large AI models can run locally on a laptop.
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="bottom-nav">
+  <a href="chapter3.html" class="nav-btn">
+    <span>←</span>
+    <div><div class="btn-small">Back to</div>Ch 3: LLMs</div>
+  </a>
+  <div style="text-align:center;font-size:0.75rem;color:var(--muted);">
+    <div style="color:var(--accent2);font-weight:700;margin-bottom:0.2rem;">Chapter 4 done! 💪</div>
+    14 concepts down
+  </div>
+  <a href="chapter5.html" class="nav-btn forward">
+    <div><div class="btn-small">Final chapter</div>Building AI Systems</div>
+    <span>→</span>
+  </a>
+</div>
+
+<script>
+  // Theme toggle
+  function toggleTheme() {
+    const light = document.body.classList.toggle('light');
+    localStorage.setItem('aibasics_theme', light ? 'light' : 'dark');
+    document.getElementById('themeBtn').textContent = light ? '☀️' : '🌙';
+  }
+  if (localStorage.getItem('aibasics_theme') === 'light') {
+    document.body.classList.add('light');
+    const _b = document.getElementById('themeBtn'); if (_b) _b.textContent = '☀️';
+  }
+  // Progress bar + chapter 4 completion
+  let _done = false;
+  window.addEventListener('scroll', () => {
+    const p = (window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100;
+    document.getElementById('progress').style.width = Math.min(p,100) + '%';
+    if (p >= 85 && !_done) { _done = true; localStorage.setItem('aibasics_ch4_complete', '1'); }
+  });
+
+  function pickRLHF(el, isGood) {
+    document.querySelectorAll('.rlhf-opt').forEach(o => o.style.pointerEvents='none');
+    if (isGood) {
+      el.classList.add('preferred');
+      const b = document.createElement('span'); b.className='rlhf-badge badge-good'; b.textContent='✅ Preferred';
+      el.prepend(b);
+      document.getElementById('rlhf-explain').innerHTML = '<span style="color:#6ee7b7">Great pick! This is helpful, actionable, and encouraging. The model learns to give answers like this more often.</span>';
+    } else {
+      el.classList.add('rejected');
+      const b = document.createElement('span'); b.className='rlhf-badge badge-bad'; b.textContent='❌ Not preferred';
+      el.prepend(b);
+      document.getElementById('rlhf-explain').innerHTML = '<span style="color:#fda4af">This is technically correct but not actually helpful. Too generic! Try the other one.</span>';
+      setTimeout(() => {
+        document.querySelectorAll('.rlhf-opt').forEach(o => o.style.pointerEvents='auto');
+        el.classList.remove('rejected'); el.querySelector('.rlhf-badge')?.remove();
+        document.getElementById('rlhf-explain').textContent = '👆 Which response would you prefer as a user?';
+      }, 1800);
+    }
+  }
+</script>
+</body>
+</html>

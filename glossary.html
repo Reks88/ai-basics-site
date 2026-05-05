@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Glossary 📖 — AI Basics</title>
+  <meta name="description" content="Every AI term explained in plain English. Searchable quick-reference for all 28 concepts.">
+  <meta property="og:title" content="AI Glossary — AI Basics">
+  <meta property="og:description" content="28 AI terms explained simply. No jargon, no PhD required.">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="https://YOUR-CLOUDFRONT-DOMAIN/og-cover.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:#0a0a0f; --surface:#12121a; --card:#1a1a28;
+      --accent1:#7c3aed; --accent2:#06b6d4; --accent3:#f59e0b;
+      --accent4:#10b981; --accent5:#f43f5e;
+      --text:#f0f0ff; --muted:#8888aa;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    /* LIGHT MODE */
+    body.light { --bg:#f5f5ff; --surface:#ebebf5; --card:#ffffff; --text:#0a0a20; --muted:#55557a; }
+    body.light nav { background:rgba(240,240,250,0.92) !important; border-bottom-color:rgba(0,0,0,0.08); }
+    body.light .term-card { box-shadow:0 2px 16px rgba(0,0,0,0.05); border-color:rgba(0,0,0,0.06); }
+    body.light .search-input { background:rgba(0,0,0,0.05); border-color:rgba(0,0,0,0.1); }
+    .theme-toggle { background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.1); border-radius:100px; padding:0.3rem 0.8rem; cursor:pointer; font-size:0.85rem; color:var(--muted); transition:all 0.2s; }
+    .theme-toggle:hover { background:rgba(255,255,255,0.14); color:var(--text); }
+    body.light .theme-toggle { background:rgba(0,0,0,0.05); border-color:rgba(0,0,0,0.1); }
+
+    body { background:var(--bg); color:var(--text); font-family:'Inter',sans-serif; overflow-x:hidden; }
+
+    nav {
+      position:sticky; top:0; z-index:100;
+      background:rgba(10,10,15,0.85);
+      backdrop-filter:blur(20px);
+      border-bottom:1px solid rgba(255,255,255,0.06);
+      padding:1rem 2rem;
+      display:flex; align-items:center; gap:1.5rem; flex-wrap:wrap;
+    }
+    .nav-home { text-decoration:none; color:var(--muted); font-size:0.8rem; transition:color 0.2s; }
+    .nav-home:hover { color:var(--text); }
+    .nav-sep { color:rgba(255,255,255,0.15); }
+    .nav-current { color:var(--accent3); font-size:0.8rem; }
+    .nav-links { margin-left:auto; display:flex; gap:0.75rem; align-items:center; }
+    .nav-pill { padding:0.35rem 0.9rem; border-radius:100px; font-size:0.7rem; text-decoration:none; color:var(--muted); border:1px solid rgba(255,255,255,0.08); transition:all 0.2s; }
+    .nav-pill:hover { border-color:var(--accent3); color:#fde68a; }
+
+    /* HERO */
+    .glossary-hero { padding:5rem 2rem 3rem; max-width:900px; margin:0 auto; }
+    .hero-badge { display:inline-block; background:rgba(245,158,11,0.15); border:1px solid rgba(245,158,11,0.35); color:#fde68a; padding:0.3rem 1rem; border-radius:100px; font-size:0.7rem; letter-spacing:0.12em; margin-bottom:1.2rem; }
+    .glossary-hero h1 { font-family:'Syne',sans-serif; font-size:clamp(2.5rem,7vw,5rem); font-weight:800; line-height:1.05; margin-bottom:1rem; }
+    .glossary-hero h1 span { background:linear-gradient(90deg,var(--accent3),var(--accent1)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+    .glossary-hero p { color:var(--muted); font-size:0.9rem; line-height:1.8; max-width:540px; margin-bottom:2.5rem; }
+
+    /* SEARCH */
+    .search-wrap { position:relative; max-width:520px; margin-bottom:1rem; }
+    .search-input { width:100%; background:var(--card); border:1px solid rgba(255,255,255,0.1); border-radius:100px; padding:0.85rem 1.5rem 0.85rem 3rem; font-size:0.88rem; color:var(--text); font-family:'Inter',sans-serif; outline:none; transition:border-color 0.2s; }
+    .search-input::placeholder { color:var(--muted); }
+    .search-input:focus { border-color:var(--accent3); }
+    .search-icon { position:absolute; left:1.1rem; top:50%; transform:translateY(-50%); color:var(--muted); font-size:1rem; pointer-events:none; }
+    .result-count { font-size:0.72rem; color:var(--muted); margin-bottom:2rem; }
+
+    /* FILTER PILLS */
+    .filter-row { display:flex; gap:0.5rem; flex-wrap:wrap; margin-bottom:2.5rem; }
+    .filter-pill { padding:0.35rem 1rem; border-radius:100px; font-size:0.7rem; border:1px solid rgba(255,255,255,0.1); color:var(--muted); cursor:pointer; transition:all 0.2s; background:transparent; font-family:'Inter',sans-serif; }
+    .filter-pill.active { color:white; border-color:transparent; }
+    .filter-pill[data-cat="all"].active { background:var(--accent1); }
+    .filter-pill[data-cat="fundamentals"].active { background:var(--accent1); }
+    .filter-pill[data-cat="architecture"].active { background:var(--accent2); }
+    .filter-pill[data-cat="training"].active { background:var(--accent4); }
+    .filter-pill[data-cat="systems"].active { background:var(--accent5); }
+    .filter-pill[data-cat="ethics"].active { background:#ec4899; }
+    .filter-pill[data-cat="future"].active { background:#8b5cf6; }
+
+    /* MAIN GRID */
+    .terms-container { max-width:900px; margin:0 auto; padding:0 2rem 6rem; }
+    .terms-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:1.25rem; }
+    .term-card { background:var(--card); border:1px solid rgba(255,255,255,0.07); border-radius:16px; padding:1.5rem; transition:transform 0.2s, border-color 0.2s; cursor:default; position:relative; overflow:hidden; }
+    .term-card::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:var(--term-color,var(--accent1)); opacity:0.6; }
+    .term-card:hover { transform:translateY(-3px); border-color:rgba(255,255,255,0.14); }
+    .term-tag { font-size:0.6rem; color:var(--muted); letter-spacing:0.1em; margin-bottom:0.4rem; }
+    .term-name { font-family:'Syne',sans-serif; font-size:1.1rem; font-weight:700; margin-bottom:0.6rem; color:var(--text); }
+    .term-def { font-size:0.78rem; color:#c0c0d8; line-height:1.75; }
+    .term-chapter { margin-top:0.8rem; font-size:0.62rem; color:var(--muted); }
+    .term-chapter a { color:var(--muted); text-decoration:none; transition:color 0.2s; }
+    .term-chapter a:hover { color:var(--text); }
+    .no-results { text-align:center; padding:4rem 2rem; color:var(--muted); font-size:0.9rem; display:none; }
+    .term-card[hidden] { display:none; }
+
+    footer { background:var(--surface); border-top:1px solid rgba(255,255,255,0.05); padding:2rem; text-align:center; color:var(--muted); font-size:0.75rem; }
+    footer span { color:var(--accent1); }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-home">🏠 Home</a>
+  <span class="nav-sep">/</span>
+  <span class="nav-current">Glossary</span>
+  <div class="nav-links">
+    <a href="quiz.html" class="nav-pill">⚡ Quiz</a>
+    <button class="theme-toggle" id="themeBtn" onclick="toggleTheme()">🌙</button>
+  </div>
+</nav>
+
+<div class="glossary-hero" style="padding-bottom:0;">
+  <div class="hero-badge">📖 QUICK REFERENCE</div>
+  <h1>The AI <span>Glossary</span></h1>
+  <p>28 terms. Plain English. No jargon. Everything you need to sound fluent in AI.</p>
+
+  <div class="search-wrap">
+    <span class="search-icon">🔍</span>
+    <input class="search-input" id="glossarySearch" type="search" placeholder="Search any term or concept..." oninput="filterTerms()" autocomplete="off">
+  </div>
+  <div class="result-count" id="resultCount">Showing all 28 terms</div>
+
+  <div class="filter-row">
+    <button class="filter-pill active" data-cat="all" onclick="filterCat(this,'all')">All</button>
+    <button class="filter-pill" data-cat="fundamentals" onclick="filterCat(this,'fundamentals')">Fundamentals</button>
+    <button class="filter-pill" data-cat="architecture" onclick="filterCat(this,'architecture')">Architecture</button>
+    <button class="filter-pill" data-cat="training" onclick="filterCat(this,'training')">Training</button>
+    <button class="filter-pill" data-cat="systems" onclick="filterCat(this,'systems')">Systems</button>
+    <button class="filter-pill" data-cat="ethics" onclick="filterCat(this,'ethics')">Ethics</button>
+    <button class="filter-pill" data-cat="future" onclick="filterCat(this,'future')">Future</button>
+  </div>
+</div>
+
+<div class="terms-container">
+  <div class="terms-grid" id="termsGrid">
+
+    <!-- FUNDAMENTALS -->
+    <div class="term-card" data-cat="fundamentals" style="--term-color:#7c3aed">
+      <div class="term-tag">FUNDAMENTALS</div>
+      <div class="term-name">Neural Network</div>
+      <div class="term-def">A system of connected layers made of neurons that processes data and learns by adjusting the strength of connections (weights) between neurons.</div>
+      <div class="term-chapter">→ <a href="chapter1.html">Chapter 1</a></div>
+    </div>
+
+    <div class="term-card" data-cat="fundamentals" style="--term-color:#7c3aed">
+      <div class="term-tag">FUNDAMENTALS</div>
+      <div class="term-name">Neuron (Artificial)</div>
+      <div class="term-def">The basic unit of a neural network. Takes in numbers, multiplies them by weights, adds them up, then decides whether to "fire" a signal using an activation function.</div>
+      <div class="term-chapter">→ <a href="chapter1.html">Chapter 1</a></div>
+    </div>
+
+    <div class="term-card" data-cat="fundamentals" style="--term-color:#7c3aed">
+      <div class="term-tag">FUNDAMENTALS</div>
+      <div class="term-name">Weight</div>
+      <div class="term-def">A number stored in a connection between neurons that controls how much influence one neuron has on another. Training = adjusting millions (or billions) of weights until outputs are accurate.</div>
+      <div class="term-chapter">→ <a href="chapter1.html">Chapter 1</a></div>
+    </div>
+
+    <div class="term-card" data-cat="fundamentals" style="--term-color:#7c3aed">
+      <div class="term-tag">FUNDAMENTALS</div>
+      <div class="term-name">Transfer Learning</div>
+      <div class="term-def">Using a model pre-trained on a large dataset as the starting point for a new task. Like starting a new job already knowing how to type — you adapt existing skills instead of starting from scratch.</div>
+      <div class="term-chapter">→ <a href="chapter1.html">Chapter 1</a></div>
+    </div>
+
+    <!-- ARCHITECTURE -->
+    <div class="term-card" data-cat="architecture" style="--term-color:#06b6d4">
+      <div class="term-tag">ARCHITECTURE</div>
+      <div class="term-name">Tokenization</div>
+      <div class="term-def">Breaking text into smaller units (tokens) that a model can process. "unhappy" might become ["un", "happy"]. Most LLMs use subword tokenization — roughly 1 token ≈ ¾ of a word.</div>
+      <div class="term-chapter">→ <a href="chapter2.html">Chapter 2</a></div>
+    </div>
+
+    <div class="term-card" data-cat="architecture" style="--term-color:#06b6d4">
+      <div class="term-tag">ARCHITECTURE</div>
+      <div class="term-name">Embedding</div>
+      <div class="term-def">Converting tokens (or images, or audio) into vectors of numbers in a high-dimensional space where similar things sit close together. "King" and "Queen" are far from "Table" but close to each other.</div>
+      <div class="term-chapter">→ <a href="chapter2.html">Chapter 2</a></div>
+    </div>
+
+    <div class="term-card" data-cat="architecture" style="--term-color:#06b6d4">
+      <div class="term-tag">ARCHITECTURE</div>
+      <div class="term-name">Attention / Self-Attention</div>
+      <div class="term-def">A mechanism that lets every token look at every other token and decide what's most relevant. When processing "it" in a sentence, attention figures out what "it" refers to by weighing all the other words.</div>
+      <div class="term-chapter">→ <a href="chapter2.html">Chapter 2</a></div>
+    </div>
+
+    <div class="term-card" data-cat="architecture" style="--term-color:#06b6d4">
+      <div class="term-tag">ARCHITECTURE</div>
+      <div class="term-name">Transformer</div>
+      <div class="term-def">The architecture behind almost every modern AI model. Introduced in "Attention is All You Need" (2017). Stacks of attention layers that process entire sequences in parallel — far more efficient than older RNNs.</div>
+      <div class="term-chapter">→ <a href="chapter2.html">Chapter 2</a></div>
+    </div>
+
+    <!-- LLMs -->
+    <div class="term-card" data-cat="architecture" style="--term-color:#f59e0b">
+      <div class="term-tag">LARGE LANGUAGE MODELS</div>
+      <div class="term-name">LLM</div>
+      <div class="term-def">Large Language Model. A transformer trained on massive text datasets to predict the next token. GPT, Claude, Gemini, Llama are all LLMs. "Large" refers to the number of parameters (weights).</div>
+      <div class="term-chapter">→ <a href="chapter3.html">Chapter 3</a></div>
+    </div>
+
+    <div class="term-card" data-cat="architecture" style="--term-color:#f59e0b">
+      <div class="term-tag">LARGE LANGUAGE MODELS</div>
+      <div class="term-name">Context Window</div>
+      <div class="term-def">The maximum amount of text an LLM can "see" at once (its working memory). GPT-4 has ~128K tokens; Claude 3 up to 200K. Text outside the window is forgotten entirely.</div>
+      <div class="term-chapter">→ <a href="chapter3.html">Chapter 3</a></div>
+    </div>
+
+    <div class="term-card" data-cat="architecture" style="--term-color:#f59e0b">
+      <div class="term-tag">LARGE LANGUAGE MODELS</div>
+      <div class="term-name">Temperature</div>
+      <div class="term-def">A setting (0–2) that controls how random an LLM's outputs are. Temperature 0 = deterministic (always picks the most likely next token). Temperature 1+ = creative but sometimes chaotic.</div>
+      <div class="term-chapter">→ <a href="chapter3.html">Chapter 3</a></div>
+    </div>
+
+    <div class="term-card" data-cat="architecture" style="--term-color:#f59e0b">
+      <div class="term-tag">LARGE LANGUAGE MODELS</div>
+      <div class="term-name">Hallucination</div>
+      <div class="term-def">When an LLM confidently states something false. Happens because LLMs predict plausible text, not verified facts. The model has no internal "truth checker" — it generates the most statistically likely continuation.</div>
+      <div class="term-chapter">→ <a href="chapter3.html">Chapter 3</a></div>
+    </div>
+
+    <!-- TRAINING -->
+    <div class="term-card" data-cat="training" style="--term-color:#10b981">
+      <div class="term-tag">TRAINING</div>
+      <div class="term-name">Fine-Tuning</div>
+      <div class="term-def">Taking a pre-trained model and continuing to train it on a smaller, task-specific dataset. You keep most of the pre-trained knowledge but specialize the model for your use case.</div>
+      <div class="term-chapter">→ <a href="chapter4.html">Chapter 4</a></div>
+    </div>
+
+    <div class="term-card" data-cat="training" style="--term-color:#10b981">
+      <div class="term-tag">TRAINING</div>
+      <div class="term-name">RLHF</div>
+      <div class="term-def">Reinforcement Learning from Human Feedback. Humans rank model outputs, those rankings train a reward model, and then the LLM is tuned to maximize that reward. How ChatGPT became helpful instead of just predicting text.</div>
+      <div class="term-chapter">→ <a href="chapter4.html">Chapter 4</a></div>
+    </div>
+
+    <div class="term-card" data-cat="training" style="--term-color:#10b981">
+      <div class="term-tag">TRAINING</div>
+      <div class="term-name">LoRA</div>
+      <div class="term-def">Low-Rank Adaptation. A parameter-efficient fine-tuning method that adds small trainable matrices to each layer instead of updating all billions of weights. 100× cheaper than full fine-tuning, nearly the same result.</div>
+      <div class="term-chapter">→ <a href="chapter4.html">Chapter 4</a></div>
+    </div>
+
+    <div class="term-card" data-cat="training" style="--term-color:#10b981">
+      <div class="term-tag">TRAINING</div>
+      <div class="term-name">Quantization</div>
+      <div class="term-def">Reducing the precision of a model's weights (e.g. 32-bit floats → 4-bit integers) to shrink memory usage and speed up inference. Makes it possible to run large models on a laptop GPU.</div>
+      <div class="term-chapter">→ <a href="chapter4.html">Chapter 4</a></div>
+    </div>
+
+    <!-- SYSTEMS -->
+    <div class="term-card" data-cat="systems" style="--term-color:#f43f5e">
+      <div class="term-tag">SYSTEMS</div>
+      <div class="term-name">Prompt Engineering</div>
+      <div class="term-def">The practice of crafting inputs to AI models to get better outputs. Techniques include few-shot examples, chain-of-thought instructions, role assignment, and output format specification.</div>
+      <div class="term-chapter">→ <a href="chapter5.html">Chapter 5</a></div>
+    </div>
+
+    <div class="term-card" data-cat="systems" style="--term-color:#f43f5e">
+      <div class="term-tag">SYSTEMS</div>
+      <div class="term-name">RAG</div>
+      <div class="term-def">Retrieval-Augmented Generation. Instead of relying solely on training data, the model retrieves relevant documents at inference time and uses them as context. Reduces hallucination and adds up-to-date knowledge.</div>
+      <div class="term-chapter">→ <a href="chapter5.html">Chapter 5</a></div>
+    </div>
+
+    <div class="term-card" data-cat="systems" style="--term-color:#f43f5e">
+      <div class="term-tag">SYSTEMS</div>
+      <div class="term-name">Vector Database</div>
+      <div class="term-def">A database optimized for storing and searching embeddings (high-dimensional vectors). Used in RAG pipelines to find the most semantically similar documents to a query. Examples: Pinecone, Weaviate, pgvector.</div>
+      <div class="term-chapter">→ <a href="chapter5.html">Chapter 5</a></div>
+    </div>
+
+    <div class="term-card" data-cat="systems" style="--term-color:#f43f5e">
+      <div class="term-tag">SYSTEMS</div>
+      <div class="term-name">AI Agent</div>
+      <div class="term-def">An LLM given access to tools (search, code execution, APIs, file system) and a feedback loop so it can plan multi-step tasks, take actions, observe results, and adjust — rather than just responding once.</div>
+      <div class="term-chapter">→ <a href="chapter5.html">Chapter 5</a></div>
+    </div>
+
+    <div class="term-card" data-cat="systems" style="--term-color:#f43f5e">
+      <div class="term-tag">SYSTEMS</div>
+      <div class="term-name">Diffusion Model</div>
+      <div class="term-def">An image generation technique that adds random noise to training images step-by-step, then trains a model to reverse that process. At inference, start from pure noise and denoise toward a coherent image. Powers DALL-E, Midjourney, Stable Diffusion.</div>
+      <div class="term-chapter">→ <a href="chapter5.html">Chapter 5</a></div>
+    </div>
+
+    <!-- ETHICS -->
+    <div class="term-card" data-cat="ethics" style="--term-color:#ec4899">
+      <div class="term-tag">ETHICS</div>
+      <div class="term-name">AI Bias</div>
+      <div class="term-def">When an AI system produces systematically unfair or prejudiced results for certain groups. Usually caused by biased training data or flawed objective functions. Can affect hiring, lending, healthcare, and more.</div>
+      <div class="term-chapter">→ <a href="chapter6.html">Chapter 6</a></div>
+    </div>
+
+    <div class="term-card" data-cat="ethics" style="--term-color:#ec4899">
+      <div class="term-tag">ETHICS</div>
+      <div class="term-name">AI Alignment</div>
+      <div class="term-def">The challenge of making AI systems do what humans actually intend, not just what was literally specified. A misaligned AI might achieve its stated goal in ways that violate human values or cause unintended harm.</div>
+      <div class="term-chapter">→ <a href="chapter6.html">Chapter 6</a></div>
+    </div>
+
+    <div class="term-card" data-cat="ethics" style="--term-color:#ec4899">
+      <div class="term-tag">ETHICS</div>
+      <div class="term-name">Red Teaming</div>
+      <div class="term-def">Deliberately trying to break or find harmful outputs in an AI system before it's deployed. Teams attempt jailbreaks, adversarial prompts, and edge cases to surface safety failures. Standard practice at major AI labs.</div>
+      <div class="term-chapter">→ <a href="chapter6.html">Chapter 6</a></div>
+    </div>
+
+    <div class="term-card" data-cat="ethics" style="--term-color:#ec4899">
+      <div class="term-tag">ETHICS</div>
+      <div class="term-name">Constitutional AI</div>
+      <div class="term-def">Anthropic's approach where the AI critiques its own outputs against a set of written principles (the "constitution") before responding. Reduces the need for human labellers while still aligning behaviour.</div>
+      <div class="term-chapter">→ <a href="chapter6.html">Chapter 6</a></div>
+    </div>
+
+    <!-- FUTURE -->
+    <div class="term-card" data-cat="future" style="--term-color:#8b5cf6">
+      <div class="term-tag">FUTURE</div>
+      <div class="term-name">Multimodal AI</div>
+      <div class="term-def">AI that can process and generate multiple types of data simultaneously — text, images, audio, and video. GPT-4V, Gemini, and Claude 3 are multimodal. The transformer architecture scales to all of these.</div>
+      <div class="term-chapter">→ <a href="chapter7.html">Chapter 7</a></div>
+    </div>
+
+    <div class="term-card" data-cat="future" style="--term-color:#8b5cf6">
+      <div class="term-tag">FUTURE</div>
+      <div class="term-name">Foundation Model</div>
+      <div class="term-def">A very large model trained on broad data that can be adapted (fine-tuned) for many downstream tasks. GPT-4, Claude, Gemini are all foundation models. The "general" model that specialists are built on top of.</div>
+      <div class="term-chapter">→ <a href="chapter7.html">Chapter 7</a></div>
+    </div>
+
+    <div class="term-card" data-cat="future" style="--term-color:#8b5cf6">
+      <div class="term-tag">FUTURE</div>
+      <div class="term-name">AGI</div>
+      <div class="term-def">Artificial General Intelligence — a hypothetical AI that can perform any cognitive task a human can, at or above human level. No consensus on whether or when it will exist. The timeline is genuinely contested among experts.</div>
+      <div class="term-chapter">→ <a href="chapter7.html">Chapter 7</a></div>
+    </div>
+
+    <div class="term-card" data-cat="future" style="--term-color:#8b5cf6">
+      <div class="term-tag">FUTURE</div>
+      <div class="term-name">Agentic AI</div>
+      <div class="term-def">AI systems that act autonomously over long time horizons — using tools, browsing the web, writing code, spawning sub-agents — to complete complex multi-step tasks with minimal human oversight.</div>
+      <div class="term-chapter">→ <a href="chapter7.html">Chapter 7</a></div>
+    </div>
+
+  </div>
+  <div class="no-results" id="noResults">No terms match "<span id="noResultsTerm"></span>" — try a different search.</div>
+</div>
+
+<footer>
+  <p>Made with 🧠 for curious minds &nbsp;|&nbsp; <span>AI Basics</span> — No PhD required &nbsp;|&nbsp; <a href="index.html" style="color:var(--accent2);text-decoration:none;">← Back to Chapters</a></p>
+</footer>
+
+<script>
+  // Theme toggle
+  function toggleTheme() {
+    const light = document.body.classList.toggle('light');
+    localStorage.setItem('aibasics_theme', light ? 'light' : 'dark');
+    document.getElementById('themeBtn').textContent = light ? '☀️' : '🌙';
+  }
+  if (localStorage.getItem('aibasics_theme') === 'light') {
+    document.body.classList.add('light');
+    const _b = document.getElementById('themeBtn'); if (_b) _b.textContent = '☀️';
+  }
+
+  let activeCategory = 'all';
+
+  function filterTerms() {
+    applyFilters();
+  }
+
+  function filterCat(btn, cat) {
+    document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    activeCategory = cat;
+    applyFilters();
+  }
+
+  function applyFilters() {
+    const query = document.getElementById('glossarySearch').value.toLowerCase().trim();
+    const cards = document.querySelectorAll('.term-card');
+    let visible = 0;
+    cards.forEach(card => {
+      const catMatch = activeCategory === 'all' || card.dataset.cat === activeCategory;
+      const textMatch = !query || card.textContent.toLowerCase().includes(query);
+      const show = catMatch && textMatch;
+      card.toggleAttribute('hidden', !show);
+      if (show) visible++;
+    });
+    const total = cards.length;
+    document.getElementById('resultCount').textContent =
+      visible === total ? `Showing all ${total} terms` : `Showing ${visible} of ${total} terms`;
+    const noResults = document.getElementById('noResults');
+    const noResultsTerm = document.getElementById('noResultsTerm');
+    if (visible === 0) {
+      noResults.style.display = 'block';
+      noResultsTerm.textContent = query || activeCategory;
+    } else {
+      noResults.style.display = 'none';
+    }
+  }
+</script>
+</body>
+</html>

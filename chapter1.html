@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chapter 1: Neural Networks 🧠 — AI Basics</title>
+  <meta name="description" content="Learn how neural networks and transfer learning work — explained simply with interactive demos.">
+  <meta property="og:title" content="Chapter 1: Neural Networks & Transfer Learning — AI Basics">
+  <meta property="og:description" content="How AI brains are built — layers, neurons, weights, and why nobody trains from scratch anymore.">
+  <meta property="og:type" content="article">
+  <meta property="og:image" content="https://YOUR-CLOUDFRONT-DOMAIN/og-cover.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0a0a0f; --surface: #12121a; --card: #1a1a28;
+      --accent: #7c3aed; --accent2: #a78bfa; --accent3: #c4b5fd;
+      --text: #f0f0ff; --muted: #8888aa;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { background:var(--bg); color:var(--text); font-family:'Inter',sans-serif; overflow-x:hidden; }
+
+    /* NAV */
+    nav {
+      position: sticky; top:0; z-index:100;
+      background: rgba(10,10,15,0.85);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      padding: 1rem 2rem;
+      display: flex; align-items: center; gap: 1.5rem;
+      flex-wrap: wrap;
+    }
+    .nav-home { text-decoration:none; color:var(--muted); font-size:0.8rem; transition:color 0.2s; }
+    .nav-home:hover { color:var(--text); }
+    .nav-sep { color: rgba(255,255,255,0.15); }
+    .nav-current { color: var(--accent2); font-size:0.8rem; }
+    .nav-links { margin-left: auto; display:flex; gap:0.75rem; }
+    .nav-pill {
+      padding:0.35rem 0.9rem; border-radius:100px;
+      font-size:0.7rem; text-decoration:none; color:var(--muted);
+      border:1px solid rgba(255,255,255,0.08);
+      transition:all 0.2s;
+    }
+    .nav-pill:hover { border-color:var(--accent); color:var(--accent2); }
+    .nav-pill.next { background:var(--accent); color:white; border-color:var(--accent); }
+    .nav-pill.next:hover { background:var(--accent2); }
+
+    /* HERO */
+    .chapter-hero {
+      padding: 5rem 2rem 3rem;
+      max-width: 900px; margin: 0 auto;
+      position: relative;
+    }
+    .chapter-num {
+      color:var(--accent2); font-size:0.75rem; letter-spacing:0.2em; margin-bottom:1rem;
+    }
+    .chapter-title {
+      font-family:'Syne',sans-serif; font-size:clamp(2.5rem,7vw,5rem);
+      font-weight:800; line-height:1.05; margin-bottom:1.5rem;
+    }
+    .chapter-title span {
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+    }
+    .chapter-intro { color:var(--muted); font-size:0.95rem; line-height:1.9; max-width:640px; }
+    .progress-bar {
+      height:3px; background:rgba(255,255,255,0.06); border-radius:100px;
+      margin:3rem 2rem 0; max-width:900px; margin-left:auto; margin-right:auto;
+    }
+    .progress-fill {
+      height:100%; border-radius:100px;
+      background:linear-gradient(90deg, var(--accent), var(--accent2));
+      width: 20%; transition:width 1s ease;
+    }
+
+    /* CONTENT */
+    .content { max-width:900px; margin:0 auto; padding:3rem 2rem 6rem; }
+
+    /* CONCEPT CARD */
+    .concept {
+      background:var(--card);
+      border:1px solid rgba(255,255,255,0.07);
+      border-radius:20px;
+      padding:2.5rem;
+      margin-bottom:3rem;
+      position:relative;
+      overflow:hidden;
+    }
+    .concept::before {
+      content:'';
+      position:absolute; top:0; left:0; right:0; height:3px;
+      background:linear-gradient(90deg, var(--accent), var(--accent2));
+    }
+    .concept-header { display:flex; align-items:center; gap:1rem; margin-bottom:1.5rem; flex-wrap:wrap; }
+    .concept-num {
+      background:linear-gradient(135deg,var(--accent),var(--accent2));
+      width:40px; height:40px; border-radius:12px;
+      display:flex; align-items:center; justify-content:center;
+      font-family:'Syne',sans-serif; font-weight:800; font-size:1rem;
+      flex-shrink:0;
+    }
+    .concept-name { font-family:'Syne',sans-serif; font-size:1.6rem; font-weight:700; }
+    .concept-body { font-size:0.88rem; color:#d0d0e8; line-height:2; }
+    .concept-body p { margin-bottom:1rem; }
+    .concept-body strong { color:var(--accent2); font-weight:700; }
+    .concept-body em { color:var(--accent3); font-style:normal; }
+
+    /* ANALOGY BOX */
+    .analogy {
+      background:rgba(124,58,237,0.12);
+      border:1px solid rgba(124,58,237,0.3);
+      border-radius:12px;
+      padding:1.5rem;
+      margin:1.5rem 0;
+      display:flex; gap:1rem; align-items:flex-start;
+    }
+    .analogy-icon { font-size:1.8rem; flex-shrink:0; }
+    .analogy-content { font-size:0.85rem; line-height:1.8; color:var(--accent3); }
+    .analogy-content strong { color: #e9d5ff; }
+
+    /* KEY POINT */
+    .key-point {
+      background:rgba(6,182,212,0.1);
+      border-left:3px solid #06b6d4;
+      padding:1rem 1.5rem;
+      margin:1.5rem 0;
+      border-radius:0 10px 10px 0;
+      font-size:0.85rem;
+      color:#a5f3fc;
+      line-height:1.7;
+    }
+
+    /* INTERACTIVE: NEURAL NET VISUALISER */
+    .interactive-box {
+      background:var(--surface);
+      border:1px solid rgba(124,58,237,0.25);
+      border-radius:20px;
+      padding:2rem;
+      margin:2rem 0;
+    }
+    .interactive-title {
+      font-family:'Syne',sans-serif; font-size:1rem; font-weight:700;
+      color:var(--accent2); margin-bottom:1rem;
+      display:flex; align-items:center; gap:0.5rem;
+    }
+    .interactive-title::before { content:'⚡'; }
+    canvas { width:100%; border-radius:12px; display:block; }
+
+    /* LAYER FLOW */
+    .layer-flow {
+      display:flex; align-items:center; gap:0; margin:1.5rem 0; flex-wrap:wrap; justify-content:center;
+    }
+    .layer-box {
+      background:rgba(255,255,255,0.05);
+      border:1px solid rgba(255,255,255,0.1);
+      border-radius:12px;
+      padding:1rem 1.5rem;
+      text-align:center;
+      flex:1; min-width:120px; max-width:180px;
+      transition:all 0.3s;
+      cursor:pointer;
+    }
+    .layer-box:hover { border-color:var(--accent); background:rgba(124,58,237,0.15); transform:translateY(-4px); }
+    .layer-box.active { border-color:var(--accent); background:rgba(124,58,237,0.25); }
+    .layer-emoji { font-size:1.8rem; display:block; margin-bottom:0.3rem; }
+    .layer-name { font-size:0.7rem; color:var(--muted); margin-bottom:0.2rem; }
+    .layer-desc { font-size:0.65rem; color:var(--accent3); display:none; }
+    .layer-box.active .layer-desc { display:block; }
+    .layer-arrow { color:var(--accent2); font-size:1.5rem; padding:0 0.5rem; flex-shrink:0; }
+
+    /* GIF */
+    .gif-container {
+      background: var(--surface);
+      border:1px solid rgba(255,255,255,0.07);
+      border-radius:16px;
+      padding:1.5rem;
+      margin:1.5rem 0;
+      text-align:center;
+    }
+    .gif-placeholder {
+      background: linear-gradient(135deg, rgba(124,58,237,0.2), rgba(6,182,212,0.1));
+      border-radius:12px;
+      height:200px;
+      display:flex; flex-direction:column; align-items:center; justify-content:center;
+      gap:1rem;
+    }
+    .gif-placeholder .big-emoji { font-size:4rem; animation:pulse 2s ease-in-out infinite; }
+    @keyframes pulse { 0%,100%{transform:scale(1);} 50%{transform:scale(1.1);} }
+    .gif-caption { font-size:0.75rem; color:var(--muted); margin-top:0.75rem; }
+
+    /* WEIGHT SLIDER */
+    .weight-demo {
+      background:rgba(255,255,255,0.04);
+      border-radius:12px;
+      padding:1.5rem;
+      margin:1rem 0;
+    }
+    .weight-demo label { font-size:0.8rem; color:var(--muted); display:block; margin-bottom:0.5rem; }
+    .weight-demo input[type=range] {
+      width:100%; accent-color:var(--accent);
+      margin-bottom:0.5rem;
+    }
+    .weight-result { font-size:0.85rem; color:var(--accent3); }
+
+    /* TRANSFER DEMO */
+    .transfer-viz {
+      display:grid; grid-template-columns:1fr auto 1fr; gap:1rem; align-items:center;
+      margin:1.5rem 0;
+    }
+    .model-box {
+      background:rgba(255,255,255,0.04);
+      border:1px solid rgba(255,255,255,0.1);
+      border-radius:14px;
+      padding:1.2rem;
+      text-align:center;
+    }
+    .model-box.pretrained { border-color:rgba(6,182,212,0.4); }
+    .model-box.finetuned { border-color:rgba(16,185,129,0.4); }
+    .model-icon { font-size:2rem; margin-bottom:0.5rem; display:block; }
+    .model-name { font-size:0.75rem; font-weight:700; }
+    .model-detail { font-size:0.65rem; color:var(--muted); margin-top:0.3rem; }
+    .transfer-arrow { font-size:2rem; color:var(--accent2); text-align:center; }
+
+    /* NAV BOTTOM */
+    .bottom-nav {
+      display:flex; justify-content:space-between; align-items:center;
+      padding:2rem; max-width:900px; margin:0 auto;
+      border-top:1px solid rgba(255,255,255,0.06);
+      flex-wrap:wrap; gap:1rem;
+    }
+    .nav-btn {
+      display:flex; align-items:center; gap:0.75rem;
+      padding:0.9rem 1.8rem; border-radius:14px;
+      text-decoration:none; color:var(--text);
+      background:var(--card); border:1px solid rgba(255,255,255,0.08);
+      font-size:0.82rem; transition:all 0.2s;
+    }
+    .nav-btn:hover { border-color:var(--accent); }
+    .nav-btn.forward { background:var(--accent); border-color:var(--accent); }
+    .nav-btn.forward:hover { background:var(--accent2); }
+    .btn-small { font-size:0.7rem; color:var(--muted); }
+
+    @keyframes slideIn { from{opacity:0;transform:translateY(20px);} to{opacity:1;transform:translateY(0);} }
+    .concept { animation: slideIn 0.5s ease both; }
+    .concept:nth-child(1) { animation-delay: 0.1s; }
+    .concept:nth-child(2) { animation-delay: 0.2s; }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-home">🏠 Home</a>
+  <span class="nav-sep">/</span>
+  <span class="nav-current">Chapter 1: Neural Networks</span>
+  <div class="nav-links">
+    <a href="index.html" class="nav-pill">All Chapters</a>
+    <a href="chapter2.html" class="nav-pill next">Next →</a>
+    <button class="theme-toggle" id="themeBtn" onclick="toggleTheme()">🌙</button>
+  </div>
+</nav>
+
+<div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
+
+<div class="chapter-hero">
+  <div class="chapter-num">// CHAPTER 01 OF 05</div>
+  <h1 class="chapter-title">Neural<br><span>Networks</span><br>& Transfer</h1>
+  <p class="chapter-intro">How AI brains are actually built — and why nobody trains from scratch anymore.</p>
+</div>
+
+<div class="content">
+
+  <!-- CONCEPT 1 -->
+  <div class="concept">
+    <div class="concept-header">
+      <div class="concept-num">1</div>
+      <div class="concept-name">Neural Networks</div>
+    </div>
+    <div class="concept-body">
+      <p>A neural network is a system of <strong>connected layers</strong> made up of tiny units called <em>neurons</em>. Think of it like a pipeline — data flows in, gets processed, and a prediction comes out.</p>
+
+      <div class="gif-container">
+        <div class="gif-placeholder">
+          <div class="big-emoji">🧠</div>
+          <div style="font-size:0.8rem;color:#8888aa;">Neural Network: Data flows through layers</div>
+        </div>
+        <div class="gif-caption">Each circle = a neuron. Lines = connections. Magic = what happens in between.</div>
+      </div>
+
+      <p>Click each layer below to see what it does 👇</p>
+    </div>
+
+    <div class="interactive-box">
+      <div class="interactive-title">Interactive: The 3-Layer Pipeline</div>
+      <div class="layer-flow" id="layers">
+        <div class="layer-box active" onclick="selectLayer(this, 'Input: Raw pixels, text, or numbers go in here first.')">
+          <span class="layer-emoji">📥</span>
+          <div class="layer-name">INPUT LAYER</div>
+          <div class="layer-desc" id="desc0"></div>
+        </div>
+        <div class="layer-arrow">→</div>
+        <div class="layer-box" onclick="selectLayer(this, 'Hidden: Multiple layers refine the data — detecting edges, then shapes, then meaning.')">
+          <span class="layer-emoji">🔮</span>
+          <div class="layer-name">HIDDEN LAYERS</div>
+          <div class="layer-desc"></div>
+        </div>
+        <div class="layer-arrow">→</div>
+        <div class="layer-box" onclick="selectLayer(this, 'Output: Final prediction! Is this a cat? Spam email? A 5-star review?')">
+          <span class="layer-emoji">📤</span>
+          <div class="layer-name">OUTPUT LAYER</div>
+          <div class="layer-desc"></div>
+        </div>
+      </div>
+      <div id="layer-info" style="margin-top:1rem;padding:1rem;background:rgba(124,58,237,0.1);border-radius:10px;font-size:0.82rem;color:#c4b5fd;min-height:48px;">
+        👆 Click a layer to see what it does!
+      </div>
+    </div>
+
+    <div class="concept-body">
+      <p>For an image model, it goes roughly like this:</p>
+      <div style="background:rgba(255,255,255,0.04);border-radius:10px;padding:1rem;margin:1rem 0;font-size:0.82rem;text-align:center;">
+        <strong style="color:#a78bfa">Pixels</strong> → <strong style="color:#06b6d4">Edges & Textures</strong> → <strong style="color:#f59e0b">Shapes & Patterns</strong> → <strong style="color:#10b981">Actual Objects 🐱</strong>
+      </div>
+      <p>Now here's the key part: every connection has a <strong>weight</strong> — a tiny "importance score". Training a neural network is literally just <em>adjusting these weights</em> until the model gets accurate.</p>
+
+      <div class="weight-demo">
+        <label>Drag to see how a weight affects neuron influence 👇</label>
+        <input type="range" min="0" max="100" value="50" id="weight-slider" oninput="updateWeight(this.value)">
+        <div class="weight-result" id="weight-result">Weight = 0.50 → Moderate influence on the next neuron</div>
+      </div>
+
+      <div class="key-point">
+        💡 Modern AI models have <strong>billions of weights</strong>. Training = adjusting all of them until outputs make sense. GPT-4 reportedly has over a trillion parameters!
+      </div>
+    </div>
+  </div>
+
+  <!-- CONCEPT 2 -->
+  <div class="concept">
+    <div class="concept-header">
+      <div class="concept-num">2</div>
+      <div class="concept-name">Transfer Learning</div>
+    </div>
+    <div class="concept-body">
+      <p>Training from scratch needs massive data, huge compute, and tons of time. <strong>Transfer learning</strong> is the shortcut that changed everything.</p>
+
+      <div class="analogy">
+        <div class="analogy-icon">🚲</div>
+        <div class="analogy-content">
+          <strong>The bike → motorcycle analogy:</strong> Already know how to ride a bicycle? Learning a motorcycle is way easier — you're not starting from zero, you're adapting what you already know. Transfer learning works exactly like this.
+        </div>
+      </div>
+
+      <div class="transfer-viz">
+        <div class="model-box pretrained">
+          <span class="model-icon">🌍</span>
+          <div class="model-name" style="color:#67e8f9">Foundation Model</div>
+          <div class="model-detail">Trained on the entire internet. Knows general patterns.</div>
+        </div>
+        <div class="transfer-arrow">+<br>🎯<br>fine-tune</div>
+        <div class="model-box finetuned">
+          <span class="model-icon">⚕️</span>
+          <div class="model-name" style="color:#6ee7b7">Medical AI</div>
+          <div class="model-detail">Same brain, now specialist. Trained on medical records.</div>
+        </div>
+      </div>
+
+      <p>This is how <strong>most modern AI actually works</strong>. Big labs train massive foundation models once, then developers adapt them for specific tasks. That's why you can build powerful AI without needing billions of data points.</p>
+
+      <div class="key-point">
+        💡 When you use ChatGPT, Claude, or Gemini — you're using a foundation model that was trained once and then fine-tuned many times for different use cases.
+      </div>
+    </div>
+
+    <div class="interactive-box">
+      <div class="interactive-title">Quick Check — Click the correct answer:</div>
+      <p style="font-size:0.85rem;margin-bottom:1rem;color:#d0d0e8;">What does "Transfer Learning" mean in AI?</p>
+      <div id="quiz-opts" style="display:flex;flex-direction:column;gap:0.75rem;">
+        <button class="quiz-opt" onclick="checkQ(this, false)" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:var(--text);padding:0.9rem 1.2rem;border-radius:10px;text-align:left;cursor:pointer;font-family:'Inter',sans-serif;font-size:0.8rem;transition:all 0.2s;">
+          A) Copying data from one computer to another
+        </button>
+        <button class="quiz-opt" onclick="checkQ(this, true)" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:var(--text);padding:0.9rem 1.2rem;border-radius:10px;text-align:left;cursor:pointer;font-family:'Inter',sans-serif;font-size:0.8rem;transition:all 0.2s;">
+          B) Using a pre-trained model as a starting point for a new task
+        </button>
+        <button class="quiz-opt" onclick="checkQ(this, false)" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:var(--text);padding:0.9rem 1.2rem;border-radius:10px;text-align:left;cursor:pointer;font-family:'Inter',sans-serif;font-size:0.8rem;transition:all 0.2s;">
+          C) Moving a neural network to a faster GPU
+        </button>
+      </div>
+      <div id="quiz-feedback" style="margin-top:1rem;font-size:0.82rem;min-height:24px;"></div>
+    </div>
+  </div>
+
+</div>
+
+<div class="bottom-nav">
+  <a href="index.html" class="nav-btn">
+    <span>🏠</span>
+    <div><div class="btn-small">Back to</div>Home</div>
+  </a>
+  <div style="text-align:center;font-size:0.75rem;color:var(--muted);">
+    <div style="color:var(--accent2);font-weight:700;margin-bottom:0.2rem;">Chapter 1 Complete! 🎉</div>
+    2 concepts down
+  </div>
+  <a href="chapter2.html" class="nav-btn forward">
+    <div><div class="btn-small">Up next</div>Transformer Stack</div>
+    <span>→</span>
+  </a>
+</div>
+
+<script>
+  // Theme toggle
+  function toggleTheme() {
+    const light = document.body.classList.toggle('light');
+    localStorage.setItem('aibasics_theme', light ? 'light' : 'dark');
+    document.getElementById('themeBtn').textContent = light ? '☀️' : '🌙';
+  }
+  if (localStorage.getItem('aibasics_theme') === 'light') {
+    document.body.classList.add('light');
+    const _b = document.getElementById('themeBtn'); if (_b) _b.textContent = '☀️';
+  }
+  // Progress bar + chapter 1 completion
+  let _done = false;
+  window.addEventListener('scroll', () => {
+    const p = (window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100;
+    document.getElementById('progress').style.width = Math.min(p, 100) + '%';
+    if (p >= 85 && !_done) { _done = true; localStorage.setItem('aibasics_ch1_complete', '1'); }
+  });
+
+  // layer selector
+  function selectLayer(el, msg) {
+    document.querySelectorAll('.layer-box').forEach(b => {
+      b.classList.remove('active');
+      b.querySelector('.layer-desc').style.display = 'none';
+    });
+    el.classList.add('active');
+    el.querySelector('.layer-desc').style.display = 'block';
+    document.getElementById('layer-info').textContent = '💡 ' + msg;
+  }
+
+  // weight slider
+  function updateWeight(val) {
+    const w = (val / 100).toFixed(2);
+    const msgs = {
+      low: 'Low weight → This neuron barely influences the next one',
+      mid: 'Medium weight → Moderate influence on the next neuron',
+      high: 'High weight → This neuron strongly drives the next one!',
+    };
+    const type = val < 33 ? 'low' : val < 66 ? 'mid' : 'high';
+    document.getElementById('weight-result').textContent = `Weight = ${w} → ${msgs[type]}`;
+  }
+
+  // quiz
+  function checkQ(btn, correct) {
+    const opts = document.querySelectorAll('.quiz-opt');
+    opts.forEach(o => { o.disabled = true; o.style.opacity = '0.5'; });
+    btn.style.opacity = '1';
+    if (correct) {
+      btn.style.background = 'rgba(16,185,129,0.25)';
+      btn.style.borderColor = '#10b981';
+      document.getElementById('quiz-feedback').innerHTML = '<span style="color:#10b981">✅ Correct! Transfer learning = building on existing knowledge instead of starting from scratch.</span>';
+    } else {
+      btn.style.background = 'rgba(244,63,94,0.25)';
+      btn.style.borderColor = '#f43f5e';
+      document.getElementById('quiz-feedback').innerHTML = '<span style="color:#f43f5e">❌ Not quite. Think about the bicycle analogy...</span>';
+      setTimeout(() => {
+        opts.forEach(o => { o.disabled = false; o.style.opacity = '1'; o.style.background='rgba(255,255,255,0.04)'; o.style.borderColor='rgba(255,255,255,0.1)'; });
+        document.getElementById('quiz-feedback').innerHTML = '';
+        btn.style.background='rgba(244,63,94,0.15)'; btn.style.borderColor='rgba(244,63,94,0.3)';
+      }, 2000);
+    }
+  }
+</script>
+</body>
+</html>

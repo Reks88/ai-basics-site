@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chapter 2: The Transformer Stack 🔤 — AI Basics</title>
+  <meta name="description" content="Understand tokenization, embeddings, attention, and transformers — the four ideas that unlocked modern AI.">
+  <meta property="og:title" content="Chapter 2: Transformers — AI Basics">
+  <meta property="og:description" content="Tokenization → Embeddings → Attention → Transformer. Four ideas that unlocked modern AI.">
+  <meta property="og:type" content="article">
+  <meta property="og:image" content="https://YOUR-CLOUDFRONT-DOMAIN/og-cover.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:#0a0a0f; --surface:#12121a; --card:#1a1a28;
+      --accent:#06b6d4; --accent2:#67e8f9; --accent3:#cffafe;
+      --text:#f0f0ff; --muted:#8888aa;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    /* LIGHT MODE */
+    body.light { --bg:#f5f5ff; --surface:#ebebf5; --card:#ffffff; --text:#0a0a20; --muted:#55557a; }
+    body.light nav { background:rgba(240,240,250,0.92) !important; border-bottom-color:rgba(0,0,0,0.08); }
+    body.light .concept { box-shadow:0 4px 20px rgba(0,0,0,0.05); border-color:rgba(0,0,0,0.08); }
+    body.light .analogy { background:rgba(6,182,212,0.07); }
+    body.light .key-point { background:rgba(6,182,212,0.07); }
+    body.light .interactive-box { background:rgba(0,0,0,0.03); }
+    /* THEME TOGGLE */
+    .theme-toggle { background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.1); border-radius:100px; padding:0.3rem 0.8rem; cursor:pointer; font-size:0.85rem; color:var(--muted); transition:all 0.2s; }
+    .theme-toggle:hover { background:rgba(255,255,255,0.14); color:var(--text); }
+    body.light .theme-toggle { background:rgba(0,0,0,0.05); border-color:rgba(0,0,0,0.1); }
+    body { background:var(--bg); color:var(--text); font-family:'Inter',sans-serif; overflow-x:hidden; }
+    nav {
+      position:sticky; top:0; z-index:100;
+      background:rgba(10,10,15,0.85); backdrop-filter:blur(20px);
+      border-bottom:1px solid rgba(255,255,255,0.06);
+      padding:1rem 2rem; display:flex; align-items:center; gap:1.5rem; flex-wrap:wrap;
+    }
+    .nav-home { text-decoration:none; color:var(--muted); font-size:0.8rem; transition:color 0.2s; }
+    .nav-home:hover { color:var(--text); }
+    .nav-sep { color:rgba(255,255,255,0.15); }
+    .nav-current { color:var(--accent2); font-size:0.8rem; }
+    .nav-links { margin-left:auto; display:flex; gap:0.75rem; }
+    .nav-pill { padding:0.35rem 0.9rem; border-radius:100px; font-size:0.7rem; text-decoration:none; color:var(--muted); border:1px solid rgba(255,255,255,0.08); transition:all 0.2s; }
+    .nav-pill:hover { border-color:var(--accent); color:var(--accent2); }
+    .nav-pill.next { background:var(--accent); color:#0a0a0f; border-color:var(--accent); }
+    .progress-bar { height:3px; background:rgba(255,255,255,0.06); }
+    .progress-fill { height:100%; background:linear-gradient(90deg,var(--accent),var(--accent2)); width:40%; transition:width 1s; }
+    .chapter-hero { padding:5rem 2rem 3rem; max-width:900px; margin:0 auto; }
+    .chapter-num { color:var(--accent2); font-size:0.75rem; letter-spacing:0.2em; margin-bottom:1rem; }
+    .chapter-title { font-family:'Syne',sans-serif; font-size:clamp(2.5rem,7vw,5rem); font-weight:800; line-height:1.05; margin-bottom:1.5rem; }
+    .chapter-title span { background:linear-gradient(90deg,var(--accent),#7c3aed); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+    .chapter-intro { color:var(--muted); font-size:0.95rem; line-height:1.9; max-width:640px; }
+    .content { max-width:900px; margin:0 auto; padding:3rem 2rem 6rem; }
+    .concept { background:var(--card); border:1px solid rgba(255,255,255,0.07); border-radius:20px; padding:2.5rem; margin-bottom:3rem; position:relative; overflow:hidden; animation:slideIn 0.5s ease both; }
+    .concept::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background:linear-gradient(90deg,var(--accent),var(--accent2)); }
+    .concept:nth-child(2) { animation-delay:0.1s; }
+    .concept:nth-child(3) { animation-delay:0.2s; }
+    .concept:nth-child(4) { animation-delay:0.3s; }
+    @keyframes slideIn { from{opacity:0;transform:translateY(20px);} to{opacity:1;transform:translateY(0);} }
+    .concept-header { display:flex; align-items:center; gap:1rem; margin-bottom:1.5rem; flex-wrap:wrap; }
+    .concept-num { background:linear-gradient(135deg,var(--accent),#7c3aed); width:40px; height:40px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-family:'Syne',sans-serif; font-weight:800; font-size:1rem; flex-shrink:0; color:#0a0a0f; }
+    .concept-name { font-family:'Syne',sans-serif; font-size:1.6rem; font-weight:700; }
+    .concept-body { font-size:0.88rem; color:#d0d0e8; line-height:2; }
+    .concept-body p { margin-bottom:1rem; }
+    .concept-body strong { color:var(--accent2); }
+    .concept-body em { color:var(--accent3); }
+    .analogy { background:rgba(6,182,212,0.1); border:1px solid rgba(6,182,212,0.25); border-radius:12px; padding:1.5rem; margin:1.5rem 0; display:flex; gap:1rem; align-items:flex-start; }
+    .analogy-icon { font-size:1.8rem; flex-shrink:0; }
+    .analogy-content { font-size:0.85rem; line-height:1.8; color:var(--accent3); }
+    .analogy-content strong { color:#cffafe; }
+    .key-point { background:rgba(124,58,237,0.1); border-left:3px solid #7c3aed; padding:1rem 1.5rem; margin:1.5rem 0; border-radius:0 10px 10px 0; font-size:0.85rem; color:#c4b5fd; line-height:1.7; }
+    .interactive-box { background:var(--surface); border:1px solid rgba(6,182,212,0.2); border-radius:20px; padding:2rem; margin:2rem 0; }
+    .interactive-title { font-family:'Syne',sans-serif; font-size:1rem; font-weight:700; color:var(--accent2); margin-bottom:1rem; display:flex; align-items:center; gap:0.5rem; }
+    .interactive-title::before { content:'⚡'; }
+
+    /* TOKENIZER */
+    .tokenizer-input { width:100%; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.12); border-radius:10px; padding:0.9rem 1.2rem; color:var(--text); font-family:'Space Mono',monospace; font-size:0.85rem; outline:none; margin-bottom:1rem; transition:border-color 0.2s; }
+    .tokenizer-input:focus { border-color:var(--accent); }
+    .tokens-display { display:flex; flex-wrap:wrap; gap:0.4rem; min-height:40px; }
+    .token-chip { background:linear-gradient(135deg,rgba(6,182,212,0.3),rgba(124,58,237,0.2)); border:1px solid rgba(6,182,212,0.4); border-radius:8px; padding:0.3rem 0.7rem; font-size:0.78rem; color:var(--accent2); animation:popIn 0.2s ease; }
+    @keyframes popIn { from{transform:scale(0.8);opacity:0;} to{transform:scale(1);opacity:1;} }
+    .token-count { font-size:0.75rem; color:var(--muted); margin-top:0.75rem; }
+
+    /* EMBEDDINGS MAP */
+    .embed-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(140px,1fr)); gap:0.75rem; margin:1rem 0; }
+    .embed-word { background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:10px; padding:0.75rem 1rem; cursor:pointer; transition:all 0.2s; text-align:center; }
+    .embed-word:hover { border-color:var(--accent); transform:translateY(-2px); }
+    .embed-word.selected { border-color:var(--accent); background:rgba(6,182,212,0.15); }
+    .embed-word.related { border-color:#10b981; background:rgba(16,185,129,0.1); }
+    .embed-word.unrelated { border-color:#f43f5e; background:rgba(244,63,94,0.08); opacity:0.5; }
+    .embed-word-text { font-size:0.9rem; font-weight:700; }
+    .embed-word-cat { font-size:0.65rem; color:var(--muted); margin-top:0.2rem; }
+    .embed-label { font-size:0.75rem; display:flex; gap:1.5rem; margin-top:0.75rem; flex-wrap:wrap; }
+    .embed-label span { display:flex; align-items:center; gap:0.4rem; }
+
+    /* ATTENTION */
+    .sentence-words { display:flex; flex-wrap:wrap; gap:0.5rem; margin:1rem 0; }
+    .s-word { background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.1); border-radius:8px; padding:0.4rem 0.9rem; font-size:0.9rem; cursor:pointer; transition:all 0.25s; }
+    .s-word:hover { border-color:var(--accent); }
+    .s-word.focus-word { background:rgba(6,182,212,0.3); border-color:var(--accent); color:#cffafe; font-weight:700; }
+    .s-word.high-attn { background:rgba(245,158,11,0.3); border-color:#f59e0b; color:#fde68a; }
+    .s-word.low-attn { opacity:0.4; }
+    .attn-explain { font-size:0.82rem; color:var(--muted); margin-top:0.75rem; min-height:40px; line-height:1.7; }
+
+    /* TRANSFORMER LAYERS VIZ */
+    .transformer-stack { display:flex; flex-direction:column; gap:0.5rem; margin:1.5rem 0; }
+    .t-layer { background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:10px; padding:1rem 1.5rem; display:flex; align-items:center; gap:1rem; cursor:pointer; transition:all 0.2s; }
+    .t-layer:hover, .t-layer.active { border-color:var(--accent); background:rgba(6,182,212,0.1); }
+    .t-layer-icon { font-size:1.5rem; flex-shrink:0; }
+    .t-layer-name { font-size:0.85rem; font-weight:700; color:var(--accent2); }
+    .t-layer-desc { font-size:0.75rem; color:var(--muted); }
+    .t-layer-badge { margin-left:auto; font-size:0.65rem; padding:0.2rem 0.6rem; border-radius:100px; }
+    .badge-basic { background:rgba(6,182,212,0.2); color:var(--accent2); }
+    .badge-deep { background:rgba(245,158,11,0.2); color:#fde68a; }
+    .badge-complex { background:rgba(244,63,94,0.2); color:#fda4af; }
+
+    .bottom-nav { display:flex; justify-content:space-between; align-items:center; padding:2rem; max-width:900px; margin:0 auto; border-top:1px solid rgba(255,255,255,0.06); flex-wrap:wrap; gap:1rem; }
+    .nav-btn { display:flex; align-items:center; gap:0.75rem; padding:0.9rem 1.8rem; border-radius:14px; text-decoration:none; color:var(--text); background:var(--card); border:1px solid rgba(255,255,255,0.08); font-size:0.82rem; transition:all 0.2s; }
+    .nav-btn:hover { border-color:var(--accent); }
+    .nav-btn.forward { background:var(--accent); border-color:var(--accent); color:#0a0a0f; }
+    .nav-btn.forward:hover { background:var(--accent2); }
+    .btn-small { font-size:0.7rem; color:var(--muted); }
+    .nav-btn.forward .btn-small { color:rgba(0,0,0,0.5); }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-home">🏠 Home</a>
+  <span class="nav-sep">/</span>
+  <span class="nav-current">Chapter 2: Transformer Stack</span>
+  <div class="nav-links">
+    <a href="chapter1.html" class="nav-pill">← Ch 1</a>
+    <a href="chapter3.html" class="nav-pill next">Next →</a>
+    <button class="theme-toggle" id="themeBtn" onclick="toggleTheme()">🌙</button>
+  </div>
+</nav>
+<div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
+
+<div class="chapter-hero">
+  <div class="chapter-num">// CHAPTER 02 OF 05</div>
+  <h1 class="chapter-title">The<br><span>Transformer</span><br>Stack</h1>
+  <p class="chapter-intro">Tokenization → Embeddings → Attention → Transformer. Four ideas that unlocked modern AI.</p>
+</div>
+
+<div class="content">
+
+  <!-- CONCEPT 3 -->
+  <div class="concept">
+    <div class="concept-header">
+      <div class="concept-num">3</div>
+      <div class="concept-name">Tokenization</div>
+    </div>
+    <div class="concept-body">
+      <p>Before AI can read anything, it breaks text into tiny pieces called <strong>tokens</strong>. A token isn't always a full word — "playing" might split into "play" and "ing".</p>
+      <p>Why not just use full words? Language is messy. New words appear daily, people make typos, mix languages. Tokens let AI handle anything with a fixed set of building blocks.</p>
+    </div>
+
+    <div class="interactive-box">
+      <div class="interactive-title">Live Tokenizer — Type anything!</div>
+      <input class="tokenizer-input" id="tok-input" placeholder="Type a sentence here... e.g. Hello world!" oninput="tokenize(this.value)">
+      <div class="tokens-display" id="tokens-out"></div>
+      <div class="token-count" id="tok-count">0 tokens</div>
+    </div>
+
+    <div class="concept-body">
+      <div class="key-point">
+        💡 AI doesn't read text the way humans do. It reads <strong>tokens</strong> — and from tokens, it builds meaning step by step.
+      </div>
+    </div>
+  </div>
+
+  <!-- CONCEPT 4 -->
+  <div class="concept">
+    <div class="concept-header">
+      <div class="concept-num">4</div>
+      <div class="concept-name">Embeddings</div>
+    </div>
+    <div class="concept-body">
+      <p>Once text is tokenized, each token gets turned into a <strong>vector</strong> — basically a list of numbers that represents its meaning. The model works with numbers, not words.</p>
+      <p>Think of it as a map. Similar words live close together; different words are far apart. The model understands meaning through <em>distance and direction</em>.</p>
+    </div>
+
+    <div class="interactive-box">
+      <div class="interactive-title">Click a word — see what's nearby in "meaning space"</div>
+      <div class="embed-grid" id="embed-grid">
+        <div class="embed-word" onclick="showRelated('doctor')"><div class="embed-word-text">👨‍⚕️ doctor</div><div class="embed-word-cat">profession</div></div>
+        <div class="embed-word" onclick="showRelated('nurse')"><div class="embed-word-text">👩‍⚕️ nurse</div><div class="embed-word-cat">profession</div></div>
+        <div class="embed-word" onclick="showRelated('hospital')"><div class="embed-word-text">🏥 hospital</div><div class="embed-word-cat">place</div></div>
+        <div class="embed-word" onclick="showRelated('mountain')"><div class="embed-word-text">⛰️ mountain</div><div class="embed-word-cat">nature</div></div>
+        <div class="embed-word" onclick="showRelated('actor')"><div class="embed-word-text">🎭 actor</div><div class="embed-word-cat">profession</div></div>
+        <div class="embed-word" onclick="showRelated('actress')"><div class="embed-word-text">💃 actress</div><div class="embed-word-cat">profession</div></div>
+        <div class="embed-word" onclick="showRelated('ocean')"><div class="embed-word-text">🌊 ocean</div><div class="embed-word-cat">nature</div></div>
+        <div class="embed-word" onclick="showRelated('prince')"><div class="embed-word-text">🤴 prince</div><div class="embed-word-cat">royalty</div></div>
+      </div>
+      <div class="embed-label">
+        <span><span style="display:inline-block;width:12px;height:12px;background:rgba(6,182,212,0.4);border-radius:3px;"></span> Selected</span>
+        <span><span style="display:inline-block;width:12px;height:12px;background:rgba(16,185,129,0.3);border-radius:3px;"></span> Semantically close</span>
+        <span><span style="display:inline-block;width:12px;height:12px;background:rgba(244,63,94,0.2);border-radius:3px;"></span> Far away in meaning</span>
+      </div>
+      <div id="embed-explain" style="margin-top:1rem;font-size:0.8rem;color:var(--muted);min-height:30px;"></div>
+    </div>
+
+    <div class="concept-body">
+      <div class="key-point">
+        💡 The model doesn't think in definitions. It thinks in <strong>geometry</strong>. "actor" → "actress" follows the same pattern as "prince" → "princess". That's wild!
+      </div>
+    </div>
+  </div>
+
+  <!-- CONCEPT 5 -->
+  <div class="concept">
+    <div class="concept-header">
+      <div class="concept-num">5</div>
+      <div class="concept-name">Attention</div>
+    </div>
+    <div class="concept-body">
+      <p>A word's meaning changes depending on context. "Apple" can be a fruit or a company. Embeddings alone can't handle this — they give each word a fixed representation.</p>
+      <p><strong>Attention</strong> lets every word look at every other word and decide what matters. It's the model asking: "given everything in this sentence, what should I focus on?"</p>
+    </div>
+
+    <div class="interactive-box">
+      <div class="interactive-title">Click a word — see what the model focuses on</div>
+      <p style="font-size:0.78rem;color:var(--muted);margin-bottom:0.75rem;">Sentence: "She bought shares in Apple last week"</p>
+      <div class="sentence-words" id="sentence">
+        <div class="s-word" onclick="showAttention(this, 'She')">She</div>
+        <div class="s-word" onclick="showAttention(this, 'bought')">bought</div>
+        <div class="s-word" onclick="showAttention(this, 'shares')">shares</div>
+        <div class="s-word" onclick="showAttention(this, 'in')">in</div>
+        <div class="s-word" onclick="showAttention(this, 'Apple')">Apple</div>
+        <div class="s-word" onclick="showAttention(this, 'last')">last</div>
+        <div class="s-word" onclick="showAttention(this, 'week')">week</div>
+      </div>
+      <div class="attn-explain" id="attn-explain">👆 Click any word to see where the model focuses its attention</div>
+    </div>
+
+    <div class="concept-body">
+      <div class="key-point">
+        💡 Before attention, models read word-by-word, left to right. Attention changed that — now the model sees <strong>everything at once</strong> and decides what matters.
+      </div>
+    </div>
+  </div>
+
+  <!-- CONCEPT 6 -->
+  <div class="concept">
+    <div class="concept-header">
+      <div class="concept-num">6</div>
+      <div class="concept-name">Transformer</div>
+    </div>
+    <div class="concept-body">
+      <p>Everything — tokens, embeddings, attention — comes together in the <strong>transformer</strong>. It's the architecture that powers almost every modern AI today.</p>
+      <p>Introduced in 2017 in a paper called <em>"Attention Is All You Need"</em>. The radical idea: make attention the core mechanism, process everything in parallel.</p>
+    </div>
+
+    <div class="interactive-box">
+      <div class="interactive-title">How transformers refine understanding layer by layer</div>
+      <div class="transformer-stack">
+        <div class="t-layer" onclick="toggleLayer(this)">
+          <span class="t-layer-icon">📝</span>
+          <div><div class="t-layer-name">Early Layers</div><div class="t-layer-desc">Basic grammar and sentence structure</div></div>
+          <span class="t-layer-badge badge-basic">Surface</span>
+        </div>
+        <div class="t-layer" onclick="toggleLayer(this)">
+          <span class="t-layer-icon">🔗</span>
+          <div><div class="t-layer-name">Middle Layers</div><div class="t-layer-desc">Word relationships and context</div></div>
+          <span class="t-layer-badge badge-deep">Relationships</span>
+        </div>
+        <div class="t-layer" onclick="toggleLayer(this)">
+          <span class="t-layer-icon">🧩</span>
+          <div><div class="t-layer-name">Deep Layers</div><div class="t-layer-desc">Complex reasoning and connections</div></div>
+          <span class="t-layer-badge badge-complex">Reasoning</span>
+        </div>
+      </div>
+      <div style="margin-top:1.5rem;background:rgba(255,255,255,0.04);border-radius:10px;padding:1rem;font-size:0.8rem;text-align:center;color:var(--muted);">
+        Text → Tokens → <strong style="color:#a78bfa">Vectors</strong> → <strong style="color:var(--accent)">Attention</strong> → <strong style="color:#10b981">Understanding</strong> ✨
+      </div>
+    </div>
+
+    <div class="concept-body">
+      <div class="analogy">
+        <div class="analogy-icon">⚡</div>
+        <div class="analogy-content">
+          <strong>Why transformers are fast:</strong> Old models read text one word at a time (slow). Transformers process all tokens <strong>in parallel</strong>. That's why they can scale to billions of parameters — they use GPUs the same way you'd parallelize tasks across multiple cores.
+        </div>
+      </div>
+      <div class="key-point">
+        💡 GPT, Claude, Gemini, Llama — they all use the transformer architecture. It's the foundation of basically all modern AI language systems.
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="bottom-nav">
+  <a href="chapter1.html" class="nav-btn">
+    <span>←</span>
+    <div><div class="btn-small">Back to</div>Ch 1: Neural Nets</div>
+  </a>
+  <div style="text-align:center;font-size:0.75rem;color:var(--muted);">
+    <div style="color:var(--accent2);font-weight:700;margin-bottom:0.2rem;">Chapter 2 done! 🔥</div>
+    6 concepts down
+  </div>
+  <a href="chapter3.html" class="nav-btn forward">
+    <div><div class="btn-small">Up next</div>LLMs & Hallucination</div>
+    <span>→</span>
+  </a>
+</div>
+
+<script>
+  // Theme toggle
+  function toggleTheme() {
+    const light = document.body.classList.toggle('light');
+    localStorage.setItem('aibasics_theme', light ? 'light' : 'dark');
+    document.getElementById('themeBtn').textContent = light ? '☀️' : '🌙';
+  }
+  if (localStorage.getItem('aibasics_theme') === 'light') {
+    document.body.classList.add('light');
+    const _b = document.getElementById('themeBtn'); if (_b) _b.textContent = '☀️';
+  }
+  // Progress bar + chapter 2 completion
+  let _done = false;
+  window.addEventListener('scroll', () => {
+    const p = (window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100;
+    document.getElementById('progress').style.width = Math.min(p,100) + '%';
+    if (p >= 85 && !_done) { _done = true; localStorage.setItem('aibasics_ch2_complete', '1'); }
+  });
+
+  // Tokenizer
+  function tokenize(text) {
+    const out = document.getElementById('tokens-out');
+    const count = document.getElementById('tok-count');
+    out.innerHTML = '';
+    if (!text.trim()) { count.textContent = '0 tokens'; return; }
+    // simple approximate tokenizer
+    const tokens = [];
+    const words = text.split(/(\s+|[.,!?;:'"-])/);
+    words.forEach(w => {
+      if (!w || /^\s+$/.test(w)) return;
+      if (w.length <= 4 || /^[.,!?;:'"-]$/.test(w)) {
+        tokens.push(w);
+      } else {
+        // split longer words
+        let i = 0;
+        while (i < w.length) {
+          const chunk = Math.floor(Math.random() * 3) + 2;
+          tokens.push(w.slice(i, i + chunk));
+          i += chunk;
+        }
+      }
+    });
+    tokens.forEach((t, i) => {
+      const chip = document.createElement('div');
+      chip.className = 'token-chip';
+      chip.style.animationDelay = (i * 0.04) + 's';
+      chip.textContent = t;
+      out.appendChild(chip);
+    });
+    count.textContent = tokens.length + ' tokens — roughly ' + Math.ceil(tokens.length * 0.75) + ' words';
+  }
+
+  // Embeddings
+  const relMap = {
+    doctor: {close:['nurse','hospital','actor'], far:['mountain','ocean']},
+    nurse:  {close:['doctor','hospital'], far:['mountain','ocean','actor']},
+    hospital: {close:['doctor','nurse'], far:['mountain','ocean','actor','actress']},
+    mountain: {close:['ocean'], far:['doctor','nurse','hospital','actor','actress']},
+    actor:  {close:['actress','prince'], far:['mountain','ocean','hospital']},
+    actress:{close:['actor','prince'], far:['mountain','ocean','hospital']},
+    ocean:  {close:['mountain'], far:['doctor','nurse','hospital','actor']},
+    prince: {close:['actor','actress'], far:['mountain','ocean','hospital']},
+  };
+  const explainMap = {
+    doctor: '"doctor" is semantically close to medical terms. In embedding space, "doctor" and "nurse" are nearby neighbours.',
+    nurse: '"nurse" lives next to "doctor" and "hospital" — all share the medical domain cluster.',
+    hospital: '"hospital" is a place, but it\'s deeply tied to medical professions. Far from nature words.',
+    mountain: '"mountain" and "ocean" cluster together in the nature domain — far from professions.',
+    actor: '"actor" → "actress" follows the same gender pattern as "prince" → "princess". Geometry in meaning!',
+    actress: '"actress" is close to "actor" — same role, different form. The model learns this pattern.',
+    ocean: '"ocean" sits in the nature cluster alongside "mountain". Professions are far away.',
+    prince: '"prince" is near "actor" because the actor/actress ↔ prince/princess analogy holds in vector space.',
+  };
+  function showRelated(word) {
+    const allWords = document.querySelectorAll('.embed-word');
+    allWords.forEach(el => { el.classList.remove('selected','related','unrelated'); });
+    const clicked = [...allWords].find(el => el.querySelector('.embed-word-text').textContent.includes(word));
+    if (!clicked) return;
+    clicked.classList.add('selected');
+    const rel = relMap[word];
+    allWords.forEach(el => {
+      const w = el.querySelector('.embed-word-cat').previousElementSibling?.textContent || el.querySelector('.embed-word-text').textContent;
+      const wClean = w.replace(/[^a-z]/gi,'').trim().toLowerCase();
+      if (wClean === word) return;
+      if (rel.close.some(r => wClean.includes(r))) el.classList.add('related');
+      else if (rel.far.some(r => wClean.includes(r))) el.classList.add('unrelated');
+    });
+    document.getElementById('embed-explain').textContent = explainMap[word] || '';
+  }
+
+  // Attention
+  const attnMap = {
+    She: { focus:['bought'], dim:['in','last','week'], msg:'"She" attends to "bought" — subject-verb relationship is key.' },
+    bought: { focus:['She','shares','Apple'], dim:['in','last','week'], msg:'"bought" needs to know who bought (She), what was bought (shares), and from where (Apple).' },
+    shares: { focus:['bought','Apple'], dim:['She','in','last'], msg:'"shares" is the object — it links strongly to "bought" and "Apple" to understand it\'s financial.' },
+    in: { focus:[], dim:['She','bought','last','week'], msg:'"in" is a function word — low attention weight, mostly connecting.' },
+    Apple: { focus:['shares','bought'], dim:['She','in','last','week'], msg:'"Apple" sees "shares" and "bought" → the model decides this is a company, not a fruit! 🍎 → 📈' },
+    last: { focus:['week'], dim:['She','bought','in'], msg:'"last" attends to "week" — they form a time phrase together.' },
+    week: { focus:['last','bought'], dim:['She','in'], msg:'"week" locks onto "last" for the time phrase and "bought" for temporal context.' },
+  };
+  function showAttention(el, word) {
+    const words = document.querySelectorAll('.s-word');
+    words.forEach(w => { w.classList.remove('focus-word','high-attn','low-attn'); });
+    el.classList.add('focus-word');
+    const data = attnMap[word];
+    if (!data) return;
+    words.forEach(w => {
+      const t = w.textContent;
+      if (t === word) return;
+      if (data.focus.includes(t)) w.classList.add('high-attn');
+      else if (data.dim.includes(t)) w.classList.add('low-attn');
+    });
+    document.getElementById('attn-explain').innerHTML = `<strong style="color:#fde68a">📍 "${word}"</strong> → ${data.msg}`;
+  }
+
+  // Transformer layers
+  function toggleLayer(el) {
+    const isActive = el.classList.contains('active');
+    document.querySelectorAll('.t-layer').forEach(l => l.classList.remove('active'));
+    if (!isActive) el.classList.add('active');
+  }
+</script>
+</body>
+</html>

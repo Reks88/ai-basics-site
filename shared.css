@@ -1,0 +1,10 @@
+/* shared.css — imported by all chapter pages */
+:root {
+  --bg: #0a0a0f;
+  --surface: #12121a;
+  --card: #1a1a28;
+  --text: #f0f0ff;
+  --muted: #8888aa;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:var(--bg); color:var(--text); font-family:'Inter', sans-serif; overflow-x:hidden; }

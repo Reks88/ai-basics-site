@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chapter 3: Large Language Models 🤖 — AI Basics</title>
+  <meta name="description" content="What ChatGPT, Claude, and Gemini actually are — and why they sometimes make stuff up.">
+  <meta property="og:title" content="Chapter 3: Large Language Models — AI Basics">
+  <meta property="og:description" content="What LLMs are, how context windows work, and why hallucination happens.">
+  <meta property="og:type" content="article">
+  <meta property="og:image" content="https://YOUR-CLOUDFRONT-DOMAIN/og-cover.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root { --bg:#0a0a0f; --surface:#12121a; --card:#1a1a28; --accent:#f59e0b; --accent2:#fde68a; --accent3:#fef3c7; --text:#f0f0ff; --muted:#8888aa; }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    /* LIGHT MODE */
+    body.light { --bg:#f5f5ff; --surface:#ebebf5; --card:#ffffff; --text:#0a0a20; --muted:#55557a; }
+    body.light nav { background:rgba(240,240,250,0.92) !important; border-bottom-color:rgba(0,0,0,0.08); }
+    body.light .concept { box-shadow:0 4px 20px rgba(0,0,0,0.05); border-color:rgba(0,0,0,0.08); }
+    body.light .analogy { background:rgba(244,63,94,0.07); }
+    body.light .key-point { background:rgba(6,182,212,0.07); }
+    body.light .interactive-box { background:rgba(0,0,0,0.03); }
+    /* THEME TOGGLE */
+    .theme-toggle { background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.1); border-radius:100px; padding:0.3rem 0.8rem; cursor:pointer; font-size:0.85rem; color:var(--muted); transition:all 0.2s; }
+    .theme-toggle:hover { background:rgba(255,255,255,0.14); color:var(--text); }
+    body.light .theme-toggle { background:rgba(0,0,0,0.05); border-color:rgba(0,0,0,0.1); }
+    body { background:var(--bg); color:var(--text); font-family:'Inter',sans-serif; overflow-x:hidden; }
+    nav { position:sticky; top:0; z-index:100; background:rgba(10,10,15,0.85); backdrop-filter:blur(20px); border-bottom:1px solid rgba(255,255,255,0.06); padding:1rem 2rem; display:flex; align-items:center; gap:1.5rem; flex-wrap:wrap; }
+    .nav-home { text-decoration:none; color:var(--muted); font-size:0.8rem; transition:color 0.2s; }
+    .nav-home:hover { color:var(--text); }
+    .nav-sep { color:rgba(255,255,255,0.15); }
+    .nav-current { color:var(--accent2); font-size:0.8rem; }
+    .nav-links { margin-left:auto; display:flex; gap:0.75rem; }
+    .nav-pill { padding:0.35rem 0.9rem; border-radius:100px; font-size:0.7rem; text-decoration:none; color:var(--muted); border:1px solid rgba(255,255,255,0.08); transition:all 0.2s; }
+    .nav-pill:hover { border-color:var(--accent); color:var(--accent2); }
+    .nav-pill.next { background:var(--accent); color:#0a0a0f; border-color:var(--accent); font-weight:700; }
+    .progress-bar { height:3px; background:rgba(255,255,255,0.06); }
+    .progress-fill { height:100%; background:linear-gradient(90deg,var(--accent),#ef4444); width:60%; }
+    .chapter-hero { padding:5rem 2rem 3rem; max-width:900px; margin:0 auto; }
+    .chapter-num { color:var(--accent2); font-size:0.75rem; letter-spacing:0.2em; margin-bottom:1rem; }
+    .chapter-title { font-family:'Syne',sans-serif; font-size:clamp(2.5rem,7vw,5rem); font-weight:800; line-height:1.05; margin-bottom:1.5rem; }
+    .chapter-title span { background:linear-gradient(90deg,var(--accent),#ef4444); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+    .chapter-intro { color:var(--muted); font-size:0.95rem; line-height:1.9; max-width:640px; }
+    .content { max-width:900px; margin:0 auto; padding:3rem 2rem 6rem; }
+    .concept { background:var(--card); border:1px solid rgba(255,255,255,0.07); border-radius:20px; padding:2.5rem; margin-bottom:3rem; position:relative; overflow:hidden; animation:slideIn 0.5s ease both; }
+    .concept::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background:linear-gradient(90deg,var(--accent),#ef4444); }
+    .concept:nth-child(2){animation-delay:0.1s;} .concept:nth-child(3){animation-delay:0.2s;} .concept:nth-child(4){animation-delay:0.3s;}
+    @keyframes slideIn { from{opacity:0;transform:translateY(20px);} to{opacity:1;transform:translateY(0);} }
+    .concept-header { display:flex; align-items:center; gap:1rem; margin-bottom:1.5rem; flex-wrap:wrap; }
+    .concept-num { background:linear-gradient(135deg,var(--accent),#ef4444); width:40px; height:40px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-family:'Syne',sans-serif; font-weight:800; color:#0a0a0f; flex-shrink:0; }
+    .concept-name { font-family:'Syne',sans-serif; font-size:1.6rem; font-weight:700; }
+    .concept-body { font-size:0.88rem; color:#d0d0e8; line-height:2; }
+    .concept-body p { margin-bottom:1rem; }
+    .concept-body strong { color:var(--accent2); }
+    .concept-body em { color:var(--accent3); }
+    .analogy { background:rgba(245,158,11,0.1); border:1px solid rgba(245,158,11,0.25); border-radius:12px; padding:1.5rem; margin:1.5rem 0; display:flex; gap:1rem; align-items:flex-start; }
+    .analogy-icon { font-size:1.8rem; flex-shrink:0; }
+    .analogy-content { font-size:0.85rem; line-height:1.8; color:var(--accent3); }
+    .analogy-content strong { color:var(--accent2); }
+    .key-point { background:rgba(6,182,212,0.08); border-left:3px solid #06b6d4; padding:1rem 1.5rem; margin:1.5rem 0; border-radius:0 10px 10px 0; font-size:0.85rem; color:#a5f3fc; line-height:1.7; }
+    .interactive-box { background:var(--surface); border:1px solid rgba(245,158,11,0.2); border-radius:20px; padding:2rem; margin:2rem 0; }
+    .interactive-title { font-family:'Syne',sans-serif; font-size:1rem; font-weight:700; color:var(--accent2); margin-bottom:1rem; display:flex; align-items:center; gap:0.5rem; }
+    .interactive-title::before { content:'⚡'; }
+
+    /* TOKEN PREDICTOR */
+    .prediction-row { display:flex; gap:0.5rem; flex-wrap:wrap; margin-bottom:1rem; align-items:center; }
+    .pred-word { font-size:0.9rem; padding:0.4rem 0.9rem; border-radius:8px; }
+    .pred-word.context { background:rgba(255,255,255,0.07); }
+    .pred-word.blank { background:rgba(245,158,11,0.2); border:2px dashed var(--accent); color:var(--accent2); font-weight:700; min-width:80px; text-align:center; cursor:pointer; }
+    .pred-choices { display:flex; gap:0.5rem; flex-wrap:wrap; margin-bottom:1rem; }
+    .pred-choice { padding:0.4rem 1rem; border-radius:8px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); font-size:0.82rem; cursor:pointer; transition:all 0.2s; }
+    .pred-choice:hover { border-color:var(--accent); }
+    .pred-choice.correct { background:rgba(16,185,129,0.2); border-color:#10b981; color:#6ee7b7; }
+    .pred-choice.wrong { background:rgba(244,63,94,0.15); border-color:#f43f5e; color:#fda4af; }
+    .pred-feedback { font-size:0.8rem; color:var(--muted); min-height:24px; }
+
+    /* CONTEXT WINDOW */
+    .context-window {
+      background:rgba(255,255,255,0.03);
+      border:2px solid rgba(245,158,11,0.3);
+      border-radius:12px;
+      padding:1.2rem;
+      position:relative;
+      margin:1rem 0;
+    }
+    .context-window-label {
+      position:absolute; top:-12px; left:16px;
+      background:var(--bg); padding:0 8px;
+      font-size:0.7rem; color:var(--accent2); letter-spacing:0.1em;
+    }
+    .context-messages { display:flex; flex-direction:column; gap:0.5rem; }
+    .ctx-msg { padding:0.6rem 1rem; border-radius:8px; font-size:0.78rem; line-height:1.5; }
+    .ctx-msg.user { background:rgba(245,158,11,0.15); border:1px solid rgba(245,158,11,0.2); align-self:flex-end; max-width:70%; }
+    .ctx-msg.ai { background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.08); align-self:flex-start; max-width:80%; }
+    .ctx-msg.faded { opacity:0.25; }
+    .ctx-msg.highlight { border-color:var(--accent); }
+    .ctx-overflow { text-align:center; font-size:0.75rem; color:#ef4444; margin-top:0.5rem; padding:0.5rem; background:rgba(244,63,94,0.1); border-radius:6px; }
+    .ctx-slider-row { display:flex; align-items:center; gap:1rem; margin-bottom:1rem; flex-wrap:wrap; }
+    .ctx-slider-row label { font-size:0.8rem; color:var(--muted); white-space:nowrap; }
+    .ctx-slider-row input { flex:1; accent-color:var(--accent); min-width:100px; }
+    .ctx-slider-row span { font-size:0.8rem; color:var(--accent2); white-space:nowrap; }
+
+    /* TEMPERATURE DEMO */
+    .temp-slider-wrap { margin:1rem 0; }
+    .temp-label { display:flex; justify-content:space-between; font-size:0.72rem; color:var(--muted); margin-bottom:0.4rem; }
+    .temp-slider-wrap input { width:100%; accent-color:var(--accent); }
+    .temp-output { margin-top:1rem; }
+    .temp-box { background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:10px; padding:1rem; font-size:0.82rem; line-height:1.8; color:#d0d0e8; min-height:80px; transition:all 0.3s; }
+    .temp-level { text-align:center; font-size:0.72rem; color:var(--muted); margin-top:0.5rem; }
+
+    /* HALLUCINATION */
+    .halluc-example { position:relative; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:12px; padding:1.5rem; margin:1rem 0; font-size:0.84rem; line-height:1.8; }
+    .halluc-word { cursor:pointer; border-bottom:2px solid var(--accent); transition:background 0.2s; padding:0 2px; border-radius:2px; }
+    .halluc-word:hover, .halluc-word.revealed { background:rgba(244,63,94,0.25); color:#fda4af; }
+    .halluc-tooltip { display:none; position:absolute; bottom:calc(100% + 8px); left:50%; transform:translateX(-50%); background:#1a1a28; border:1px solid rgba(244,63,94,0.4); border-radius:8px; padding:0.6rem 1rem; font-size:0.75rem; color:#fda4af; white-space:nowrap; z-index:10; }
+    .halluc-word.revealed + .halluc-tooltip { display:block; }
+    .halluc-btn { background:rgba(244,63,94,0.2); border:1px solid rgba(244,63,94,0.4); color:#fda4af; padding:0.5rem 1.2rem; border-radius:8px; cursor:pointer; font-family:'Space Mono',monospace; font-size:0.78rem; margin-top:0.75rem; transition:all 0.2s; }
+    .halluc-btn:hover { background:rgba(244,63,94,0.35); }
+
+    .bottom-nav { display:flex; justify-content:space-between; align-items:center; padding:2rem; max-width:900px; margin:0 auto; border-top:1px solid rgba(255,255,255,0.06); flex-wrap:wrap; gap:1rem; }
+    .nav-btn { display:flex; align-items:center; gap:0.75rem; padding:0.9rem 1.8rem; border-radius:14px; text-decoration:none; color:var(--text); background:var(--card); border:1px solid rgba(255,255,255,0.08); font-size:0.82rem; transition:all 0.2s; }
+    .nav-btn:hover { border-color:var(--accent); }
+    .nav-btn.forward { background:var(--accent); border-color:var(--accent); color:#0a0a0f; font-weight:700; }
+    .btn-small { font-size:0.7rem; color:var(--muted); }
+    .nav-btn.forward .btn-small { color:rgba(0,0,0,0.5); }
+  </style>
+</head>
+<body>
+<nav>
+  <a href="index.html" class="nav-home">🏠 Home</a>
+  <span class="nav-sep">/</span>
+  <span class="nav-current">Chapter 3: LLMs</span>
+  <div class="nav-links">
+    <a href="chapter2.html" class="nav-pill">← Ch 2</a>
+    <a href="chapter4.html" class="nav-pill next">Next →</a>
+    <button class="theme-toggle" id="themeBtn" onclick="toggleTheme()">🌙</button>
+  </div>
+</nav>
+<div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
+
+<div class="chapter-hero">
+  <div class="chapter-num">// CHAPTER 03 OF 05</div>
+  <h1 class="chapter-title">Large<br><span>Language</span><br>Models</h1>
+  <p class="chapter-intro">What ChatGPT, Claude, and Gemini actually are — and why they sometimes confidently make stuff up.</p>
+</div>
+
+<div class="content">
+
+  <!-- CONCEPT 7: LLM -->
+  <div class="concept">
+    <div class="concept-header">
+      <div class="concept-num">7</div>
+      <div class="concept-name">LLM (Large Language Model)</div>
+    </div>
+    <div class="concept-body">
+      <p>An LLM is just a <strong>transformer trained on a massive amount of text</strong>. Books, websites, code — hundreds of billions of tokens. And the training goal?</p>
+      <p>Surprisingly simple: <em>predict the next token</em>. That's it. Over trillions of examples, it learns patterns, reasoning, language structure — and starts to look like understanding.</p>
+    </div>
+
+    <div class="interactive-box">
+      <div class="interactive-title">Play: Predict the Next Word</div>
+      <p style="font-size:0.8rem;color:var(--muted);margin-bottom:1rem;">This is what an LLM does billions of times during training. What word comes next?</p>
+      <div id="pred-area"></div>
+    </div>
+
+    <div class="concept-body">
+      <div class="analogy">
+        <div class="analogy-icon">🔢</div>
+        <div class="analogy-content">
+          <strong>What does "large" mean?</strong> It refers to parameters — the internal values the model learns during training. GPT-3 has 175 billion. GPT-4 likely has over a trillion. Training one of these costs millions of dollars!
+        </div>
+      </div>
+      <div class="key-point">
+        💡 When you use ChatGPT, Claude, or Gemini — you're talking to a model that learned language by doing one simple thing over and over: <strong>predicting what comes next</strong>.
+      </div>
+    </div>
+  </div>
+
+  <!-- CONCEPT 8: Context Window -->
+  <div class="concept">
+    <div class="concept-header">
+      <div class="concept-num">8</div>
+      <div class="concept-name">Context Window</div>
+    </div>
+    <div class="concept-body">
+      <p>Every AI model has a limit to how much it can "remember" at once — the <strong>context window</strong>. It's the model's short-term working memory. Everything — your messages and its responses — has to fit inside.</p>
+    </div>
+
+    <div class="interactive-box">
+      <div class="interactive-title">See what happens when the context fills up</div>
+      <div class="ctx-slider-row">
+        <label>Context window size:</label>
+        <input type="range" min="1" max="5" value="4" id="ctx-slider" oninput="updateContext(this.value)">
+        <span id="ctx-label">4 messages</span>
+      </div>
+      <div class="context-window">
+        <div class="context-window-label">CONTEXT WINDOW</div>
+        <div class="context-messages" id="ctx-messages"></div>
+      </div>
+      <div id="ctx-warning" style="display:none" class="ctx-overflow">⚠️ Earlier messages are outside the context! The model can't see them anymore.</div>
+    </div>
+
+    <div class="concept-body">
+      <p>Early models could only handle a few thousand tokens. Modern models handle entire books. But bigger context = <strong>more compute and slower responses</strong>.</p>
+      <div class="key-point">
+        💡 The "lost in the middle" problem: models tend to remember the <strong>beginning and end</strong> of a conversation better than the middle. So if you ask about something from way back — the AI might "forget" it.
+      </div>
+    </div>
+  </div>
+
+  <!-- CONCEPT 9: Temperature -->
+  <div class="concept">
+    <div class="concept-header">
+      <div class="concept-num">9</div>
+      <div class="concept-name">Temperature</div>
+    </div>
+    <div class="concept-body">
+      <p>When a model picks the next token, it calculates probabilities for every option. <strong>Temperature</strong> controls how strictly it follows those probabilities.</p>
+    </div>
+
+    <div class="interactive-box">
+      <div class="interactive-title">Drag the temperature — watch the output change</div>
+      <div class="temp-slider-wrap">
+        <div class="temp-label">
+          <span>🎯 Precise (0.1)</span>
+          <span>✨ Creative (1.5)</span>
+        </div>
+        <input type="range" min="1" max="10" value="5" id="temp-slider" oninput="updateTemp(this.value)">
+      </div>
+      <div class="temp-output">
+        <div class="temp-box" id="temp-output-box">Loading...</div>
+        <div class="temp-level" id="temp-level">Temperature: 0.5 — Balanced</div>
+      </div>
+    </div>
+
+    <div class="concept-body">
+      <div class="analogy">
+        <div class="analogy-icon">🌡️</div>
+        <div class="analogy-content">
+          <strong>Low temp (0.1):</strong> Always picks the most likely next word. Great for code, facts, summaries.<br>
+          <strong>High temp (1.5):</strong> Takes wild risks with less likely words. Great for creative writing, brainstorming.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONCEPT 10: Hallucination -->
+  <div class="concept">
+    <div class="concept-header">
+      <div class="concept-num">10</div>
+      <div class="concept-name">Hallucination</div>
+    </div>
+    <div class="concept-body">
+      <p>Sometimes AI gives you an answer that sounds totally confident… but it's <strong>completely made up</strong>. That's called a hallucination.</p>
+      <p>Why? Because the model isn't trying to tell the truth. It's trying to generate the most <em>probable next piece of text</em>. If a false statement looks like what should come next — it'll say it with full confidence.</p>
+    </div>
+
+    <div class="interactive-box">
+      <div class="interactive-title">Spot the hallucination — click the suspicious parts</div>
+      <div class="halluc-example" id="halluc-text">
+        <p>The transformer architecture was introduced in the 2017 paper <span class="halluc-word" onclick="revealHalluc(this, false)">"Attention Is All You Need"</span> by Vaswani et al. The lead author <span class="halluc-word" onclick="revealHalluc(this, true)">Ashish Vaswani</span> wrote the paper while working at <span class="halluc-word" onclick="revealHalluc(this, false)">Google Brain</span>. The paper introduced self-attention and was <span class="halluc-word" onclick="revealHalluc(this, true)">cited over 100,000 times by 2024</span>. It also won the <span class="halluc-word" onclick="revealHalluc(this, false)">"Best Paper of the Decade" award at NeurIPS 2023</span>.</p>
+      </div>
+      <button class="halluc-btn" onclick="revealAll()">Reveal All Hallucinations</button>
+      <div id="halluc-result" style="margin-top:1rem;font-size:0.8rem;color:var(--muted);"></div>
+    </div>
+
+    <div class="concept-body">
+      <div class="key-point">
+        💡 This is why you should never blindly trust AI for important facts, code logic, or decisions. The model is incredibly good at <strong>sounding right</strong> — but it still needs a human to check if it actually <em>is</em> right.
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="bottom-nav">
+  <a href="chapter2.html" class="nav-btn">
+    <span>←</span>
+    <div><div class="btn-small">Back to</div>Ch 2: Transformers</div>
+  </a>
+  <div style="text-align:center;font-size:0.75rem;color:var(--muted);">
+    <div style="color:var(--accent2);font-weight:700;margin-bottom:0.2rem;">Chapter 3 done! 💯</div>
+    10 concepts down
+  </div>
+  <a href="chapter4.html" class="nav-btn forward">
+    <div><div class="btn-small">Up next</div>Training & Optimization</div>
+    <span>→</span>
+  </a>
+</div>
+
+<script>
+  // Theme toggle
+  function toggleTheme() {
+    const light = document.body.classList.toggle('light');
+    localStorage.setItem('aibasics_theme', light ? 'light' : 'dark');
+    document.getElementById('themeBtn').textContent = light ? '☀️' : '🌙';
+  }
+  if (localStorage.getItem('aibasics_theme') === 'light') {
+    document.body.classList.add('light');
+    const _b = document.getElementById('themeBtn'); if (_b) _b.textContent = '☀️';
+  }
+  // Progress bar + chapter 3 completion
+  let _done = false;
+  window.addEventListener('scroll', () => {
+    const p = (window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100;
+    document.getElementById('progress').style.width = Math.min(p,100) + '%';
+    if (p >= 85 && !_done) { _done = true; localStorage.setItem('aibasics_ch3_complete', '1'); }
+  });
+
+  // PREDICTION GAME
+  const questions = [
+    { context:'The sky is really', choices:['blue','quickly','however','Tuesday'], answer:'blue' },
+    { context:'Neural networks learn by adjusting their', choices:['colors','weights','chairs','songs'], answer:'weights' },
+    { context:'GPT stands for Generative Pre-trained', choices:['Transformer','Toaster','Transfer','Template'], answer:'Transformer' },
+  ];
+  let qIdx = 0;
+  function renderQ() {
+    const q = questions[qIdx % questions.length];
+    document.getElementById('pred-area').innerHTML = `
+      <div class="prediction-row">
+        ${q.context.split(' ').map(w=>`<span class="pred-word context">${w}</span>`).join('')}
+        <span class="pred-word blank" id="blank">???</span>
+      </div>
+      <div class="pred-choices">
+        ${q.choices.map(c=>`<button class="pred-choice" onclick="pickAnswer(this,'${c}','${q.answer}')">${c}</button>`).join('')}
+      </div>
+      <div class="pred-feedback" id="pred-fb"></div>
+    `;
+  }
+  function pickAnswer(btn, choice, answer) {
+    document.querySelectorAll('.pred-choice').forEach(b => b.disabled = true);
+    if (choice === answer) {
+      btn.classList.add('correct');
+      document.getElementById('blank').textContent = choice;
+      document.getElementById('pred-fb').innerHTML = '<span style="color:#10b981">✅ Correct! That\'s exactly how an LLM thinks.</span>';
+      setTimeout(() => { qIdx++; renderQ(); }, 1800);
+    } else {
+      btn.classList.add('wrong');
+      document.getElementById('pred-fb').innerHTML = '<span style="color:#f43f5e">❌ The model says that\'s less probable. Try again!</span>';
+      setTimeout(() => { document.querySelectorAll('.pred-choice').forEach(b => { b.disabled=false; b.classList.remove('wrong'); }); document.getElementById('pred-fb').innerHTML=''; }, 1500);
+    }
+  }
+  renderQ();
+
+  // CONTEXT WINDOW
+  const msgs = [
+    {role:'user', text:'Hi! What is a neural network?'},
+    {role:'ai', text:'A neural network is layers of connected neurons that process data...'},
+    {role:'user', text:'Cool! What about transformers?'},
+    {role:'ai', text:'Transformers use attention to process all tokens in parallel...'},
+    {role:'user', text:'What did I ask you first?'},
+  ];
+  function updateContext(val) {
+    const v = parseInt(val);
+    document.getElementById('ctx-label').textContent = v + ' messages';
+    const container = document.getElementById('ctx-messages');
+    const visible = msgs.slice(-v);
+    const hidden = msgs.slice(0, msgs.length - v);
+    container.innerHTML = msgs.map((m, i) => {
+      const isVisible = msgs.length - i <= v;
+      return `<div class="ctx-msg ${m.role} ${isVisible?'':'faded'} ${i===msgs.length-1?'highlight':''}">${m.role==='user'?'👤 ':'🤖 '}${m.text}</div>`;
+    }).join('');
+    document.getElementById('ctx-warning').style.display = hidden.length > 0 ? 'block' : 'none';
+  }
+  updateContext(4);
+
+  // TEMPERATURE
+  const tempOutputs = [
+    { level:'0.1 — Robotic & Predictable', text:'The capital of France is Paris. Paris is a city in Europe. It is the largest city in France.' },
+    { level:'0.3 — Focused & Clear', text:'Paris is the capital of France, known for iconic landmarks like the Eiffel Tower and the Louvre museum.' },
+    { level:'0.5 — Balanced', text:'Paris, the City of Light, is France\'s vibrant capital — where history meets modern culture along the Seine river.' },
+    { level:'0.7 — Creative & Lively', text:'Paris isn\'t just a city — it\'s a feeling. Cobblestone streets, corner cafés, and that certain *je ne sais quoi* that makes every visit unforgettable.' },
+    { level:'0.9 — Wild & Expressive', text:'Ah, Paris! Where baguettes float past ancient cathedrals and every shadow whispers poetry in a language only dreamers understand... 🥐🗼✨' },
+    { level:'1.1 — Getting Chaotic', text:'Paris! City! The Eiffel glitters at night, croissants spiral through the Seine-kissed air where philosophers once danced among the... cheese?' },
+    { level:'1.3 — Unpredictable', text:'Paris, when the moon decides its name is Tuesday, wanders through cobblestoned time-loops whistling forgotten jazz at invisible cafés.' },
+    { level:'1.5 — Maximum Chaos 🔥', text:'PARIS. Baguette-sword. The Louvre is a feeling now. Pigeons invented art. River Seine backward = Eniese. Napoleon was 5\'7". Croissant=time.' },
+  ];
+  function updateTemp(val) {
+    const idx = Math.min(parseInt(val) - 1, tempOutputs.length - 1);
+    const t = tempOutputs[idx];
+    const box = document.getElementById('temp-output-box');
+    box.textContent = t.text;
+    const temp = (val / 10 * 1.4 + 0.1).toFixed(1);
+    box.style.borderColor = val < 4 ? 'rgba(6,182,212,0.3)' : val < 7 ? 'rgba(245,158,11,0.3)' : 'rgba(244,63,94,0.4)';
+    document.getElementById('temp-level').textContent = 'Temperature: ' + t.level;
+  }
+  updateTemp(5);
+
+  // HALLUCINATION
+  const hallucData = [
+    { isHalluc: false, msg: '✅ TRUE — The paper is genuinely called "Attention Is All You Need"' },
+    { isHalluc: false, msg: '✅ TRUE — Ashish Vaswani is the lead author' },
+    { isHalluc: false, msg: '✅ TRUE — It was published while at Google Brain' },
+    { isHalluc: false, msg: '✅ PROBABLY TRUE — Citation counts are in this range' },
+    { isHalluc: true, msg: '❌ HALLUCINATION — No such "Best Paper of the Decade" award exists at NeurIPS 2023. The AI made this up!' },
+  ];
+  let hallucIdx = 0;
+  const hallucWords = document.querySelectorAll('.halluc-word');
+  function revealHalluc(el, isTrue) {
+    const data = hallucData[hallucIdx++];
+    if (!data) return;
+    if (data.isHalluc) {
+      el.style.background = 'rgba(244,63,94,0.3)';
+      el.style.color = '#fda4af';
+      el.style.borderBottomColor = '#f43f5e';
+    } else {
+      el.style.background = 'rgba(16,185,129,0.2)';
+      el.style.color = '#6ee7b7';
+      el.style.borderBottomColor = '#10b981';
+    }
+    el.onclick = null;
+    document.getElementById('halluc-result').innerHTML = data.msg;
+  }
+  function revealAll() {
+    const words = document.querySelectorAll('.halluc-word');
+    words.forEach((w, i) => {
+      const d = hallucData[i];
+      if (!d) return;
+      if (d.isHalluc) { w.style.background='rgba(244,63,94,0.3)'; w.style.color='#fda4af'; w.style.borderBottomColor='#f43f5e'; }
+      else { w.style.background='rgba(16,185,129,0.2)'; w.style.color='#6ee7b7'; w.style.borderBottomColor='#10b981'; }
+      w.onclick = null;
+    });
+    document.getElementById('halluc-result').innerHTML = '❌ The last sentence is a hallucination — AI made up a fake award that doesn\'t exist. It sounds real but isn\'t!';
+  }
+</script>
+</body>
+</html>

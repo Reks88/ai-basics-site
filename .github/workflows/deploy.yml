@@ -1,0 +1,69 @@
+name: Deploy to S3 + CloudFront
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:  # allow manual trigger from GitHub UI
+
+jobs:
+  deploy:
+    name: Deploy static site
+    runs-on: ubuntu-latest
+
+    permissions:
+      id-token: write   # required for OIDC (recommended over long-lived keys)
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # ── Option A: OIDC (recommended) ─────────────────────────────────────
+      # Uncomment this block and remove the "Configure AWS credentials" step
+      # below if you've set up an IAM role with a GitHub OIDC trust policy.
+      #
+      # - name: Configure AWS credentials via OIDC
+      #   uses: aws-actions/configure-aws-credentials@v4
+      #   with:
+      #     role-to-assume: arn:aws:iam::YOUR_ACCOUNT_ID:role/GitHubActionsDeployRole
+      #     aws-region: ${{ vars.AWS_REGION }}
+      # ─────────────────────────────────────────────────────────────────────
+
+      # ── Option B: IAM access keys (stored as GitHub Secrets) ─────────────
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id:     ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region:            ${{ vars.AWS_REGION }}
+      # ─────────────────────────────────────────────────────────────────────
+
+      - name: Sync HTML + CSS to S3
+        run: |
+          aws s3 sync . s3://${{ vars.S3_BUCKET_NAME }} \
+            --exclude ".git/*" \
+            --exclude ".github/*" \
+            --exclude "*.md" \
+            --exclude "bucket-policy.json" \
+            --delete \
+            --cache-control "public, max-age=300, stale-while-revalidate=60"
+
+      - name: Set longer cache on static assets
+        run: |
+          aws s3 cp s3://${{ vars.S3_BUCKET_NAME }}/shared.css \
+                    s3://${{ vars.S3_BUCKET_NAME }}/shared.css \
+            --metadata-directive REPLACE \
+            --cache-control "public, max-age=86400, stale-while-revalidate=3600" \
+            --content-type "text/css"
+
+      - name: Invalidate CloudFront cache
+        run: |
+          aws cloudfront create-invalidation \
+            --distribution-id ${{ vars.CLOUDFRONT_DISTRIBUTION_ID }} \
+            --paths "/*"
+
+      - name: Print deployment summary
+        run: |
+          echo "✅ Deployed to s3://${{ vars.S3_BUCKET_NAME }}"
+          echo "🌐 CloudFront invalidation triggered for distribution ${{ vars.CLOUDFRONT_DISTRIBUTION_ID }}"

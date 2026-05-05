@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Basics 🧠 Learn How AI Actually Works</title>
+  <meta name="description" content="20 AI concepts explained simply. No PhD required — understand neural networks, LLMs, transformers, and more.">
+  <meta property="og:title" content="AI Basics — Learn How AI Actually Works">
+  <meta property="og:description" content="20 AI concepts. Zero fluff. Built for curious minds who want to understand the tech shaping the future.">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="https://YOUR-CLOUDFRONT-DOMAIN/og-cover.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="AI Basics — Learn How AI Actually Works">
+  <meta name="twitter:description" content="20 AI concepts. Zero fluff. Built for curious minds.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0a0a0f;
+      --surface: #12121a;
+      --card: #1a1a28;
+      --accent1: #7c3aed;
+      --accent2: #06b6d4;
+      --accent3: #f59e0b;
+      --accent4: #10b981;
+      --accent5: #f43f5e;
+      --text: #f0f0ff;
+      --muted: #8888aa;
+    }
+    /* LIGHT MODE */
+    body.light { --bg:#f5f5ff; --surface:#ebebf5; --card:#ffffff; --text:#0a0a20; --muted:#55557a; }
+    body.light .chapter-card { box-shadow:0 4px 20px rgba(0,0,0,0.06); }
+    body.light .stats-bar { background:var(--surface); }
+    body.light .quiz-box { background:var(--card); }
+    body.light .highlight-section { background:linear-gradient(135deg,rgba(124,58,237,0.08),rgba(6,182,212,0.06)); }
+    body.light footer { background:var(--surface); }
+    /* THEME TOGGLE (floating) */
+    .theme-toggle-fab { position:fixed; bottom:1.5rem; right:1.5rem; z-index:999; background:var(--card); border:1px solid rgba(255,255,255,0.12); border-radius:100px; padding:0.5rem 1rem; cursor:pointer; font-size:1rem; color:var(--text); box-shadow:0 4px 20px rgba(0,0,0,0.3); transition:all 0.2s; }
+    .theme-toggle-fab:hover { transform:scale(1.08); box-shadow:0 6px 30px rgba(0,0,0,0.4); }
+    body.light .theme-toggle-fab { border-color:rgba(0,0,0,0.1); box-shadow:0 4px 20px rgba(0,0,0,0.1); }
+    /* SEARCH */
+    .search-wrap { max-width:500px; margin:0 auto 2.5rem; position:relative; }
+    .search-input { width:100%; background:var(--card); border:1px solid rgba(255,255,255,0.1); border-radius:100px; padding:0.8rem 1.5rem 0.8rem 3rem; font-size:0.85rem; color:var(--text); font-family:'Inter',sans-serif; outline:none; transition:border-color 0.2s; }
+    .search-input::placeholder { color:var(--muted); }
+    .search-input:focus { border-color:var(--accent1); }
+    .search-icon { position:absolute; left:1rem; top:50%; transform:translateY(-50%); color:var(--muted); font-size:1rem; pointer-events:none; }
+    body.light .search-input { background:rgba(0,0,0,0.05); border-color:rgba(0,0,0,0.1); }
+    /* COMPLETION BADGE */
+    .card-done { position:absolute; top:1rem; right:1rem; background:rgba(16,185,129,0.2); border:1px solid rgba(16,185,129,0.5); color:#6ee7b7; font-size:0.62rem; padding:0.2rem 0.6rem; border-radius:100px; letter-spacing:0.05em; }
+    /* HIDDEN (search filter) */
+    .chapter-card[hidden] { display:none; }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      overflow-x: hidden;
+    }
+    /* HERO */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 2rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at 20% 50%, rgba(124,58,237,0.25) 0%, transparent 60%),
+                  radial-gradient(ellipse at 80% 20%, rgba(6,182,212,0.2) 0%, transparent 50%),
+                  radial-gradient(ellipse at 50% 90%, rgba(245,158,11,0.15) 0%, transparent 50%);
+      z-index: 0;
+    }
+    /* animated grid */
+    .grid-bg {
+      position: absolute;
+      inset: 0;
+      background-image: linear-gradient(rgba(124,58,237,0.08) 1px, transparent 1px),
+                        linear-gradient(90deg, rgba(124,58,237,0.08) 1px, transparent 1px);
+      background-size: 40px 40px;
+      animation: gridScroll 20s linear infinite;
+      z-index: 0;
+    }
+    @keyframes gridScroll {
+      0% { transform: translateY(0); }
+      100% { transform: translateY(40px); }
+    }
+    .hero-content { position: relative; z-index: 1; max-width: 800px; }
+    .badge {
+      display: inline-block;
+      background: rgba(124,58,237,0.3);
+      border: 1px solid var(--accent1);
+      color: #c4b5fd;
+      padding: 0.4rem 1.2rem;
+      border-radius: 100px;
+      font-size: 0.75rem;
+      letter-spacing: 0.1em;
+      margin-bottom: 2rem;
+      animation: fadeDown 0.6s ease forwards;
+    }
+    .hero h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(3rem, 10vw, 7rem);
+      font-weight: 800;
+      line-height: 0.95;
+      margin-bottom: 1.5rem;
+      animation: fadeUp 0.8s ease 0.2s both;
+    }
+    .h1-line1 { color: var(--text); }
+    .h1-line2 {
+      display: inline-block;
+      background: linear-gradient(90deg, var(--accent1), var(--accent2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      padding-right: 0.1em;
+    }
+    .h1-line3 { color: var(--accent3); }
+    .hero-sub {
+      font-size: 1rem;
+      color: var(--muted);
+      max-width: 500px;
+      margin: 0 auto 3rem;
+      line-height: 1.8;
+      animation: fadeUp 0.8s ease 0.4s both;
+    }
+    .hero-cta {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      animation: fadeUp 0.8s ease 0.6s both;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent1), var(--accent2));
+      color: white;
+      padding: 1rem 2.5rem;
+      border-radius: 100px;
+      text-decoration: none;
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 1rem;
+      transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 0 30px rgba(124,58,237,0.4);
+    }
+    .btn-primary:hover { transform: translateY(-3px) scale(1.03); box-shadow: 0 0 50px rgba(124,58,237,0.6); }
+    .btn-secondary {
+      background: transparent;
+      color: var(--text);
+      padding: 1rem 2.5rem;
+      border-radius: 100px;
+      text-decoration: none;
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 1rem;
+      border: 1px solid rgba(255,255,255,0.2);
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .btn-secondary:hover { border-color: var(--accent2); background: rgba(6,182,212,0.1); }
+    /* floating neurons animation */
+    .float-neuron {
+      position: absolute;
+      border-radius: 50%;
+      opacity: 0.6;
+      animation: floatAround 8s ease-in-out infinite;
+    }
+    @keyframes floatAround {
+      0%, 100% { transform: translate(0,0) scale(1); }
+      33% { transform: translate(20px,-30px) scale(1.1); }
+      66% { transform: translate(-15px,20px) scale(0.9); }
+    }
+
+    /* SCROLL indicator */
+    .scroll-hint {
+      position: absolute;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--muted);
+      font-size: 0.7rem;
+      letter-spacing: 0.1em;
+      z-index: 1;
+    }
+    .scroll-arrow { animation: bounce 1.5s infinite; font-size: 1.2rem; }
+    @keyframes bounce { 0%,100% { transform: translateY(0); } 50% { transform: translateY(6px); } }
+
+    /* STATS BAR */
+    .stats-bar {
+      background: var(--surface);
+      border-top: 1px solid rgba(255,255,255,0.05);
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      padding: 1.5rem 2rem;
+      display: flex;
+      justify-content: center;
+      gap: 4rem;
+      flex-wrap: wrap;
+    }
+    .stat { text-align: center; }
+    .stat-num { font-family: 'Syne', sans-serif; font-size: 2rem; font-weight: 800; }
+    .stat-label { color: var(--muted); font-size: 0.7rem; letter-spacing: 0.1em; }
+
+    /* CHAPTERS GRID */
+    .chapters {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 5rem 2rem;
+    }
+    .section-label {
+      color: var(--accent2);
+      font-size: 0.75rem;
+      letter-spacing: 0.2em;
+      margin-bottom: 0.75rem;
+    }
+    .section-title {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      font-weight: 800;
+      margin-bottom: 3rem;
+      line-height: 1.1;
+    }
+    .chapters-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1.5rem;
+    }
+    .chapter-card {
+      background: var(--card);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 20px;
+      padding: 2rem;
+      text-decoration: none;
+      color: var(--text);
+      transition: transform 0.25s, border-color 0.25s, box-shadow 0.25s;
+      position: relative;
+      overflow: hidden;
+    }
+    .chapter-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: var(--card-accent);
+      opacity: 0;
+      transition: opacity 0.25s;
+    }
+    .chapter-card:hover { transform: translateY(-6px); border-color: rgba(255,255,255,0.15); box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
+    .chapter-card:hover::before { opacity: 1; }
+    .card-icon { font-size: 2.5rem; margin-bottom: 1rem; display: block; }
+    .card-num { font-size: 0.7rem; color: var(--muted); letter-spacing: 0.15em; margin-bottom: 0.5rem; }
+    .card-title { font-family: 'Syne', sans-serif; font-size: 1.4rem; font-weight: 700; margin-bottom: 0.75rem; }
+    .card-desc { font-size: 0.8rem; color: var(--muted); line-height: 1.7; }
+    .card-topics {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin-top: 1.2rem;
+    }
+    .topic-pill {
+      background: rgba(255,255,255,0.07);
+      padding: 0.25rem 0.75rem;
+      border-radius: 100px;
+      font-size: 0.65rem;
+      color: var(--muted);
+    }
+    .card-arrow {
+      position: absolute;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.05);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1rem;
+      transition: background 0.2s, transform 0.2s;
+    }
+    .chapter-card:hover .card-arrow { background: var(--card-accent); transform: translateX(3px); }
+
+    /* BIG CONCEPT HIGHLIGHT */
+    .highlight-section {
+      background: linear-gradient(135deg, rgba(124,58,237,0.15), rgba(6,182,212,0.1));
+      border: 1px solid rgba(124,58,237,0.3);
+      border-radius: 24px;
+      padding: 4rem;
+      margin: 0 2rem 5rem;
+      max-width: 1100px;
+      margin-left: auto;
+      margin-right: auto;
+      text-align: center;
+    }
+    .highlight-emoji { font-size: 4rem; margin-bottom: 1.5rem; display: block; }
+    .highlight-section h2 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(1.8rem, 4vw, 3rem);
+      font-weight: 800;
+      margin-bottom: 1rem;
+    }
+    .highlight-section p { color: var(--muted); max-width: 600px; margin: 0 auto; line-height: 1.8; }
+
+    /* QUIZ TEASER */
+    .quiz-teaser {
+      max-width: 1100px;
+      margin: 0 auto 5rem;
+      padding: 0 2rem;
+    }
+    .quiz-box {
+      background: var(--card);
+      border: 1px solid rgba(245,158,11,0.3);
+      border-radius: 20px;
+      padding: 2.5rem;
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+      flex-wrap: wrap;
+    }
+    .quiz-icon { font-size: 3rem; flex-shrink: 0; }
+    .quiz-text h3 { font-family: 'Syne', sans-serif; font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem; }
+    .quiz-text p { color: var(--muted); font-size: 0.85rem; line-height: 1.6; }
+    .quiz-btn {
+      margin-left: auto;
+      background: linear-gradient(135deg, var(--accent3), #ef4444);
+      color: white;
+      padding: 0.9rem 2rem;
+      border-radius: 100px;
+      text-decoration: none;
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      transition: transform 0.2s;
+      white-space: nowrap;
+    }
+    .quiz-btn:hover { transform: scale(1.05); }
+
+    /* FOOTER */
+    footer {
+      background: var(--surface);
+      border-top: 1px solid rgba(255,255,255,0.05);
+      padding: 2rem;
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.75rem;
+    }
+    footer span { color: var(--accent1); }
+
+    @keyframes fadeUp { from { opacity:0; transform: translateY(30px); } to { opacity:1; transform: translateY(0); } }
+    @keyframes fadeDown { from { opacity:0; transform: translateY(-20px); } to { opacity:1; transform: translateY(0); } }
+  </style>
+</head>
+<body>
+
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="grid-bg"></div>
+
+  <!-- floating dots -->
+  <div class="float-neuron" style="width:8px;height:8px;background:#7c3aed;top:20%;left:15%;animation-delay:0s;animation-duration:7s;"></div>
+  <div class="float-neuron" style="width:5px;height:5px;background:#06b6d4;top:60%;left:80%;animation-delay:2s;animation-duration:9s;"></div>
+  <div class="float-neuron" style="width:10px;height:10px;background:#f59e0b;top:75%;left:25%;animation-delay:4s;animation-duration:6s;"></div>
+  <div class="float-neuron" style="width:6px;height:6px;background:#10b981;top:30%;left:70%;animation-delay:1s;animation-duration:11s;"></div>
+  <div class="float-neuron" style="width:4px;height:4px;background:#f43f5e;top:50%;left:50%;animation-delay:3s;animation-duration:8s;"></div>
+
+  <div class="hero-content">
+    <div class="badge">🚀 NO BORING TEXTBOOKS HERE</div>
+    <h1>
+      <div class="h1-line1">HOW AI</div>
+      <div class="h1-line2">ACTUALLY</div>
+      <div class="h1-line3">WORKS</div>
+    </h1>
+    <p class="hero-sub">20 concepts. Zero fluff. Built for curious minds who want to understand the tech shaping the future — explained like a friend, not a professor.</p>
+    <div class="hero-cta">
+      <a href="#chapters" class="btn-primary">Start Learning 🧠</a>
+      <a href="quiz.html" class="btn-secondary">Test Yourself ⚡</a>
+    </div>
+  </div>
+  <div class="scroll-hint">
+    <span>SCROLL</span>
+    <span class="scroll-arrow">↓</span>
+  </div>
+</section>
+
+<div class="stats-bar">
+  <div class="stat"><div class="stat-num" style="color:#7c3aed">28</div><div class="stat-label">CONCEPTS</div></div>
+  <div class="stat"><div class="stat-num" style="color:#06b6d4">7</div><div class="stat-label">CHAPTERS</div></div>
+  <div class="stat"><div class="stat-num" style="color:#f59e0b">0</div><div class="stat-label">BORING PARTS</div></div>
+  <div class="stat"><div class="stat-num" style="color:#10b981">∞</div><div class="stat-label">CURIOSITY</div></div>
+</div>
+
+<section class="chapters" id="chapters">
+  <div class="section-label">// THE CURRICULUM</div>
+  <h2 class="section-title">Pick where<br>to start 👇</h2>
+
+  <div class="search-wrap">
+    <span class="search-icon">🔍</span>
+    <input class="search-input" id="searchInput" type="search" placeholder="Search chapters & topics..." oninput="filterChapters(this.value)" autocomplete="off">
+  </div>
+
+  <div class="chapters-grid">
+    <a href="chapter1.html" class="chapter-card" style="--card-accent: linear-gradient(90deg, #7c3aed, #a78bfa);" data-search="chapter 1 neural networks transfer learning layers neurons weights">
+      <span class="card-icon">🧠</span>
+      <div class="card-num">CHAPTER 01</div>
+      <div class="card-title">Neural Networks & Transfer Learning</div>
+      <div class="card-desc">How AI brains are built — layers, neurons, weights, and why you don't need to start from zero.</div>
+      <div class="card-topics">
+        <span class="topic-pill">Neural Nets</span>
+        <span class="topic-pill">Transfer Learning</span>
+      </div>
+      <div class="card-arrow">→</div>
+    </a>
+
+    <a href="chapter2.html" class="chapter-card" style="--card-accent: linear-gradient(90deg, #06b6d4, #67e8f9);" data-search="chapter 2 transformers tokenization embeddings attention self-attention">
+      <span class="card-icon">🔤</span>
+      <div class="card-num">CHAPTER 02</div>
+      <div class="card-title">Transformers: The Power Stack</div>
+      <div class="card-desc">How AI actually reads language — from breaking text into tokens all the way to understanding meaning.</div>
+      <div class="card-topics">
+        <span class="topic-pill">Tokenization</span>
+        <span class="topic-pill">Embeddings</span>
+        <span class="topic-pill">Attention</span>
+        <span class="topic-pill">Transformers</span>
+      </div>
+      <div class="card-arrow">→</div>
+    </a>
+
+    <a href="chapter3.html" class="chapter-card" style="--card-accent: linear-gradient(90deg, #f59e0b, #fde68a);" data-search="chapter 3 large language models llms gpt chatgpt context window temperature hallucination">
+      <span class="card-icon">🤖</span>
+      <div class="card-num">CHAPTER 03</div>
+      <div class="card-title">Large Language Models</div>
+      <div class="card-desc">What ChatGPT, Claude, and Gemini actually are — and why they sometimes make stuff up.</div>
+      <div class="card-topics">
+        <span class="topic-pill">LLMs</span>
+        <span class="topic-pill">Context Window</span>
+        <span class="topic-pill">Temperature</span>
+        <span class="topic-pill">Hallucination</span>
+      </div>
+      <div class="card-arrow">→</div>
+    </a>
+
+    <a href="chapter4.html" class="chapter-card" style="--card-accent: linear-gradient(90deg, #10b981, #6ee7b7);" data-search="chapter 4 training optimization fine-tuning rlhf lora quantization">
+      <span class="card-icon">⚙️</span>
+      <div class="card-num">CHAPTER 04</div>
+      <div class="card-title">Training & Optimization</div>
+      <div class="card-desc">Fine-tuning, RLHF, LoRA, Quantization — how AI gets polished, personalised, and made to run on your laptop.</div>
+      <div class="card-topics">
+        <span class="topic-pill">Fine-Tuning</span>
+        <span class="topic-pill">RLHF</span>
+        <span class="topic-pill">LoRA</span>
+        <span class="topic-pill">Quantization</span>
+      </div>
+      <div class="card-arrow">→</div>
+    </a>
+
+    <a href="chapter5.html" class="chapter-card" style="--card-accent: linear-gradient(90deg, #f43f5e, #fda4af);" data-search="chapter 5 building ai systems prompting prompt engineering rag retrieval agents diffusion images">
+      <span class="card-icon">🚀</span>
+      <div class="card-num">CHAPTER 05</div>
+      <div class="card-title">Building AI Systems</div>
+      <div class="card-desc">Prompting tricks, AI agents, RAG, vector databases, and how images are generated from noise.</div>
+      <div class="card-topics">
+        <span class="topic-pill">Prompt Engineering</span>
+        <span class="topic-pill">RAG</span>
+        <span class="topic-pill">AI Agents</span>
+        <span class="topic-pill">Diffusion</span>
+      </div>
+      <div class="card-arrow">→</div>
+    </a>
+
+    <a href="chapter6.html" class="chapter-card" style="--card-accent: linear-gradient(90deg, #ec4899, #f43f5e);" data-search="chapter 6 ai ethics bias fairness safety alignment hallucination responsible ai">
+      <span class="card-icon">⚖️</span>
+      <div class="card-num">CHAPTER 06</div>
+      <div class="card-title">AI Ethics & Responsible AI</div>
+      <div class="card-desc">Bias, fairness, alignment, and why building safe AI is harder than it looks.</div>
+      <div class="card-topics">
+        <span class="topic-pill">Bias</span>
+        <span class="topic-pill">Fairness</span>
+        <span class="topic-pill">Alignment</span>
+        <span class="topic-pill">Safety</span>
+      </div>
+      <div class="card-arrow">→</div>
+    </a>
+
+    <a href="chapter7.html" class="chapter-card" style="--card-accent: linear-gradient(90deg, #8b5cf6, #06b6d4);" data-search="chapter 7 multimodal future ai vision audio video gpt-4v gemini agents tools">
+      <span class="card-icon">🌌</span>
+      <div class="card-num">CHAPTER 07</div>
+      <div class="card-title">Multimodal AI & The Future</div>
+      <div class="card-desc">Beyond text — vision, audio, video, and what the next generation of AI actually looks like.</div>
+      <div class="card-topics">
+        <span class="topic-pill">Multimodal</span>
+        <span class="topic-pill">Vision AI</span>
+        <span class="topic-pill">AI Agents 2.0</span>
+        <span class="topic-pill">What’s Next</span>
+      </div>
+      <div class="card-arrow">→</div>
+    </a>
+
+    <a href="glossary.html" class="chapter-card" style="--card-accent: linear-gradient(90deg, #f59e0b, #fde68a); background: linear-gradient(135deg, rgba(245,158,11,0.12), rgba(124,58,237,0.1)); border-color: rgba(245,158,11,0.15);" data-search="glossary terms definitions ai vocabulary">
+      <span class="card-icon">📖</span>
+      <div class="card-num">REFERENCE</div>
+      <div class="card-title">AI Glossary</div>
+      <div class="card-desc">Every term explained in plain English. Searchable quick-reference for all 28 concepts.</div>
+      <div class="card-topics">
+        <span class="topic-pill">All Terms</span>
+        <span class="topic-pill">Searchable</span>
+      </div>
+      <div class="card-arrow">→</div>
+    </a>
+
+    <a href="quiz.html" class="chapter-card" style="--card-accent: linear-gradient(90deg, #f59e0b, #7c3aed); background: linear-gradient(135deg, rgba(124,58,237,0.2), rgba(245,158,11,0.2)); border-color: rgba(245,158,11,0.2);" data-search="quiz test questions all topics">
+      <span class="card-icon">⚡</span>
+      <div class="card-num">BONUS</div>
+      <div class="card-title">Quiz: Test Your AI Brain</div>
+      <div class="card-desc">Think you've got it? Put yourself to the test with 10 quick questions across all topics.</div>
+      <div class="card-topics">
+        <span class="topic-pill">All Topics</span>
+        <span class="topic-pill">Interactive</span>
+      </div>
+      <div class="card-arrow">→</div>
+    </a>
+  </div>
+</section>
+
+<div class="highlight-section">
+  <span class="highlight-emoji">💡</span>
+  <h2>The Big Idea</h2>
+  <p>AI isn't magic — it's patterns. Billions of weights, attention layers, and clever maths all working together. Once you see how the pieces fit, you'll never look at ChatGPT the same way again.</p>
+</div>
+
+<div class="quiz-teaser">
+  <div class="quiz-box">
+    <div class="quiz-icon">🎯</div>
+    <div class="quiz-text">
+      <h3>Ready to test yourself?</h3>
+      <p>10 questions, instant results, no judgement. See how much you actually know about AI.</p>
+    </div>
+    <a href="quiz.html" class="quiz-btn">Take the Quiz →</a>
+  </div>
+</div>
+
+<footer>
+  <p>Made with 🧠 for curious minds everywhere &nbsp;|  <span>AI Basics</span> — No PhD required &nbsp;|  <a href="glossary.html" style="color:var(--accent2);text-decoration:none;">Glossary</a></p>
+</footer>
+
+<button class="theme-toggle-fab" id="themeBtn" onclick="toggleTheme()">🌙 Theme</button>
+
+<script>
+  // Theme toggle
+  function toggleTheme() {
+    const light = document.body.classList.toggle('light');
+    localStorage.setItem('aibasics_theme', light ? 'light' : 'dark');
+    document.getElementById('themeBtn').textContent = light ? '☀️ Theme' : '🌙 Theme';
+  }
+  if (localStorage.getItem('aibasics_theme') === 'light') {
+    document.body.classList.add('light');
+    const _b = document.getElementById('themeBtn'); if (_b) _b.textContent = '☀️ Theme';
+  }
+
+  // Chapter completion badges
+  (function() {
+    const map = { 'chapter1.html':1,'chapter2.html':2,'chapter3.html':3,'chapter4.html':4,'chapter5.html':5,'chapter6.html':6,'chapter7.html':7 };
+    document.querySelectorAll('.chapter-card').forEach(card => {
+      const href = card.getAttribute('href');
+      const n = map[href];
+      if (n && localStorage.getItem('aibasics_ch' + n + '_complete') === '1') {
+        const badge = document.createElement('span');
+        badge.className = 'card-done';
+        badge.textContent = '✓ Done';
+        card.appendChild(badge);
+      }
+    });
+  })();
+
+  // Search filter
+  function filterChapters(q) {
+    const term = q.toLowerCase().trim();
+    document.querySelectorAll('.chapter-card').forEach(card => {
+      if (!term) { card.removeAttribute('hidden'); return; }
+      const searchData = (card.dataset.search || '') + ' ' + (card.textContent || '');
+      card.toggleAttribute('hidden', !searchData.toLowerCase().includes(term));
+    });
+  }
+
+  // smooth scroll
+  document.querySelectorAll('a[href="#chapters"]').forEach(a => {
+    a.addEventListener('click', e => {
+      e.preventDefault();
+      document.getElementById('chapters').scrollIntoView({ behavior: 'smooth' });
+    });
+  });
+
+  // count-up animation for stats
+  const nums = document.querySelectorAll('.stat-num');
+  const targets = [28, 7, 0];
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        nums.forEach((el, i) => {
+          if (targets[i] === undefined) return;
+          let count = 0;
+          const interval = setInterval(() => {
+            count++;
+            if (count >= targets[i]) { el.textContent = targets[i]; clearInterval(interval); }
+            else el.textContent = count;
+          }, 40);
+        });
+        observer.disconnect();
+      }
+    });
+  });
+  observer.observe(document.querySelector('.stats-bar'));
+</script>
+</body>
+</html>
