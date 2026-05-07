@@ -39,6 +39,10 @@
     .theme-toggle-fab { position:fixed; bottom:1.5rem; right:1.5rem; z-index:999; background:var(--card); border:1px solid rgba(255,255,255,0.12); border-radius:100px; padding:0.5rem 1rem; cursor:pointer; font-size:1rem; color:var(--text); box-shadow:0 4px 20px rgba(0,0,0,0.3); transition:all 0.2s; }
     .theme-toggle-fab:hover { transform:scale(1.08); box-shadow:0 6px 30px rgba(0,0,0,0.4); }
     body.light .theme-toggle-fab { border-color:rgba(0,0,0,0.1); box-shadow:0 4px 20px rgba(0,0,0,0.1); }
+    /* RESET PROGRESS */
+    .reset-fab { position:fixed; bottom:1.5rem; right:7rem; z-index:999; background:var(--card); border:1px solid rgba(255,255,255,0.12); border-radius:100px; padding:0.5rem 1rem; cursor:pointer; font-size:1rem; color:var(--text); box-shadow:0 4px 20px rgba(0,0,0,0.3); transition:all 0.2s; }
+    .reset-fab:hover { transform:scale(1.08); box-shadow:0 6px 30px rgba(0,0,0,0.4); }
+    body.light .reset-fab { border-color:rgba(0,0,0,0.1); box-shadow:0 4px 20px rgba(0,0,0,0.1); }
     /* SEARCH */
     .search-wrap { max-width:500px; margin:0 auto 2.5rem; position:relative; }
     .search-input { width:100%; background:var(--card); border:1px solid rgba(255,255,255,0.1); border-radius:100px; padding:0.8rem 1.5rem 0.8rem 3rem; font-size:0.85rem; color:var(--text); font-family:'Inter',sans-serif; outline:none; transition:border-color 0.2s; }
@@ -547,6 +551,7 @@
 </footer>
 
 <button class="theme-toggle-fab" id="themeBtn" onclick="toggleTheme()">🌙 Theme</button>
+<button class="reset-fab" onclick="resetProgress()">🔄 Reset</button>
 
 <script>
   // Theme toggle
@@ -560,6 +565,17 @@
     const _b = document.getElementById('themeBtn'); if (_b) _b.textContent = '☀️ Theme';
   }
 
+  // Reset progress
+  function resetProgress() {
+    if (confirm('Reset all progress? This will clear completion badges for all chapters and quiz.')) {
+      for (let i = 1; i <= 7; i++) {
+        localStorage.removeItem('aibasics_ch' + i + '_complete');
+      }
+      localStorage.removeItem('aibasics_quiz_complete');
+      location.reload();
+    }
+  }
+
   // Chapter completion badges
   (function() {
     const map = { 'chapter1.html':1,'chapter2.html':2,'chapter3.html':3,'chapter4.html':4,'chapter5.html':5,'chapter6.html':6,'chapter7.html':7 };
@@ -567,6 +583,13 @@
       const href = card.getAttribute('href');
       const n = map[href];
       if (n && localStorage.getItem('aibasics_ch' + n + '_complete') === '1') {
+        const badge = document.createElement('span');
+        badge.className = 'card-done';
+        badge.textContent = '✓ Done';
+        card.appendChild(badge);
+      }
+      // Quiz completion
+      if (href === 'quiz.html' && localStorage.getItem('aibasics_quiz_complete') === '1') {
         const badge = document.createElement('span');
         badge.className = 'card-done';
         badge.textContent = '✓ Done';

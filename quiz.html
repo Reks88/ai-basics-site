@@ -24,6 +24,12 @@
       --text: #f0f0ff;
       --muted: #8888aa;
     }
+    /* LIGHT MODE */
+    body.light { --bg:#f5f5ff; --surface:#ebebf5; --card:#ffffff; --text:#0a0a20; --muted:#55557a; }
+    body.light nav { background:rgba(240,240,250,0.92) !important; border-bottom-color:rgba(0,0,0,0.08); }
+    body.light .quiz-card { box-shadow:0 4px 20px rgba(0,0,0,0.05); border-color:rgba(0,0,0,0.08); }
+    body.light .option { background:rgba(0,0,0,0.03); border-color:rgba(0,0,0,0.08); }
+    body.light .theme-toggle { background:rgba(0,0,0,0.05); border-color:rgba(0,0,0,0.1); }
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; overflow-x: hidden; }
 
@@ -47,6 +53,10 @@
       border: 1px solid rgba(255,255,255,0.08); transition: all 0.2s;
     }
     .nav-pill:hover { border-color: var(--accent3); color: #fde68a; }
+
+    /* THEME TOGGLE */
+    .theme-toggle { background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.1); border-radius:100px; padding:0.3rem 0.8rem; cursor:pointer; font-size:0.85rem; color:var(--muted); transition:all 0.2s; }
+    .theme-toggle:hover { background:rgba(255,255,255,0.14); color:var(--text); }
 
     /* HERO */
     .quiz-hero {
@@ -292,6 +302,7 @@
     <a href="chapter3.html" class="nav-pill">Ch.3</a>
     <a href="chapter4.html" class="nav-pill">Ch.4</a>
     <a href="chapter5.html" class="nav-pill">Ch.5</a>
+    <button class="theme-toggle" id="themeBtn" onclick="toggleTheme()">🌙</button>
   </div>
 </nav>
 
@@ -524,6 +535,17 @@
   let score = 0;
   let userAnswers = [];
 
+  // Theme toggle
+  function toggleTheme() {
+    const light = document.body.classList.toggle('light');
+    localStorage.setItem('aibasics_theme', light ? 'light' : 'dark');
+    document.getElementById('themeBtn').textContent = light ? '☀️' : '🌙';
+  }
+  if (localStorage.getItem('aibasics_theme') === 'light') {
+    document.body.classList.add('light');
+    const _b = document.getElementById('themeBtn'); if (_b) _b.textContent = '☀️';
+  }
+
   function startQuiz() {
     document.getElementById('startScreen').style.display = 'none';
     document.getElementById('progressWrap').style.display = 'block';
@@ -604,6 +626,7 @@
   }
 
   function showResults() {
+    localStorage.setItem('aibasics_quiz_complete', '1');
     document.getElementById('progressWrap').style.display = 'none';
     document.getElementById('quizArea').style.display = 'none';
     const results = document.getElementById('resultsScreen');
