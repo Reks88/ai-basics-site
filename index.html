@@ -343,6 +343,52 @@
     }
     .quiz-btn:hover { transform: scale(1.05); }
 
+    /* CHATGPT TEASER */
+    .chatgpt-teaser {
+      max-width: 1100px;
+      margin: 0 auto 5rem;
+      padding: 0 2rem;
+    }
+    .chatgpt-box {
+      background: var(--card);
+      border: 1px solid rgba(6,182,212,0.3);
+      border-radius: 20px;
+      padding: 2.5rem;
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+      flex-wrap: wrap;
+      position: relative;
+      overflow: hidden;
+    }
+    .chatgpt-box::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: linear-gradient(135deg, rgba(6,182,212,0.1), rgba(124,58,237,0.1));
+      z-index: 0;
+    }
+    .chatgpt-icon { font-size: 3rem; flex-shrink: 0; position: relative; z-index: 1; }
+    .chatgpt-text { position: relative; z-index: 1; }
+    .chatgpt-text h3 { font-family: 'Syne', sans-serif; font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem; color: var(--accent2); }
+    .chatgpt-text p { color: var(--muted); font-size: 0.85rem; line-height: 1.6; }
+    .chatgpt-btn {
+      margin-left: auto;
+      background: linear-gradient(135deg, var(--accent2), var(--accent1));
+      color: white;
+      padding: 0.9rem 2rem;
+      border-radius: 100px;
+      text-decoration: none;
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      transition: transform 0.2s, box-shadow 0.2s;
+      white-space: nowrap;
+      position: relative;
+      z-index: 1;
+      box-shadow: 0 0 20px rgba(6,182,212,0.4);
+    }
+    .chatgpt-btn:hover { transform: scale(1.05); box-shadow: 0 0 30px rgba(6,182,212,0.6); }
+
     /* FOOTER */
     footer {
       background: var(--surface);
@@ -543,6 +589,17 @@
       <p>10 questions, instant results, no judgement. See how much you actually know about AI.</p>
     </div>
     <a href="quiz.html" class="quiz-btn">Take the Quiz →</a>
+  </div>
+</div>
+
+<div class="chatgpt-teaser">
+  <div class="chatgpt-box">
+    <div class="chatgpt-icon">🤖</div>
+    <div class="chatgpt-text">
+      <h3>Explore ChatGPT Learning</h3>
+      <p>Experience interactive AI-powered learning with our ChatGPT-focused project. Discover hands-on examples and practical applications.</p>
+    </div>
+    <a href="/aadu-ai-learning/" class="chatgpt-btn">Try the ChatGPT Experience →</a>
   </div>
 </div>
 
