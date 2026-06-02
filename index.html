@@ -408,6 +408,108 @@
 
     @keyframes fadeUp { from { opacity:0; transform: translateY(30px); } to { opacity:1; transform: translateY(0); } }
     @keyframes fadeDown { from { opacity:0; transform: translateY(-20px); } to { opacity:1; transform: translateY(0); } }
+
+    /* PROGRESS DASHBOARD */
+    .progress-dashboard {
+      max-width: 1100px;
+      margin: 3rem auto 0;
+      padding: 0 2rem;
+    }
+    .progress-card {
+      background: var(--card);
+      border: 1px solid rgba(124,58,237,0.25);
+      border-radius: 20px;
+      padding: 1.75rem 2rem;
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+      flex-wrap: wrap;
+    }
+    .progress-label {
+      flex-shrink: 0;
+    }
+    .progress-label .prog-title {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 1rem;
+      margin-bottom: 0.25rem;
+    }
+    .progress-label .prog-sub {
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+    .progress-bar-wrap {
+      flex: 1;
+      min-width: 180px;
+      background: rgba(255,255,255,0.06);
+      border-radius: 100px;
+      height: 10px;
+      overflow: hidden;
+    }
+    .progress-bar-fill {
+      height: 100%;
+      border-radius: 100px;
+      background: linear-gradient(90deg, var(--accent1), var(--accent2));
+      transition: width 0.6s cubic-bezier(0.4,0,0.2,1);
+    }
+    body.light .progress-bar-wrap { background: rgba(0,0,0,0.08); }
+    .progress-count {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--accent1);
+      flex-shrink: 0;
+      white-space: nowrap;
+    }
+    .resume-btn {
+      background: linear-gradient(135deg, var(--accent1), var(--accent2));
+      color: white;
+      padding: 0.65rem 1.4rem;
+      border-radius: 100px;
+      text-decoration: none;
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 0.8rem;
+      transition: transform 0.2s, box-shadow 0.2s;
+      white-space: nowrap;
+      box-shadow: 0 0 20px rgba(124,58,237,0.3);
+    }
+    .resume-btn:hover { transform: translateY(-2px) scale(1.04); box-shadow: 0 0 30px rgba(124,58,237,0.5); }
+
+    /* READ TIME & DIFFICULTY on cards */
+    .card-meta {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+      margin-top: 1rem;
+      flex-wrap: wrap;
+    }
+    .meta-pill {
+      font-size: 0.62rem;
+      padding: 0.2rem 0.65rem;
+      border-radius: 100px;
+      letter-spacing: 0.04em;
+    }
+    .meta-pill.time {
+      background: rgba(255,255,255,0.06);
+      color: var(--muted);
+    }
+    .meta-pill.diff-beginner {
+      background: rgba(16,185,129,0.15);
+      color: #6ee7b7;
+      border: 1px solid rgba(16,185,129,0.3);
+    }
+    .meta-pill.diff-intermediate {
+      background: rgba(245,158,11,0.15);
+      color: #fde68a;
+      border: 1px solid rgba(245,158,11,0.3);
+    }
+    .meta-pill.diff-advanced {
+      background: rgba(244,63,94,0.15);
+      color: #fda4af;
+      border: 1px solid rgba(244,63,94,0.3);
+    }
+    body.light .meta-pill.time { background: rgba(0,0,0,0.06); }
   </style>
 </head>
 <body>
@@ -449,6 +551,20 @@
   <div class="stat"><div class="stat-num" style="color:#10b981">∞</div><div class="stat-label">CURIOSITY</div></div>
 </div>
 
+<div class="progress-dashboard" id="progressDashboard" style="display:none">
+  <div class="progress-card">
+    <div class="progress-label">
+      <div class="prog-title">Your Progress</div>
+      <div class="prog-sub">Keep going — you're doing great</div>
+    </div>
+    <div class="progress-bar-wrap">
+      <div class="progress-bar-fill" id="progressBarFill" style="width:0%"></div>
+    </div>
+    <div class="progress-count"><span id="progressCount">0</span><span style="font-size:1rem;color:var(--muted)">/7</span></div>
+    <a class="resume-btn" id="resumeBtn" href="chapter1.html">Resume →</a>
+  </div>
+</div>
+
 <section class="chapters" id="chapters">
   <div class="section-label">// THE CURRICULUM</div>
   <h2 class="section-title">Pick where<br>to start 👇</h2>
@@ -468,6 +584,10 @@
         <span class="topic-pill">Neural Nets</span>
         <span class="topic-pill">Transfer Learning</span>
       </div>
+      <div class="card-meta">
+        <span class="meta-pill time">⏱ 8 min read</span>
+        <span class="meta-pill diff-beginner">Beginner</span>
+      </div>
       <div class="card-arrow">→</div>
     </a>
 
@@ -481,6 +601,10 @@
         <span class="topic-pill">Embeddings</span>
         <span class="topic-pill">Attention</span>
         <span class="topic-pill">Transformers</span>
+      </div>
+      <div class="card-meta">
+        <span class="meta-pill time">⏱ 10 min read</span>
+        <span class="meta-pill diff-beginner">Beginner</span>
       </div>
       <div class="card-arrow">→</div>
     </a>
@@ -496,6 +620,10 @@
         <span class="topic-pill">Temperature</span>
         <span class="topic-pill">Hallucination</span>
       </div>
+      <div class="card-meta">
+        <span class="meta-pill time">⏱ 12 min read</span>
+        <span class="meta-pill diff-intermediate">Intermediate</span>
+      </div>
       <div class="card-arrow">→</div>
     </a>
 
@@ -509,6 +637,10 @@
         <span class="topic-pill">RLHF</span>
         <span class="topic-pill">LoRA</span>
         <span class="topic-pill">Quantization</span>
+      </div>
+      <div class="card-meta">
+        <span class="meta-pill time">⏱ 11 min read</span>
+        <span class="meta-pill diff-intermediate">Intermediate</span>
       </div>
       <div class="card-arrow">→</div>
     </a>
@@ -524,6 +656,10 @@
         <span class="topic-pill">AI Agents</span>
         <span class="topic-pill">Diffusion</span>
       </div>
+      <div class="card-meta">
+        <span class="meta-pill time">⏱ 14 min read</span>
+        <span class="meta-pill diff-intermediate">Intermediate</span>
+      </div>
       <div class="card-arrow">→</div>
     </a>
 
@@ -538,6 +674,10 @@
         <span class="topic-pill">Alignment</span>
         <span class="topic-pill">Safety</span>
       </div>
+      <div class="card-meta">
+        <span class="meta-pill time">⏱ 9 min read</span>
+        <span class="meta-pill diff-beginner">Beginner</span>
+      </div>
       <div class="card-arrow">→</div>
     </a>
 
@@ -551,6 +691,10 @@
         <span class="topic-pill">Vision AI</span>
         <span class="topic-pill">AI Agents 2.0</span>
         <span class="topic-pill">What’s Next</span>
+      </div>
+      <div class="card-meta">
+        <span class="meta-pill time">⏱ 10 min read</span>
+        <span class="meta-pill diff-advanced">Advanced</span>
       </div>
       <div class="card-arrow">→</div>
     </a>
@@ -602,7 +746,7 @@
   <div class="chatgpt-box">
     <div class="chatgpt-icon">🤖</div>
     <div class="chatgpt-text">
-      <h3>Explore ChaatGPT</h3>
+      <h3>Explore ChatGPT</h3>
       <p>Our very first project on Indian cuisine using AI-powered technology. Discover the fusion of traditional recipes and modern AI.</p>
     </div>
     <a href="https://d3kew7wmnuzkk2.cloudfront.net/" class="chatgpt-btn">Try the ChatGPT Experience →</a>
@@ -702,6 +846,38 @@
     });
   });
   observer.observe(document.querySelector('.stats-bar'));
+
+  // Progress dashboard
+  (function() {
+    const chapterLinks = ['chapter1.html','chapter2.html','chapter3.html','chapter4.html','chapter5.html','chapter6.html','chapter7.html'];
+    const done = chapterLinks.filter((_,i) => localStorage.getItem('aibasics_ch'+(i+1)+'_complete') === '1');
+    if (done.length > 0) {
+      const dash = document.getElementById('progressDashboard');
+      dash.style.display = '';
+      document.getElementById('progressCount').textContent = done.length;
+      document.getElementById('progressBarFill').style.width = Math.round(done.length / 7 * 100) + '%';
+      // Resume = first incomplete chapter
+      const nextIdx = chapterLinks.findIndex((_,i) => localStorage.getItem('aibasics_ch'+(i+1)+'_complete') !== '1');
+      const resumeBtn = document.getElementById('resumeBtn');
+      if (nextIdx !== -1) {
+        resumeBtn.href = chapterLinks[nextIdx];
+        resumeBtn.textContent = 'Resume Ch.' + (nextIdx+1) + ' →';
+      } else {
+        resumeBtn.href = 'quiz.html';
+        resumeBtn.textContent = 'Take Quiz →';
+      }
+    }
+  })();
+
+  // Press '/' to focus search
+  document.addEventListener('keydown', e => {
+    if (e.key === '/' && document.activeElement.tagName !== 'INPUT') {
+      e.preventDefault();
+      const s = document.getElementById('searchInput');
+      s.focus();
+      s.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  });
 </script>
 </body>
 </html>
