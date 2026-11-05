@@ -121,6 +121,11 @@ If you want a proper URL like `aibasics.io`:
 These are console-side changes the repo can't make for itself. The first one is
 **required** for `404.html` to ever be shown.
 
+> **Steps 8a, 8b and 8e are scripted** — see [`infra/README.md`](infra/README.md).
+> `python3 infra/harden.py status` shows what's configured; each command is dry-run
+> by default and idempotent. 8c and 8d stay manual, for reasons explained there.
+> The steps below describe the equivalent clicks if you'd rather use the console.
+
 ### 8a. Serve the custom 404 page (required)
 
 Without this, a bad URL returns raw S3 XML (`Code: NoSuchKey`), which looks broken.
