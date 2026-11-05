@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Page Not Found 🤷 — AI Basics</title>
+  <meta name="description" content="That page doesn't exist — but these seven chapters do.">
+  <meta name="robots" content="noindex">
+  <meta property="og:title" content="Page Not Found — AI Basics">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="https://ai-basics.org/og-cover.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <meta name="theme-color" content="#0a0a0f">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0a0a0f; --surface: #12121a; --card: #1a1a28;
+      --accent1: #7c3aed; --accent2: #06b6d4; --accent3: #f59e0b;
+      --text: #f0f0ff; --muted: #8888aa;
+    }
+    body.light { --bg:#f5f5ff; --surface:#ebebf5; --card:#ffffff; --text:#0a0a20; --muted:#55557a; }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      background:var(--bg); color:var(--text); font-family:'Inter',sans-serif;
+      min-height:100vh; display:flex; flex-direction:column;
+      align-items:center; justify-content:center; text-align:center;
+      padding:2rem; overflow-x:hidden;
+    }
+    .code {
+      font-family:'Space Mono',monospace; font-size:clamp(4rem,14vw,8rem);
+      font-weight:700; line-height:1;
+      background:linear-gradient(135deg,var(--accent1),var(--accent2));
+      -webkit-background-clip:text; background-clip:text;
+      -webkit-text-fill-color:transparent;
+    }
+    h1 {
+      font-family:'Syne',sans-serif; font-weight:800;
+      font-size:clamp(1.5rem,5vw,2.4rem); margin:1rem 0 0.75rem;
+    }
+    p.lede { color:var(--muted); max-width:34rem; line-height:1.7; margin-bottom:2.5rem; }
+    .links { display:flex; flex-wrap:wrap; gap:0.75rem; justify-content:center; }
+    .links a {
+      background:var(--card); color:var(--text); text-decoration:none;
+      border:1px solid rgba(255,255,255,0.12); border-radius:100px;
+      padding:0.7rem 1.4rem; font-size:0.9rem; font-weight:500;
+      transition:transform 0.2s, border-color 0.2s;
+    }
+    .links a:hover { transform:translateY(-2px); border-color:var(--accent2); }
+    .links a.primary {
+      background:linear-gradient(135deg,var(--accent1),var(--accent2));
+      border-color:transparent; font-weight:600;
+    }
+    body.light .links a { border-color:rgba(0,0,0,0.1); }
+    footer { margin-top:3.5rem; color:var(--muted); font-size:0.8rem; }
+    footer a { color:var(--accent2); text-decoration:none; }
+  </style>
+</head>
+<body>
+  <div class="code">404</div>
+  <h1>This page didn't make the curriculum</h1>
+  <p class="lede">
+    The link is broken or the page has moved. Nothing's on fire — here's the way back in.
+  </p>
+  <div class="links">
+    <a href="/" class="primary">← Back to all chapters</a>
+    <a href="/chapter1.html">Start at chapter 1</a>
+    <a href="/glossary.html">Glossary</a>
+    <a href="/quiz.html">Take the quiz</a>
+  </div>
+  <footer>
+    <p>Made with 🧠 for curious minds everywhere &nbsp;|&nbsp; <a href="/">AI Basics</a></p>
+  </footer>
+  <script>
+    // Honour the theme the visitor already chose on the rest of the site.
+    try {
+      if (localStorage.getItem('aibasics_theme') === 'light') {
+        document.body.classList.add('light');
+      }
+    } catch (e) { /* storage blocked — dark theme is a fine default */ }
+  </script>
+</body>
+</html>

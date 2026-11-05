@@ -44,6 +44,7 @@ jobs:
           aws s3 sync . s3://${{ vars.S3_BUCKET_NAME }} \
             --exclude ".git/*" \
             --exclude ".github/*" \
+            --exclude ".claude/*" \
             --exclude "*.md" \
             --exclude "bucket-policy.json" \
             --delete \
@@ -56,6 +57,20 @@ jobs:
             --metadata-directive REPLACE \
             --cache-control "public, max-age=86400, stale-while-revalidate=3600" \
             --content-type "text/css"
+
+          # Images are content-stable and referenced by absolute URL, so they
+          # can be cached far longer than the HTML that points at them.
+          for asset in "og-cover.png:image/png" \
+                       "apple-touch-icon.png:image/png" \
+                       "favicon.ico:image/x-icon"; do
+            key="${asset%%:*}"
+            type="${asset##*:}"
+            aws s3 cp s3://${{ vars.S3_BUCKET_NAME }}/"$key" \
+                      s3://${{ vars.S3_BUCKET_NAME }}/"$key" \
+              --metadata-directive REPLACE \
+              --cache-control "public, max-age=604800, stale-while-revalidate=86400" \
+              --content-type "$type"
+          done
 
       - name: Invalidate CloudFront cache
         run: |

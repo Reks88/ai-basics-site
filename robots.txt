@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://YOUR-CLOUDFRONT-DOMAIN/sitemap.xml
+Sitemap: https://ai-basics.org/sitemap.xml

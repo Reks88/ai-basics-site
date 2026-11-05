@@ -8,6 +8,9 @@ node_modules/
 # VS Code
 .vscode/
 
+# Claude Code local state and git worktrees — never deploy or commit these
+.claude/
+
 # Environment / secrets — never commit these
 .env
 .env.*

@@ -18,4 +18,4 @@ echo "⏳ Waiting for GitHub Actions deployment..."
 sleep 10
 
 echo "✅ Deployment complete!"
-echo "🌐 Site should be updated at: https://d35gjncy3cc0uh.cloudfront.net"
+echo "🌐 Site should be updated at: https://ai-basics.org"

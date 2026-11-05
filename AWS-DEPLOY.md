@@ -61,16 +61,18 @@
 1. Go to the **Objects** tab → click **Upload**
 2. Click **Add files** → select all these files:
    - `index.html`
-   - `chapter1.html`
-   - `chapter2.html`
-   - `chapter3.html`
-   - `chapter4.html`
-   - `chapter5.html`
+   - `chapter1.html` … `chapter7.html` (all seven)
    - `quiz.html`
+   - `glossary.html`
+   - `404.html`
    - `shared.css`
+   - `robots.txt`, `sitemap.xml`
+   - `og-cover.png`, `favicon.ico`, `apple-touch-icon.png`
 3. Click **Upload**
 
-> Do **not** upload `bucket-policy.json` or `AWS-DEPLOY.md`.
+> Do **not** upload `bucket-policy.json`, `AWS-DEPLOY.md`, or anything under `.claude/`.
+> In practice the GitHub Actions workflow (`.github/workflows/deploy.yml`) does all
+> of this on every push to `main` — manual upload is only for the first run.
 
 ---
 
@@ -111,6 +113,75 @@ If you want a proper URL like `aibasics.io`:
    - Toggle **Alias** on
    - Route traffic to: **Alias to CloudFront distribution** → select yours
 6. DNS propagates in ~5 minutes
+
+---
+
+## Step 8 — Post-setup hardening
+
+These are console-side changes the repo can't make for itself. The first one is
+**required** for `404.html` to ever be shown.
+
+### 8a. Serve the custom 404 page (required)
+
+Without this, a bad URL returns raw S3 XML (`Code: NoSuchKey`), which looks broken.
+
+**CloudFront → your distribution → Error pages → Create custom error response**, twice:
+
+| HTTP error code | Customize response | Response page path | HTTP response code |
+|---|---|---|---|
+| 403 Forbidden | Yes | `/404.html` | 404 |
+| 404 Not Found | Yes | `/404.html` | 404 |
+
+Use `404` as the response code, not `200` — returning 200 for a missing page tells
+search engines the error page is real content ("soft 404") and gets it indexed.
+
+> 403 is listed because an S3 **REST** origin returns 403, not 404, for a missing
+> key when the bucket isn't public. Covering both is harmless.
+
+### 8b. Add security response headers
+
+The site currently sends no `Strict-Transport-Security`, `Content-Security-Policy`,
+`X-Content-Type-Options` or `Referrer-Policy`.
+
+**CloudFront → Policies → Response headers → Create policy**, then attach it to the
+default behaviour. A good starting point for this site:
+
+- **HSTS**: max-age 31536000, include subdomains, preload
+- **X-Content-Type-Options**: `nosniff`
+- **Referrer-Policy**: `strict-origin-when-cross-origin`
+- **X-Frame-Options**: `DENY`
+- **Content-Security-Policy**:
+  ```
+  default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+  font-src https://fonts.gstatic.com; img-src 'self' data:; script-src 'self' 'unsafe-inline';
+  object-src 'none'; base-uri 'self'; frame-ancestors 'none'
+  ```
+  `'unsafe-inline'` is needed because every page's CSS and JS is inline. Dropping it
+  later means moving those to files or adding per-build nonces.
+
+### 8c. Replace IAM access keys with OIDC
+
+`deploy.yml` currently authenticates with `AWS_ACCESS_KEY_ID` /
+`AWS_SECRET_ACCESS_KEY` secrets — long-lived credentials sitting in a now-public
+repo's settings. The workflow already contains a commented-out OIDC block: create an
+IAM role trusting `token.actions.githubusercontent.com` (scoped to
+`repo:Reks88/ai-basics-site:ref:refs/heads/main`), then swap to it and delete both
+secrets.
+
+### 8d. Lock the bucket down with Origin Access Control
+
+`bucket-policy.json` grants `s3:GetObject` to `Principal: "*"`, so the bucket is
+readable by anyone directly, bypassing CloudFront. The current pattern is **Origin
+Access Control**: in CloudFront set the origin to the S3 **REST** endpoint, create an
+OAC, and let the console update the bucket policy to allow only that distribution.
+Then re-enable *Block all public access* on the bucket. (Note this changes the origin
+type from Step 6, and makes 8a's 403 rule necessary.)
+
+### 8e. Optional — clean URLs
+
+`/glossary` 404s today; only `/glossary.html` works. A CloudFront Function on
+*viewer request* that appends `.html` to extensionless paths gives you tidier,
+more linkable URLs without renaming anything.
 
 ---
 
