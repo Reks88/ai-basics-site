@@ -1,52 +1,52 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://YOUR-CLOUDFRONT-DOMAIN/</loc>
+    <loc>https://ai-basics.org/</loc>
     <changefreq>monthly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://YOUR-CLOUDFRONT-DOMAIN/chapter1.html</loc>
+    <loc>https://ai-basics.org/chapter1.html</loc>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://YOUR-CLOUDFRONT-DOMAIN/chapter2.html</loc>
+    <loc>https://ai-basics.org/chapter2.html</loc>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://YOUR-CLOUDFRONT-DOMAIN/chapter3.html</loc>
+    <loc>https://ai-basics.org/chapter3.html</loc>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://YOUR-CLOUDFRONT-DOMAIN/chapter4.html</loc>
+    <loc>https://ai-basics.org/chapter4.html</loc>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://YOUR-CLOUDFRONT-DOMAIN/chapter5.html</loc>
+    <loc>https://ai-basics.org/chapter5.html</loc>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://YOUR-CLOUDFRONT-DOMAIN/chapter6.html</loc>
+    <loc>https://ai-basics.org/chapter6.html</loc>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://YOUR-CLOUDFRONT-DOMAIN/chapter7.html</loc>
+    <loc>https://ai-basics.org/chapter7.html</loc>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://YOUR-CLOUDFRONT-DOMAIN/quiz.html</loc>
+    <loc>https://ai-basics.org/quiz.html</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://YOUR-CLOUDFRONT-DOMAIN/glossary.html</loc>
+    <loc>https://ai-basics.org/glossary.html</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
