@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Footy Legends ⚽ Guess the Player, Records &amp; Quizzes</title>
+  <meta name="description" content="Four football games in one: guess the legend from five clues, higher or lower, a 10-question quiz, plus a hall of fame and all-time records tables.">
+  <meta property="og:title" content="Footy Legends — Guess the Player, Records &amp; Quizzes">
+  <meta property="og:description" content="Guess the legend from five clues, play higher-or-lower, and test yourself on 40 questions of football history.">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="https://ai-basics.org/og-cover.png">
+  <meta property="og:url" content="https://ai-basics.org/football/">
+  <meta property="og:site_name" content="AI Basics">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="canonical" href="https://ai-basics.org/football/">
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <meta name="theme-color" content="#0b0d10">
+  <style>
+    :root {
+      color-scheme: dark;
+      /* Page + surfaces */
+      --bg:            #0b0d10;
+      --surface:       #15171c;   /* the surface the bars were validated on */
+      --card:          #1c1f26;
+      --card-hi:       #242831;
+      --line:          rgba(255,255,255,0.10);
+
+      /* Ink */
+      --text:          #f0efec;
+      --text-2:        #c3c2b7;
+      --muted:         #898781;
+
+      /* Brand + data */
+      --accent:        #199e70;   /* aqua, validated on --surface */
+      --accent-soft:   rgba(25,158,112,0.14);
+      --series:        #3987e5;   /* bar hue, validated on --surface */
+      --good:          #0ca30c;
+      --bad:           #d03b3b;
+
+      --radius:        14px;
+      --font: system-ui, -apple-system, "Segoe UI", sans-serif;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── chrome ──────────────────────────────────────────────────────── */
+
+    header.bar {
+      position: sticky; top: 0; z-index: 50;
+      background: rgba(11,13,16,0.92);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--line);
+    }
+    .bar-inner {
+      max-width: 1100px; margin: 0 auto;
+      padding: 0.7rem 1rem;
+      display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;
+    }
+    .brand {
+      font-weight: 800; font-size: 1.05rem; letter-spacing: -0.01em;
+      display: flex; align-items: center; gap: 0.45rem;
+      background: none; border: 0; color: var(--text); cursor: pointer;
+      font-family: var(--font);
+    }
+    .brand span.ball { font-size: 1.2rem; }
+    nav { display: flex; gap: 0.3rem; flex-wrap: wrap; margin-left: auto; }
+    /* On a phone the six nav items can't fit or wrap cleanly, so give them
+       one swipeable row instead of letting the last one clip off-screen. */
+    @media (max-width: 760px) {
+      nav {
+        margin-left: 0; width: 100%; flex-wrap: nowrap;
+        overflow-x: auto; -webkit-overflow-scrolling: touch;
+        scrollbar-width: none; padding-bottom: 0.15rem; min-width: 0;
+      }
+      nav::-webkit-scrollbar { display: none; }
+      nav button { flex: 0 0 auto; }
+    }
+    nav button {
+      background: transparent; border: 1px solid transparent; color: var(--text-2);
+      font-family: var(--font); font-size: 0.82rem; font-weight: 500;
+      padding: 0.42rem 0.75rem; border-radius: 100px; cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+    }
+    nav button:hover { background: var(--card); color: var(--text); }
+    nav button[aria-current="page"] {
+      background: var(--accent-soft); color: var(--text);
+      border-color: rgba(25,158,112,0.45);
+    }
+
+    main { max-width: 1100px; margin: 0 auto; padding: 1.5rem 1rem 4rem; }
+
+    /* ── shared bits ─────────────────────────────────────────────────── */
+
+    h1 {
+      font-size: clamp(1.8rem, 5.5vw, 2.9rem); font-weight: 800;
+      letter-spacing: -0.02em; line-height: 1.1; margin-bottom: 0.6rem;
+    }
+    h2 { font-size: 1.3rem; font-weight: 700; letter-spacing: -0.01em; }
+    .lede { color: var(--text-2); max-width: 46rem; margin-bottom: 2rem; }
+
+    .btn {
+      background: var(--card); color: var(--text);
+      border: 1px solid var(--line); border-radius: 100px;
+      padding: 0.6rem 1.25rem; font-family: var(--font);
+      font-size: 0.9rem; font-weight: 600; cursor: pointer;
+      margin: 0.35rem 0.35rem 0 0; transition: transform 0.15s, background 0.15s;
+    }
+    .btn:hover { transform: translateY(-1px); background: var(--card-hi); }
+    .btn-primary { background: var(--accent); border-color: transparent; color: #fff; }
+    .btn-primary:hover { background: #1cb37e; }
+
+    .opt {
+      display: block; width: 100%; text-align: left;
+      background: var(--card); color: var(--text);
+      border: 1px solid var(--line); border-radius: 12px;
+      padding: 0.85rem 1.1rem; margin-bottom: 0.55rem;
+      font-family: var(--font); font-size: 0.95rem; font-weight: 500;
+      cursor: pointer; transition: background 0.15s, border-color 0.15s, transform 0.1s;
+    }
+    .opt:hover { background: var(--card-hi); border-color: var(--accent); transform: translateX(2px); }
+
+    .panel {
+      background: var(--surface); border: 1px solid var(--line);
+      border-radius: var(--radius); padding: 1.4rem;
+    }
+
+    /* status strip above each game */
+    .strip {
+      display: flex; gap: 1.5rem; align-items: baseline; flex-wrap: wrap;
+      padding-bottom: 1rem; margin-bottom: 1.25rem;
+      border-bottom: 1px solid var(--line);
+    }
+    .strip .k { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); display: block; }
+    .strip .v { font-size: 1.35rem; font-weight: 700; }
+
+    /* ── home ────────────────────────────────────────────────────────── */
+
+    /* 300px floor puts three cards on a row at full width, so the five
+       modes break 3 + 2 rather than a lopsided 4 + 1. */
+    .mode-grid {
+      display: grid; gap: 1rem;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      margin-bottom: 1rem;
+    }
+    .mode-card {
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: var(--radius); padding: 1.3rem;
+      text-align: left; cursor: pointer; color: var(--text);
+      font-family: var(--font); transition: transform 0.15s, border-color 0.15s;
+      display: flex; flex-direction: column; gap: 0.5rem;
+    }
+    .mode-card:hover { transform: translateY(-3px); border-color: var(--accent); }
+    .mode-icon { font-size: 1.9rem; }
+    .mode-card h3 { font-size: 1.1rem; font-weight: 700; }
+    .mode-card p { font-size: 0.86rem; color: var(--text-2); flex: 1; }
+    .mode-best {
+      font-size: 0.74rem; text-transform: uppercase; letter-spacing: 0.07em;
+      color: var(--muted); border-top: 1px solid var(--line); padding-top: 0.6rem;
+    }
+    .mode-best strong { color: var(--accent); font-size: 0.95rem; letter-spacing: 0; }
+
+    /* ── Guess the Legend ────────────────────────────────────────────── */
+
+    .clue { list-style: none; display: flex; gap: 0.8rem; padding: 0.7rem 0; border-bottom: 1px solid var(--line); }
+    .clue:last-child { border-bottom: 0; }
+    .clue-n {
+      flex-shrink: 0; font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.07em;
+      color: var(--accent); font-weight: 700; padding-top: 0.2rem; min-width: 3.4rem;
+    }
+    .worth { color: var(--text-2); font-size: 0.85rem; margin: 1rem 0; }
+    .worth strong { color: var(--accent); }
+
+    .reveal, .result {
+      border: 1px solid var(--line); border-radius: var(--radius);
+      padding: 1.4rem; margin-top: 0.5rem;
+    }
+    .reveal-right, .result-right { border-color: rgba(12,163,12,0.5); background: rgba(12,163,12,0.08); }
+    .reveal-wrong, .result-wrong { border-color: rgba(208,59,59,0.5); background: rgba(208,59,59,0.08); }
+    .reveal-final { border-color: rgba(25,158,112,0.5); background: var(--accent-soft); text-align: center; }
+    .verdict { font-weight: 700; margin-bottom: 0.7rem; }
+    .reveal-name { font-size: 1.35rem; font-weight: 800; margin-bottom: 0.2rem; }
+    .reveal-meta { color: var(--text-2); font-size: 0.88rem; margin-bottom: 0.7rem; }
+    .reveal-fact { margin-bottom: 0.6rem; }
+    .reveal-honours { color: var(--accent); font-size: 0.84rem; font-weight: 600; margin-bottom: 1rem; }
+    .final-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); }
+    .final-score { font-size: 3.4rem; font-weight: 800; line-height: 1.1; }
+    .final-note { color: var(--text-2); margin-bottom: 1rem; }
+
+    /* ── Higher or Lower ─────────────────────────────────────────────── */
+
+    .hi-grid {
+      display: grid; gap: 1rem; grid-template-columns: 1fr 1fr;
+      align-items: stretch; margin-bottom: 1.25rem;
+    }
+    @media (max-width: 560px) { .hi-grid { grid-template-columns: 1fr; } }
+    .hi-card {
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: var(--radius); padding: 1.3rem; text-align: center;
+    }
+    .hi-name { font-size: 1.05rem; font-weight: 700; margin-bottom: 0.25rem; }
+    .hi-meta { font-size: 0.78rem; color: var(--muted); margin-bottom: 0.9rem; }
+    .hi-value { font-size: 2.9rem; font-weight: 800; line-height: 1; color: var(--accent); }
+    .hi-label { font-size: 0.74rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin-top: 0.3rem; }
+    .hi-asof { display: block; font-size: 0.68rem; color: var(--muted); }
+    .hi-ask { text-align: center; color: var(--text-2); margin-bottom: 0.8rem; }
+    .hi-buttons { display: flex; gap: 0.6rem; justify-content: center; }
+    .result { text-align: center; }
+    .result-note { color: var(--text-2); font-size: 0.9rem; margin-bottom: 1rem; }
+
+    /* ── Quiz ────────────────────────────────────────────────────────── */
+
+    .timer { height: 4px; background: var(--card); border-radius: 100px; overflow: hidden; margin-bottom: 0.4rem; }
+    .timer-bar { display: block; height: 100%; background: var(--accent); width: 100%; }
+    .timer-label { font-size: 0.72rem; color: var(--muted); text-align: right; margin-bottom: 1.2rem; }
+    .quiz-q { font-size: 1.2rem; font-weight: 700; margin-bottom: 1.2rem; line-height: 1.35; }
+
+    /* ── Hall of Fame ────────────────────────────────────────────────── */
+
+    .filters { display: flex; gap: 0.4rem; flex-wrap: wrap; margin-bottom: 0.6rem; }
+    .filters button {
+      background: var(--card); border: 1px solid var(--line); color: var(--text-2);
+      font-family: var(--font); font-size: 0.8rem; font-weight: 600;
+      padding: 0.4rem 0.9rem; border-radius: 100px; cursor: pointer;
+    }
+    .filters button[aria-pressed="true"] { background: var(--accent-soft); border-color: var(--accent); color: var(--text); }
+    .filter-count { font-size: 0.78rem; color: var(--muted); margin-bottom: 1.2rem; }
+
+    .fame-grid { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); }
+    .fame-card {
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: var(--radius); padding: 1.2rem;
+      display: flex; flex-direction: column; gap: 0.7rem;
+    }
+    .fame-head { display: flex; gap: 0.8rem; align-items: center; }
+    .fame-flag { font-size: 1.9rem; line-height: 1; }
+    .fame-name { font-size: 1.05rem; font-weight: 700; }
+    .fame-meta { font-size: 0.76rem; color: var(--muted); }
+    .fame-fact { font-size: 0.9rem; color: var(--text-2); flex: 1; }
+    .fame-honours { list-style: none; display: flex; flex-wrap: wrap; gap: 0.3rem; }
+    .fame-honours li {
+      font-size: 0.72rem; font-weight: 600; color: var(--accent);
+      background: var(--accent-soft); border-radius: 100px; padding: 0.2rem 0.6rem;
+    }
+    .fame-clubs { font-size: 0.74rem; color: var(--muted); }
+    .fame-goals { font-size: 0.8rem; color: var(--text-2); border-top: 1px solid var(--line); padding-top: 0.6rem; }
+    .fame-goals strong { font-size: 1.1rem; color: var(--text); }
+
+    /* ── Records ─────────────────────────────────────────────────────── */
+
+    .rec-table { margin-bottom: 2.2rem; }
+    .rec-title { font-size: 1.05rem; font-weight: 700; }
+    .rec-sub { font-size: 0.78rem; color: var(--muted); margin-bottom: 0.9rem; }
+    .rec-rows { display: flex; flex-direction: column; gap: 2px; }
+    .rec-row {
+      display: grid; align-items: center;
+      gap: 0.3rem 0.8rem;
+      grid-template-columns: 1.4rem minmax(6rem, 13rem) minmax(0, 1fr) 3rem;
+      grid-template-areas: "rank name bar value";
+      padding: 0.45rem 0; border-radius: 6px;
+    }
+    .rec-rank { grid-area: rank; }
+    .rec-name { grid-area: name; }
+    .rec-bar-track { grid-area: bar; }
+    .rec-value { grid-area: value; }
+    .rec-row:hover { background: var(--card); }
+    .rec-rank { font-size: 0.78rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+    .rec-name { font-size: 0.88rem; font-weight: 600; display: flex; flex-direction: column; }
+    .rec-detail { font-size: 0.72rem; font-weight: 400; color: var(--muted); }
+    .rec-name { min-width: 0; }
+    .rec-name > span { overflow-wrap: break-word; }
+    .rec-bar-track { display: block; height: 10px; }
+    .rec-bar {
+      display: block; height: 100%; background: var(--series);
+      border-radius: 0 4px 4px 0; min-width: 3px;
+    }
+    .rec-value {
+      font-size: 0.95rem; font-weight: 700; text-align: right;
+      font-variant-numeric: tabular-nums;
+    }
+    /* Narrow screens: name and value on the top line, the bar on its own
+       line underneath, so nothing has to be squeezed or clipped. */
+    @media (max-width: 620px) {
+      .rec-row {
+        grid-template-columns: 1.2rem minmax(0, 1fr) 2.8rem;
+        grid-template-areas:
+          "rank name  value"
+          "rank bar   bar";
+        padding: 0.55rem 0;
+      }
+      .rec-bar-track { height: 8px; }
+    }
+
+    /* ── footer ──────────────────────────────────────────────────────── */
+
+    footer {
+      border-top: 1px solid var(--line); margin-top: 3rem;
+      padding: 1.5rem 1rem; text-align: center;
+      font-size: 0.78rem; color: var(--muted);
+    }
+    footer a { color: var(--accent); text-decoration: none; }
+    .note {
+      background: var(--card); border: 1px solid var(--line);
+      border-left: 3px solid var(--accent);
+      border-radius: 8px; padding: 0.9rem 1.1rem;
+      font-size: 0.8rem; color: var(--text-2); margin-top: 2rem;
+    }
+    .kbd {
+      font-family: ui-monospace, monospace; font-size: 0.72rem;
+      background: var(--card-hi); border: 1px solid var(--line);
+      border-radius: 4px; padding: 0.1rem 0.35rem;
+    }
+  </style>
+</head>
+<body>
+
+<header class="bar">
+  <div class="bar-inner">
+    <button class="brand" data-nav="home"><span class="ball">⚽</span> Footy Legends</button>
+    <nav>
+      <button data-nav="home">Menu</button>
+      <button data-nav="legend">Guess the Legend</button>
+      <button data-nav="higher">Higher or Lower</button>
+      <button data-nav="quiz">Quiz</button>
+      <button data-nav="fame">Hall of Fame</button>
+      <button data-nav="records">Records</button>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+  <!-- ── Home ────────────────────────────────────────────────────────── -->
+  <section id="view-home">
+    <h1>Four football games.<br>One question: how much do you actually know?</h1>
+    <p class="lede">
+      Guess legends from five clues, survive a higher-or-lower streak, and take on
+      40 questions of football history — from Puskás to Bonmatí.
+    </p>
+
+    <div class="mode-grid">
+      <button class="mode-card" data-nav="legend">
+        <span class="mode-icon">🕵️</span>
+        <h3>Guess the Legend</h3>
+        <p>Five clues, getting easier. Guess early for more points — 50 down to 10. Five rounds.</p>
+        <span class="mode-best">Your best · <strong id="best-legend">—</strong></span>
+      </button>
+
+      <button class="mode-card" data-nav="higher">
+        <span class="mode-icon">📈</span>
+        <h3>Higher or Lower</h3>
+        <p>Who scored more goals for their country? Keep the streak alive. One wrong answer ends it.</p>
+        <span class="mode-best">Best streak · <strong id="best-higher">—</strong></span>
+      </button>
+
+      <button class="mode-card" data-nav="quiz">
+        <span class="mode-icon">⚡</span>
+        <h3>Quick-fire Quiz</h3>
+        <p>Ten random questions, 20 seconds each. World Cups, leagues, records, legends.</p>
+        <span class="mode-best">Your best · <strong id="best-quiz">—</strong></span>
+      </button>
+
+      <button class="mode-card" data-nav="fame">
+        <span class="mode-icon">🏛️</span>
+        <h3>Hall of Fame</h3>
+        <p>36 of the greatest, from the 1920s to now — what they won and why they mattered.</p>
+        <span class="mode-best">Reference</span>
+      </button>
+
+      <button class="mode-card" data-nav="records">
+        <span class="mode-icon">📊</span>
+        <h3>Records Tables</h3>
+        <p>Ballon d'Ors, World Cups, Champions Leagues, league titles and goalscoring records.</p>
+        <span class="mode-best">Reference</span>
+      </button>
+    </div>
+
+    <div class="note">
+      <strong>About the data.</strong> Everything here is built on settled football
+      history — completed seasons, career honours, all-time records — verified
+      through <span id="data-stamp">May 2026</span>. Figures for players still
+      playing are tagged “as of”, because they're still climbing. A
+      <span class="kbd">*</span> in the records tables marks a number worth
+      double-checking before you quote it.
+    </div>
+  </section>
+
+  <!-- ── Guess the Legend ────────────────────────────────────────────── -->
+  <section id="view-legend" hidden>
+    <h2>Guess the Legend</h2>
+    <p class="lede">Clues get easier as you go. The earlier you guess, the more it's worth.</p>
+
+    <div class="panel">
+      <div class="strip">
+        <span><span class="k">Progress</span><span class="v" id="legend-progress">Round 1 of 5</span></span>
+        <span><span class="k">Score</span><span class="v" id="legend-score">0</span></span>
+      </div>
+
+      <div id="legend-play">
+        <ul id="legend-clues"></ul>
+        <p class="worth">A correct guess right now is worth <strong id="legend-worth">50</strong> points.</p>
+        <button class="btn" type="button" id="legend-next-clue">Another clue (worth less) <span class="kbd">c</span></button>
+        <div id="legend-options" style="margin-top:1.1rem"></div>
+      </div>
+
+      <div class="reveal" id="legend-reveal" hidden></div>
+    </div>
+  </section>
+
+  <!-- ── Higher or Lower ─────────────────────────────────────────────── -->
+  <section id="view-higher" hidden>
+    <h2>Higher or Lower</h2>
+    <p class="lede">Goals scored for the national team. Did the mystery player score more, or fewer?</p>
+
+    <div class="panel">
+      <div class="strip">
+        <span><span class="k">Streak</span><span class="v" id="higher-streak">0</span></span>
+        <span><span class="k">Best ever</span><span class="v" id="higher-best">0</span></span>
+      </div>
+
+      <div class="hi-grid">
+        <div class="hi-card">
+          <p class="hi-name" id="hi-left-name"></p>
+          <p class="hi-meta" id="hi-left-meta"></p>
+          <p class="hi-value" id="hi-left-value"></p>
+          <p class="hi-label">international goals<span class="hi-asof" id="hi-left-asof"></span></p>
+        </div>
+        <div class="hi-card">
+          <p class="hi-name" id="hi-right-name"></p>
+          <p class="hi-meta" id="hi-right-meta"></p>
+          <p class="hi-value" id="hi-right-value">?</p>
+          <p class="hi-label">international goals<span class="hi-asof" id="hi-right-asof"></span></p>
+        </div>
+      </div>
+
+      <div id="higher-buttons">
+        <p class="hi-ask">Compared to the player on the left, did they score…</p>
+        <div class="hi-buttons">
+          <button class="btn btn-primary" type="button" id="hi-more">More ↑</button>
+          <button class="btn btn-primary" type="button" id="hi-fewer">Fewer ↓</button>
+        </div>
+      </div>
+
+      <div class="result" id="higher-result" hidden></div>
+    </div>
+  </section>
+
+  <!-- ── Quiz ────────────────────────────────────────────────────────── -->
+  <section id="view-quiz" hidden>
+    <h2>Quick-fire Quiz</h2>
+    <p class="lede">Ten questions, 20 seconds each. Running out of time counts as wrong.</p>
+
+    <div class="panel">
+      <div class="strip">
+        <span><span class="k">Progress</span><span class="v" id="quiz-progress">Question 1 of 10</span></span>
+        <span><span class="k">Correct</span><span class="v" id="quiz-score">0</span></span>
+      </div>
+
+      <div class="timer"><span class="timer-bar" id="quiz-timer-bar"></span></div>
+      <p class="timer-label" id="quiz-timer-label">20s</p>
+
+      <p class="quiz-q" id="quiz-question"></p>
+      <div id="quiz-answers"></div>
+      <div class="reveal" id="quiz-feedback" hidden></div>
+    </div>
+  </section>
+
+  <!-- ── Hall of Fame ────────────────────────────────────────────────── -->
+  <section id="view-fame" hidden>
+    <h2>Hall of Fame</h2>
+    <p class="lede">The players the records are named after — and a few still writing theirs.</p>
+
+    <div class="filters">
+      <button data-fame-filter="all" aria-pressed="true">Everyone</button>
+      <button data-fame-filter="classic" aria-pressed="false">The classics</button>
+      <button data-fame-filter="modern" aria-pressed="false">Modern era</button>
+      <button data-fame-filter="keeper" aria-pressed="false">Goalkeepers</button>
+    </div>
+    <p class="filter-count" id="fame-count"></p>
+    <div class="fame-grid" id="fame-grid"></div>
+  </section>
+
+  <!-- ── Records ─────────────────────────────────────────────────────── -->
+  <section id="view-records" hidden>
+    <h2>All-time Records</h2>
+    <p class="lede">
+      Bar length shows the figure; hover any row for the exact number.
+      A <span class="kbd">*</span> marks a value worth verifying.
+    </p>
+    <div id="records-wrap"></div>
+  </section>
+
+</main>
+
+<footer>
+  <p>
+    ⚽ Footy Legends · built for curious minds ·
+    <a href="/">back to AI Basics</a><br>
+    Press <span class="kbd">Esc</span> to return to the menu.
+  </p>
+</footer>
+
+<script src="data.js"></script>
+<script src="game.js"></script>
+</body>
+</html>
